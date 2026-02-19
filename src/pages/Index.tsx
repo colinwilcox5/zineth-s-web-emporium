@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import sigil from "@/assets/zineth-sigil.png";
+import logo from "@/assets/zineth-logo.png";
 import GlitchTitle from "@/components/GlitchTitle";
 import MarqueeBar from "@/components/MarqueeBar";
 import RetroNav from "@/components/RetroNav";
@@ -58,9 +58,9 @@ const Index = () => {
     return (
       <div className="scanlines min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <img
-          src={sigil}
-          alt="Zineth Sigil"
-          className="w-32 h-32 md:w-48 md:h-48 spin-slow mb-8"
+          src={logo}
+          alt="Zineth Logo"
+          className="w-40 h-40 md:w-56 md:h-56 spin-slow mb-8"
         />
         <GlitchTitle />
         {!booting ? (
@@ -90,9 +90,9 @@ const Index = () => {
       {/* Hero */}
       <section id="hero" className="py-20 flex flex-col items-center justify-center text-center px-4">
         <img
-          src={sigil}
-          alt="Zineth Sigil"
-          className="w-24 h-24 float-anim mb-6"
+          src={logo}
+          alt="Zineth Logo"
+          className="w-32 h-32 spin-slow mb-6"
         />
         <GlitchTitle />
         <p className="font-terminal text-muted-foreground text-lg mt-6 max-w-xl">
