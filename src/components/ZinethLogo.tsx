@@ -8,19 +8,19 @@ interface ZinethLogoProps {
 
 const ZinethLogo = ({ size = "w-40 h-40" }: ZinethLogoProps) => {
   return (
-    <div className={`${size} relative`}>
-      {/* Pink ring - spins slowly */}
+    <div className={`${size} relative group`}>
+      {/* Pink ring - spins on hover */}
       <img
         src={ringPink}
         alt=""
-        className="absolute inset-0 w-full h-full object-contain spin-slow"
+        className="absolute inset-0 w-full h-full object-contain spin-slow ring-hover"
         style={{ animationDuration: "10s" }}
       />
-      {/* Red ring - spins opposite direction */}
+      {/* Red ring - spins opposite on hover */}
       <img
         src={ringRed}
         alt=""
-        className="absolute inset-0 w-full h-full object-contain spin-slow"
+        className="absolute inset-0 w-full h-full object-contain spin-slow ring-hover"
         style={{ animationDirection: "reverse", animationDuration: "7s" }}
       />
       {/* Z letter - stationary */}
