@@ -172,6 +172,14 @@
   animation: spin-slow 8s linear infinite;
 }
 
+.ring-hover {
+  animation-play-state: paused;
+}
+
+.group:hover .ring-hover {
+  animation-play-state: running;
+}
+
 .font-pixel {
   font-family: 'Press Start 2P', cursive;
 }
