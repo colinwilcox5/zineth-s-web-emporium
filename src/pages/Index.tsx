@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import logo from "@/assets/zineth-logo.png";
+import ZinethLogo from "@/components/ZinethLogo";
 import GlitchTitle from "@/components/GlitchTitle";
 import MarqueeBar from "@/components/MarqueeBar";
 import RetroNav from "@/components/RetroNav";
@@ -57,11 +57,7 @@ const Index = () => {
   if (!entered) {
     return (
       <div className="scanlines min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <img
-          src={logo}
-          alt="Zineth Logo"
-          className="w-40 h-40 md:w-56 md:h-56 spin-slow mb-8"
-        />
+        <ZinethLogo size="w-40 h-40 md:w-56 md:h-56" />
         <GlitchTitle />
         {!booting ? (
           <button
@@ -89,11 +85,7 @@ const Index = () => {
 
       {/* Hero */}
       <section id="hero" className="py-20 flex flex-col items-center justify-center text-center px-4">
-        <img
-          src={logo}
-          alt="Zineth Logo"
-          className="w-32 h-32 spin-slow mb-6"
-        />
+        <ZinethLogo size="w-32 h-32" />
         <GlitchTitle />
         <p className="font-terminal text-muted-foreground text-lg mt-6 max-w-xl">
           A frequency for those who seek beyond the surface.
