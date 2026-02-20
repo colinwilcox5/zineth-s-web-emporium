@@ -30,7 +30,7 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3%;
+    --background: 38 77% 12%;
     --foreground: 120 100% 65%;
 
     --card: 240 10% 6%;
@@ -65,7 +65,7 @@
     --neon-green: 120 100% 65%;
     --neon-yellow: 60 100% 50%;
     --neon-red: 0 100% 50%;
-    --void: 240 10% 3%;
+    --void: 38 77% 12%;
 
     --sidebar-background: 240 10% 5%;
     --sidebar-foreground: 120 100% 65%;
