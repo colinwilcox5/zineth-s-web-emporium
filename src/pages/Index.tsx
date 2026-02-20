@@ -56,7 +56,7 @@ const Index = () => {
 
   if (!entered) {
     return (
-      <div className="scanlines min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <div className="scanlines min-h-screen bg-background flex flex-col items-center justify-center text-center px-4">
         <ZinethLogo size="w-40 h-40 md:w-56 md:h-56" />
         <GlitchTitle />
         {!booting ? (
