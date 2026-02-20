@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ZinethLogo from "@/components/ZinethLogo";
 import GlitchTitle from "@/components/GlitchTitle";
 import MarqueeBar from "@/components/MarqueeBar";
@@ -12,6 +12,10 @@ const Index = () => {
   const [entered, setEntered] = useState(false);
   const [bootText, setBootText] = useState("");
   const [booting, setBooting] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
+  const [transitionDone, setTransitionDone] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const titleBoxRef = useRef<HTMLDivElement>(null);
 
   const bootSequence = [
     "INITIALIZING ZINETH PROTOCOL...",
@@ -30,10 +34,27 @@ const Index = () => {
         i++;
       } else {
         clearInterval(interval);
-        setTimeout(() => setEntered(true), 600);
+        setTimeout(() => {
+          setEntered(true);
+          // Start transition after render
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setTransitioning(true);
+            });
+          });
+        }, 600);
       }
     }, 500);
   };
+
+  // After transition animation completes, mark done
+  useEffect(() => {
+    if (!transitioning) return;
+    const timer = setTimeout(() => {
+      setTransitionDone(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [transitioning]);
 
   useEffect(() => {
     // Konami code easter egg
@@ -56,7 +77,7 @@ const Index = () => {
 
   if (!entered) {
     return (
-      <div className="scanlines min-h-screen bg-background flex flex-col items-center justify-center text-center px-4">
+      <div className="scanlines min-h-screen bg-void flex flex-col items-center justify-center text-center px-4">
         <ZinethLogo size="w-40 h-40 md:w-56 md:h-56" />
         <GlitchTitle />
         {!booting ? (
@@ -79,14 +100,31 @@ const Index = () => {
   }
 
   return (
-    <div className="scanlines min-h-screen bg-background">
+    <div className="scanlines min-h-screen bg-white">
+      {/* Brown overlay that shrinks to the ZINETH title box */}
+      {!transitionDone && (
+        <div
+          ref={overlayRef}
+          className={`fixed inset-0 bg-void z-[100] transition-all duration-1000 ease-in-out ${
+            transitioning ? "dolly-out-done" : ""
+          }`}
+          style={{
+            pointerEvents: transitioning ? "none" : "auto",
+          }}
+        />
+      )}
+
       <RetroNav />
       <MarqueeBar text="★ ZINETH ★ THE SIGNAL IS ALIVE ★ NEW ARTIFACTS INCOMING ★ TUNE IN OR TUNE OUT ★ FREQUENCY 7.83Hz ★ THE VOID REMEMBERS ★ ZINETH ★" />
 
       {/* Hero */}
       <section id="hero" className="py-20 flex flex-col items-center justify-center text-center px-4">
         <ZinethLogo size="w-32 h-32" />
-        <GlitchTitle />
+        <div ref={titleBoxRef} className="relative">
+          <div className="bg-void px-8 py-4 md:px-12 md:py-6 inline-block">
+            <GlitchTitle />
+          </div>
+        </div>
         <p className="font-terminal text-muted-foreground text-lg mt-6 max-w-xl">
           A frequency for those who seek beyond the surface.
           <br />

@@ -272,3 +272,33 @@
   border-bottom: 1px solid hsl(var(--neon-green));
   overflow: hidden;
 }
+
+/* Dolly-out transition overlay */
+@keyframes dolly-out {
+  0% {
+    clip-path: inset(0% 0% 0% 0%);
+    opacity: 1;
+  }
+  80% {
+    clip-path: inset(30% 20% 40% 20%);
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(30% 20% 40% 20%);
+    opacity: 0;
+  }
+}
+
+.dolly-out-done {
+  animation: dolly-out 1.2s ease-in-out forwards;
+}
+
+/* White background text color overrides for main site */
+.bg-white {
+  --foreground: 0 0% 15%;
+  --muted-foreground: 0 0% 40%;
+  --card: 0 0% 96%;
+  --card-foreground: 0 0% 15%;
+  --border: 0 0% 80%;
+  --input: 0 0% 80%;
+}
