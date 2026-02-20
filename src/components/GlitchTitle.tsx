@@ -1,5 +1,5 @@
 const GlitchTitle = () => (
-  <div className="relative select-none">
+  <div className="relative select-none text-center">
     <h1 className="font-vintage text-6xl md:text-8xl lg:text-9xl text-primary glitch-text tracking-wider">
       ZINETH
     </h1>
