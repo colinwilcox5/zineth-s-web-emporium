@@ -18,6 +18,7 @@ export default {
         pixel: ["Press Start 2P", "cursive"],
         mono: ["Space Mono", "monospace"],
         vintage: ["VintageRhyme", "serif"],
+        premiero: ["ATPPremiero", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
