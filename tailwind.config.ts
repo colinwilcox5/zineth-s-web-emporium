@@ -17,6 +17,7 @@ export default {
         terminal: ["VT323", "monospace"],
         pixel: ["Press Start 2P", "cursive"],
         mono: ["Space Mono", "monospace"],
+        vintage: ["VintageRhyme", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
