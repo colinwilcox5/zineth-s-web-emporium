@@ -108,12 +108,10 @@
 
 /* Glitch text animation */
 @keyframes glitch {
-  0% { text-shadow: 2px 0 hsl(var(--neon-cyan)), -2px 0 hsl(var(--neon-pink)); }
-  20% { text-shadow: -3px 2px hsl(var(--neon-cyan)), 3px -1px hsl(var(--neon-pink)); }
-  40% { text-shadow: 3px -2px hsl(var(--neon-cyan)), -3px 2px hsl(var(--neon-pink)); }
-  60% { text-shadow: -2px 1px hsl(var(--neon-cyan)), 2px -2px hsl(var(--neon-pink)); }
-  80% { text-shadow: 1px -1px hsl(var(--neon-cyan)), -1px 3px hsl(var(--neon-pink)); }
-  100% { text-shadow: 2px 0 hsl(var(--neon-cyan)), -2px 0 hsl(var(--neon-pink)); }
+  0%, 100% { text-shadow: 1px 0 hsl(var(--neon-pink) / 0.3), -1px 0 hsl(var(--neon-cyan) / 0.2); }
+  25% { text-shadow: -1px 1px hsl(var(--neon-pink) / 0.25), 1px -1px hsl(var(--neon-cyan) / 0.15); }
+  50% { text-shadow: 1px -1px hsl(var(--neon-pink) / 0.3), -1px 1px hsl(var(--neon-cyan) / 0.2); }
+  75% { text-shadow: -1px 0 hsl(var(--neon-pink) / 0.2), 1px 0 hsl(var(--neon-cyan) / 0.15); }
 }
 
 @keyframes blink {
@@ -160,7 +158,7 @@
 }
 
 .glitch-text {
-  animation: glitch 0.3s infinite;
+  animation: glitch 2s infinite;
 }
 
 .blink {
