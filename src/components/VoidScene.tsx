@@ -249,6 +249,15 @@ function useAnimatedGifTexture(src: string) {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = src;
+    // Append to DOM (hidden) so browser actually animates the GIF frames
+    img.style.position = "fixed";
+    img.style.left = "-9999px";
+    img.style.top = "-9999px";
+    img.style.width = "1px";
+    img.style.height = "1px";
+    img.style.opacity = "0";
+    img.style.pointerEvents = "none";
+    document.body.appendChild(img);
     imgRef.current = img;
   }
 
