@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import ZinethLogo from "@/components/ZinethLogo";
 import GlitchTitle from "@/components/GlitchTitle";
 import MarqueeBar from "@/components/MarqueeBar";
@@ -7,6 +7,9 @@ import ArtGallery from "@/components/ArtGallery";
 import ClothingShop from "@/components/ClothingShop";
 import LoreSection from "@/components/LoreSection";
 import RetroFooter from "@/components/RetroFooter";
+import StaticTransition from "@/components/StaticTransition";
+
+const VoidScene = lazy(() => import("@/components/VoidScene"));
 
 const Index = () => {
   const [entered, setEntered] = useState(false);
@@ -16,6 +19,11 @@ const Index = () => {
   const [transitionDone, setTransitionDone] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const titleBoxRef = useRef<HTMLDivElement>(null);
+
+  // Void scene state
+  const [voidActive, setVoidActive] = useState(false);
+  const [staticActive, setStaticActive] = useState(false);
+  const [showVoid, setShowVoid] = useState(false);
 
   const bootSequence = [
     "INITIALIZING ZINETH PROTOCOL...",
@@ -36,7 +44,6 @@ const Index = () => {
         clearInterval(interval);
         setTimeout(() => {
           setEntered(true);
-          // Start transition after render
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               setTransitioning(true);
@@ -75,27 +82,97 @@ const Index = () => {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  // Hidden scroll detection — only on the pre-enter landing page
+  useEffect(() => {
+    if (entered || voidActive) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Only trigger on scroll down
+      if (e.deltaY > 30) {
+        setStaticActive(true);
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel);
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [entered, voidActive]);
+
+  const handleStaticComplete = useCallback(() => {
+    setStaticActive(false);
+    setVoidActive(true);
+    setShowVoid(true);
+  }, []);
+
+  // Return from void with scroll up or Escape
+  useEffect(() => {
+    if (!voidActive) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setStaticActive(true);
+        setTimeout(() => {
+          setVoidActive(false);
+          setShowVoid(false);
+          setStaticActive(false);
+        }, 800);
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [voidActive]);
+
+  // Static transition overlay
+  const staticOverlay = (
+    <StaticTransition active={staticActive} onComplete={handleStaticComplete} />
+  );
+
+  // Void scene — full takeover
+  if (showVoid) {
+    return (
+      <>
+        {staticOverlay}
+        <Suspense
+          fallback={
+            <div className="w-full h-screen flex items-center justify-center" style={{ background: "#050505" }}>
+              <p className="font-terminal text-neon-green text-xl neon-glow-green blink">
+                ENTERING THE VOID...
+              </p>
+            </div>
+          }
+        >
+          <VoidScene />
+        </Suspense>
+        {/* Subtle escape hint — only appears after 5s */}
+        <EscapeHint />
+      </>
+    );
+  }
+
   if (!entered) {
     return (
-      <div className="scanlines min-h-screen bg-void flex flex-col items-center justify-center text-center px-4">
-        <ZinethLogo size="w-40 h-40 md:w-56 md:h-56" />
-        <GlitchTitle />
-        {!booting ? (
-          <button
-            onClick={handleEnter}
-            className="mt-10 font-pixel text-sm text-foreground border-2 border-foreground px-8 py-3 hover:bg-foreground hover:text-background transition-all duration-200 flicker"
-          >
-            [ ENTER ]
-          </button>
-        ) : (
-          <pre className="mt-8 font-terminal text-sm text-foreground text-left max-w-md neon-glow-green whitespace-pre-wrap">
-            {bootText}
-          </pre>
-        )}
-        <p className="easter-egg-text font-terminal text-xs mt-16">
-          you are being watched
-        </p>
-      </div>
+      <>
+        {staticOverlay}
+        <div className="scanlines min-h-screen bg-void flex flex-col items-center justify-center text-center px-4">
+          <ZinethLogo size="w-40 h-40 md:w-56 md:h-56" />
+          <GlitchTitle />
+          {!booting ? (
+            <button
+              onClick={handleEnter}
+              className="mt-10 font-pixel text-sm text-foreground border-2 border-foreground px-8 py-3 hover:bg-foreground hover:text-background transition-all duration-200 flicker"
+            >
+              [ ENTER ]
+            </button>
+          ) : (
+            <pre className="mt-8 font-terminal text-sm text-foreground text-left max-w-md neon-glow-green whitespace-pre-wrap">
+              {bootText}
+            </pre>
+          )}
+          <p className="easter-egg-text font-terminal text-xs mt-16">
+            you are being watched
+          </p>
+        </div>
+      </>
     );
   }
 
@@ -150,6 +227,24 @@ const Index = () => {
       <MarqueeBar text="★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★" />
 
       <RetroFooter />
+    </div>
+  );
+};
+
+// Small hint that fades in after delay
+const EscapeHint = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 font-terminal text-xs opacity-30 transition-opacity duration-1000" style={{ color: "#00ff66" }}>
+      [ ESC to return ]
     </div>
   );
 };
