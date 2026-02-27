@@ -50,7 +50,7 @@ const FloatingIcon = ({
   bobAmount,
   onClick,
 }: FloatingIconProps) => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<THREE.Group>(null);
   const [clicked, setClicked] = useState(false);
   const [hovered, setHovered] = useState(false);
   const glitchTime = useRef(0);
@@ -99,8 +99,8 @@ const FloatingIcon = ({
   }, [onClick]);
 
   return (
-    <mesh
-      ref={meshRef}
+    <group
+      ref={meshRef as any}
       position={position}
       onClick={handleClick}
       onPointerEnter={() => {
@@ -112,15 +112,20 @@ const FloatingIcon = ({
         document.body.style.cursor = "";
       }}
     >
-      <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial
-        map={texture}
-        transparent
-        alphaTest={0.1}
-        side={THREE.DoubleSide}
-        opacity={clicked ? 0.5 + Math.random() * 0.5 : 1}
-      />
-    </mesh>
+      {/* Layered depth stack for volumetric effect */}
+      {[0, 0.03, 0.06, 0.09, 0.12].map((zOff, idx) => (
+        <mesh key={idx} position={[0, 0, -zOff]}>
+          <planeGeometry args={[1, 1]} />
+          <meshBasicMaterial
+            map={texture}
+            transparent
+            alphaTest={0.1}
+            side={THREE.DoubleSide}
+            opacity={(clicked ? 0.5 + Math.random() * 0.5 : 1) * (1 - idx * 0.18)}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 };
 
