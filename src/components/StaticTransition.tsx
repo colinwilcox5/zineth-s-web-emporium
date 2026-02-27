@@ -10,6 +10,8 @@ const StaticTransition = ({ active, onComplete }: StaticTransitionProps) => {
   const [visible, setVisible] = useState(false);
   const frameRef = useRef<number>(0);
   const startTimeRef = useRef(0);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     if (!active) return;
@@ -58,7 +60,7 @@ const StaticTransition = ({ active, onComplete }: StaticTransitionProps) => {
         frameRef.current = requestAnimationFrame(drawStatic);
       } else {
         setVisible(false);
-        onComplete?.();
+        onCompleteRef.current?.();
       }
     };
 
@@ -67,15 +69,17 @@ const StaticTransition = ({ active, onComplete }: StaticTransitionProps) => {
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
-  }, [active, onComplete]);
-
-  if (!visible) return null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 z-[200] pointer-events-none"
-      style={{ imageRendering: "pixelated" }}
+      style={{
+        imageRendering: "pixelated",
+        display: visible ? "block" : "none",
+      }}
     />
   );
 };

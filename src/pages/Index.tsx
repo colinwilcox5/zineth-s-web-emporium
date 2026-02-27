@@ -104,10 +104,9 @@ const Index = () => {
   }, []);
 
   const enterVoid = useCallback(() => {
-    if (!voidActive && !staticActive) {
-      setStaticActive(true);
-    }
-  }, [voidActive, staticActive]);
+    setVoidActive(true);
+    setShowVoid(true);
+  }, []);
 
   // Return from void with scroll up or Escape
   useEffect(() => {
