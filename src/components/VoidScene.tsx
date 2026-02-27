@@ -15,6 +15,16 @@ import cosmicwyrmImg from "@/assets/icons/cosmicwyrm.png";
 import bigfootImg from "@/assets/icons/bigfoot.png";
 import chupacabraImg from "@/assets/icons/chupacabra.png";
 import xfilesImg from "@/assets/icons/xfiles.gif";
+import earthRingsImg from "@/assets/icons/earth-rings.gif";
+import duchovnyImg from "@/assets/icons/duchovny.gif";
+import ufoEarthImg from "@/assets/icons/ufo-earth.gif";
+import planetHiphopImg from "@/assets/icons/planet-hiphop.gif";
+import wackyWorldImg from "@/assets/icons/wacky-world.gif";
+import wildStyleImg from "@/assets/icons/wild-style.gif";
+import koolaidImg from "@/assets/icons/koolaid.gif";
+import vinceCarterImg from "@/assets/icons/vince-carter.gif";
+import princessImg from "@/assets/icons/princess.gif";
+import graffitiImg from "@/assets/icons/graffiti.gif";
 import zinethZ from "@/assets/zineth-z.png";
 import ringPink from "@/assets/zineth-ring-pink.png";
 import ringRed from "@/assets/zineth-ring-red.png";
@@ -207,7 +217,7 @@ const ZinethLogoObject = ({
 // Generate scattered icon data
 function generateIcons(count: number, spread: number) {
   const rand = seededRandom(42);
-  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol", "globe", "mothman", "spacewyrm", "cosmicwyrm", "bigfoot", "chupacabra", "xfiles"];
+  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol", "globe", "mothman", "spacewyrm", "cosmicwyrm", "bigfoot", "chupacabra", "xfiles", "earthRings", "duchovny", "ufoEarth", "planetHiphop", "wackyWorld", "wildStyle", "koolaid", "vinceCarter", "princess", "graffiti"];
   const icons = [];
 
   for (let i = 0; i < count; i++) {
@@ -286,7 +296,7 @@ function useAnimatedGifTexture(src: string) {
 }
 
 // List of GIF sources that need animated textures
-const GIF_TYPES = new Set(["globe", "xfiles"]);
+const GIF_TYPES = new Set(["globe", "xfiles", "earthRings", "duchovny", "ufoEarth", "planetHiphop", "wackyWorld", "wildStyle", "koolaid", "vinceCarter", "princess", "graffiti"]);
 
 const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
   const iconData = useMemo(() => generateIcons(60, 20), []);
@@ -308,6 +318,16 @@ const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
   // Animated GIF textures
   const globeAnimated = useAnimatedGifTexture(globeImg);
   const xfilesAnimated = useAnimatedGifTexture(xfilesImg);
+  const earthRingsAnimated = useAnimatedGifTexture(earthRingsImg);
+  const duchovnyAnimated = useAnimatedGifTexture(duchovnyImg);
+  const ufoEarthAnimated = useAnimatedGifTexture(ufoEarthImg);
+  const planetHiphopAnimated = useAnimatedGifTexture(planetHiphopImg);
+  const wackyWorldAnimated = useAnimatedGifTexture(wackyWorldImg);
+  const wildStyleAnimated = useAnimatedGifTexture(wildStyleImg);
+  const koolaidAnimated = useAnimatedGifTexture(koolaidImg);
+  const vinceCarterAnimated = useAnimatedGifTexture(vinceCarterImg);
+  const princessAnimated = useAnimatedGifTexture(princessImg);
+  const graffitiAnimated = useAnimatedGifTexture(graffitiImg);
 
   // Set nearest filter + strip backgrounds for static textures
   Object.values(staticTextures).forEach((tex) => {
@@ -339,6 +359,16 @@ const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
     ...staticTextures,
     globe: globeAnimated,
     xfiles: xfilesAnimated,
+    earthRings: earthRingsAnimated,
+    duchovny: duchovnyAnimated,
+    ufoEarth: ufoEarthAnimated,
+    planetHiphop: planetHiphopAnimated,
+    wackyWorld: wackyWorldAnimated,
+    wildStyle: wildStyleAnimated,
+    koolaid: koolaidAnimated,
+    vinceCarter: vinceCarterAnimated,
+    princess: princessAnimated,
+    graffiti: graffitiAnimated,
   };
 
   return (
