@@ -13,6 +13,7 @@ import mothmanImg from "@/assets/icons/mothman.png";
 import spacewyrmImg from "@/assets/icons/spacewyrm.png";
 import cosmicwyrmImg from "@/assets/icons/cosmicwyrm.png";
 import bigfootImg from "@/assets/icons/bigfoot.png";
+import chupacabraImg from "@/assets/icons/chupacabra.png";
 import zinethZ from "@/assets/zineth-z.png";
 import ringPink from "@/assets/zineth-ring-pink.png";
 import ringRed from "@/assets/zineth-ring-red.png";
@@ -197,7 +198,7 @@ const ZinethLogoObject = ({
 // Generate scattered icon data
 function generateIcons(count: number, spread: number) {
   const rand = seededRandom(42);
-  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol", "globe", "mothman", "spacewyrm", "cosmicwyrm", "bigfoot"];
+  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol", "globe", "mothman", "spacewyrm", "cosmicwyrm", "bigfoot", "chupacabra"];
   const icons = [];
 
   for (let i = 0; i < count; i++) {
@@ -233,6 +234,7 @@ const SceneContent = () => {
     spacewyrm: useLoader(THREE.TextureLoader, spacewyrmImg),
     cosmicwyrm: useLoader(THREE.TextureLoader, cosmicwyrmImg),
     bigfoot: useLoader(THREE.TextureLoader, bigfootImg),
+    chupacabra: useLoader(THREE.TextureLoader, chupacabraImg),
   };
 
   // Set nearest filter for pixelated look
