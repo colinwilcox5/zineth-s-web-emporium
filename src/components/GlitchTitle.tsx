@@ -1,6 +1,6 @@
 const GlitchTitle = () => (
   <div className="relative select-none text-center">
-    <h1 className="font-vintage text-6xl md:text-8xl lg:text-9xl text-primary glitch-text tracking-wider">
+    <h1 className="font-vintage text-6xl md:text-8xl lg:text-9xl text-primary glitch-text tracking-wider blue-flash">
       ZINETH
     </h1>
     <p className="font-premiero text-2xl md:text-3xl text-secondary mt-4 neon-glow-cyan tracking-[0.5em]">
