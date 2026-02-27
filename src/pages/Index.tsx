@@ -168,9 +168,12 @@ const Index = () => {
               {bootText}
             </pre>
           )}
-          <p className="easter-egg-text font-terminal text-xs mt-16">
+          <button
+            onClick={() => setStaticActive(true)}
+            className="easter-egg-text font-terminal text-xs mt-16 cursor-pointer hover:opacity-100 transition-opacity border-none bg-transparent"
+          >
             you are being watched
-          </p>
+          </button>
         </div>
       </>
     );
