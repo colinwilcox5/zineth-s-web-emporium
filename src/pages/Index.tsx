@@ -109,17 +109,21 @@ const Index = () => {
   }, []);
 
   // Return from void with scroll up or Escape
+  const exitVoid = useCallback(() => {
+    setStaticActive(true);
+    setTimeout(() => {
+      setVoidActive(false);
+      setShowVoid(false);
+      setStaticActive(false);
+    }, 800);
+  }, []);
+
   useEffect(() => {
     if (!voidActive) return;
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setStaticActive(true);
-        setTimeout(() => {
-          setVoidActive(false);
-          setShowVoid(false);
-          setStaticActive(false);
-        }, 800);
+        exitVoid();
       }
     };
 
@@ -146,7 +150,7 @@ const Index = () => {
             </div>
           }
         >
-          <VoidScene />
+          <VoidScene onExitVoid={exitVoid} />
         </Suspense>
         {/* Subtle escape hint — only appears after 5s */}
         <EscapeHint />
