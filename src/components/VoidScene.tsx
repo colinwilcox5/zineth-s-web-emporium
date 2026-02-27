@@ -8,6 +8,7 @@ import planetImg from "@/assets/icons/planet.png";
 import lizardImg from "@/assets/icons/lizard.png";
 import yinyangImg from "@/assets/icons/yinyang.png";
 import symbolImg from "@/assets/icons/symbol.png";
+import globeImg from "@/assets/icons/globe.gif";
 import zinethZ from "@/assets/zineth-z.png";
 import ringPink from "@/assets/zineth-ring-pink.png";
 import ringRed from "@/assets/zineth-ring-red.png";
@@ -192,7 +193,7 @@ const ZinethLogoObject = ({
 // Generate scattered icon data
 function generateIcons(count: number, spread: number) {
   const rand = seededRandom(42);
-  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol"];
+  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol", "globe"];
   const icons = [];
 
   for (let i = 0; i < count; i++) {
@@ -223,6 +224,7 @@ const SceneContent = () => {
     lizard: useLoader(THREE.TextureLoader, lizardImg),
     yinyang: useLoader(THREE.TextureLoader, yinyangImg),
     symbol: useLoader(THREE.TextureLoader, symbolImg),
+    globe: useLoader(THREE.TextureLoader, globeImg),
   };
 
   // Set nearest filter for pixelated look
