@@ -237,10 +237,39 @@ const SceneContent = () => {
     chupacabra: useLoader(THREE.TextureLoader, chupacabraImg),
   };
 
-  // Set nearest filter for pixelated look
+  // Set nearest filter for pixelated look + strip white/light backgrounds
   Object.values(textures).forEach((tex) => {
     tex.magFilter = THREE.NearestFilter;
     tex.minFilter = THREE.NearestFilter;
+
+    // Make white/light pixels transparent
+    if (tex.image) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (ctx && tex.image instanceof HTMLImageElement) {
+        canvas.width = tex.image.width;
+        canvas.height = tex.image.height;
+        ctx.drawImage(tex.image, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          // If pixel is near-white or very light, make transparent
+          if (r > 200 && g > 200 && b > 200) {
+            data[i + 3] = 0;
+          }
+          // Also handle light gray backgrounds
+          if (r > 180 && g > 180 && b > 180 && Math.abs(r - g) < 20 && Math.abs(g - b) < 20) {
+            data[i + 3] = 0;
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        tex.image = canvas as unknown as HTMLImageElement;
+        tex.needsUpdate = true;
+      }
+    }
   });
 
   return (
