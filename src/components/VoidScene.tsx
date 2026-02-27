@@ -132,8 +132,10 @@ const FloatingIcon = ({
 // Special Z Logo with animated rings
 const ZinethLogoObject = ({
   position,
+  onClickLogo,
 }: {
   position: [number, number, number];
+  onClickLogo?: () => void;
 }) => {
   const groupRef = useRef<THREE.Group>(null);
   const pinkRingRef = useRef<THREE.Mesh>(null);
@@ -172,6 +174,7 @@ const ZinethLogoObject = ({
     <group
       ref={groupRef}
       position={position}
+      onClick={onClickLogo}
       onPointerEnter={() => {
         setHovered(true);
         document.body.style.cursor = "pointer";
@@ -225,7 +228,7 @@ function generateIcons(count: number, spread: number) {
   return icons;
 }
 
-const SceneContent = () => {
+const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
   const iconData = useMemo(() => generateIcons(60, 20), []);
 
   const textures = {
@@ -298,7 +301,7 @@ const SceneContent = () => {
       />
 
       {/* Z Logo - center-ish, slightly offset */}
-      <ZinethLogoObject position={[0, 0.5, 0]} />
+      <ZinethLogoObject position={[0, 0.5, 0]} onClickLogo={onLogoClick} />
 
       {/* Scattered icons */}
       {iconData.map((icon, i) => (
@@ -356,7 +359,7 @@ const Stars = () => {
   );
 };
 
-const VoidScene = () => {
+const VoidScene = ({ onExitVoid }: { onExitVoid?: () => void }) => {
   return (
     <div className="w-full h-screen" style={{ background: "#050505" }}>
       <Canvas
@@ -367,7 +370,7 @@ const VoidScene = () => {
         }}
       >
         <Suspense fallback={null}>
-          <SceneContent />
+          <SceneContent onLogoClick={onExitVoid} />
         </Suspense>
       </Canvas>
     </div>
