@@ -14,6 +14,7 @@ import spacewyrmImg from "@/assets/icons/spacewyrm.png";
 import cosmicwyrmImg from "@/assets/icons/cosmicwyrm.png";
 import bigfootImg from "@/assets/icons/bigfoot.png";
 import chupacabraImg from "@/assets/icons/chupacabra.png";
+import xfilesImg from "@/assets/icons/xfiles.gif";
 import zinethZ from "@/assets/zineth-z.png";
 import ringPink from "@/assets/zineth-ring-pink.png";
 import ringRed from "@/assets/zineth-ring-red.png";
@@ -206,7 +207,7 @@ const ZinethLogoObject = ({
 // Generate scattered icon data
 function generateIcons(count: number, spread: number) {
   const rand = seededRandom(42);
-  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol", "globe", "mothman", "spacewyrm", "cosmicwyrm", "bigfoot", "chupacabra"];
+  const iconTypes = ["spaceship", "planet", "lizard", "yinyang", "symbol", "globe", "mothman", "spacewyrm", "cosmicwyrm", "bigfoot", "chupacabra", "xfiles"];
   const icons = [];
 
   for (let i = 0; i < count; i++) {
@@ -285,7 +286,7 @@ function useAnimatedGifTexture(src: string) {
 }
 
 // List of GIF sources that need animated textures
-const GIF_TYPES = new Set(["globe"]);
+const GIF_TYPES = new Set(["globe", "xfiles"]);
 
 const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
   const iconData = useMemo(() => generateIcons(60, 20), []);
@@ -304,8 +305,9 @@ const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
     chupacabra: useLoader(THREE.TextureLoader, chupacabraImg),
   };
 
-  // Animated GIF texture
+  // Animated GIF textures
   const globeAnimated = useAnimatedGifTexture(globeImg);
+  const xfilesAnimated = useAnimatedGifTexture(xfilesImg);
 
   // Set nearest filter + strip backgrounds for static textures
   Object.values(staticTextures).forEach((tex) => {
@@ -336,6 +338,7 @@ const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
   const textures: Record<string, THREE.Texture> = {
     ...staticTextures,
     globe: globeAnimated,
+    xfiles: xfilesAnimated,
   };
 
   return (
