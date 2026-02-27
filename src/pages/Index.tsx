@@ -103,6 +103,12 @@ const Index = () => {
     setShowVoid(true);
   }, []);
 
+  const enterVoid = useCallback(() => {
+    if (!voidActive && !staticActive) {
+      setStaticActive(true);
+    }
+  }, [voidActive, staticActive]);
+
   // Return from void with scroll up or Escape
   useEffect(() => {
     if (!voidActive) return;
@@ -169,7 +175,7 @@ const Index = () => {
             </pre>
           )}
           <button
-            onClick={() => setStaticActive(true)}
+            onClick={enterVoid}
             className="easter-egg-text font-terminal text-xs mt-16 cursor-pointer hover:opacity-100 transition-opacity border-none bg-transparent"
           >
             you are being watched
@@ -195,7 +201,12 @@ const Index = () => {
       )}
 
       <RetroNav />
-      <MarqueeBar text="★ ZINETH ★ THE SIGNAL IS ALIVE ★ NEW ARTIFACTS INCOMING ★ TUNE IN OR TUNE OUT ★ FREQUENCY 7.83Hz ★ THE VOID REMEMBERS ★ ZINETH ★" />
+      <button
+        onClick={enterVoid}
+        className="fixed top-4 right-4 z-50 font-pixel text-xs border-2 border-foreground bg-background/90 text-foreground px-3 py-2 hover:bg-foreground hover:text-background transition-all"
+      >
+        [ ENTER VOID ]
+      </button>
 
       {/* Hero */}
       <section id="hero" className="py-20 flex flex-col items-center justify-center text-center px-4">
