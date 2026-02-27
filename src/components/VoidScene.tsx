@@ -1,6 +1,7 @@
-import { useRef, useState, useCallback, useMemo, Suspense } from "react";
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useRef, useState, useCallback, useMemo, useEffect, Suspense } from "react";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import { parseGIF, decompressFrames } from "gifuct-js";
 import * as THREE from "three";
 
 import spaceshipImg from "@/assets/icons/spaceship.png";
@@ -239,30 +240,26 @@ function generateIcons(count: number, spread: number) {
   return icons;
 }
 
-// Hook to create an animated GIF texture using browser-native decoding
+// Hook to create a truly animated GIF texture via frame decoding
 function useAnimatedGifTexture(src: string) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const textureRef = useRef<THREE.CanvasTexture | null>(null);
+  type GifFrame = {
+    delay: number;
+    disposalType?: number;
+    dims: { left: number; top: number; width: number; height: number };
+    patch: Uint8ClampedArray;
+  };
 
-  if (!imgRef.current) {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = src;
-    // Append to DOM (hidden) so browser actually animates the GIF frames
-    img.style.position = "fixed";
-    img.style.left = "-9999px";
-    img.style.top = "-9999px";
-    img.style.width = "1px";
-    img.style.height = "1px";
-    img.style.opacity = "0";
-    img.style.pointerEvents = "none";
-    document.body.appendChild(img);
-    imgRef.current = img;
-  }
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const textureRef = useRef<THREE.CanvasTexture | null>(null);
+  const framesRef = useRef<GifFrame[]>([]);
+  const frameIndexRef = useRef(0);
+  const accumulatorRef = useRef(0);
 
   if (!canvasRef.current) {
-    canvasRef.current = document.createElement("canvas");
+    const c = document.createElement("canvas");
+    c.width = 2;
+    c.height = 2;
+    canvasRef.current = c;
   }
 
   if (!textureRef.current) {
@@ -271,34 +268,112 @@ function useAnimatedGifTexture(src: string) {
     textureRef.current.minFilter = THREE.NearestFilter;
   }
 
-  useFrame(() => {
-    const img = imgRef.current;
+  const drawFrame = useCallback((frame: GifFrame, clearAll = false) => {
     const canvas = canvasRef.current;
     const texture = textureRef.current;
-    if (!img || !canvas || !texture || !img.complete || img.naturalWidth === 0) return;
+    if (!canvas || !texture) return;
 
-    if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-    }
-
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0);
-
-    // Strip white/light backgrounds
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i], g = data[i + 1], b = data[i + 2];
-      if (r > 200 && g > 200 && b > 200) data[i + 3] = 0;
-      if (r > 180 && g > 180 && b > 180 && Math.abs(r - g) < 20 && Math.abs(g - b) < 20) data[i + 3] = 0;
+    if (clearAll) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
-    ctx.putImageData(imageData, 0, 0);
 
+    const patchData = new Uint8ClampedArray(frame.patch);
+    for (let i = 0; i < patchData.length; i += 4) {
+      const r = patchData[i];
+      const g = patchData[i + 1];
+      const b = patchData[i + 2];
+
+      if (r > 200 && g > 200 && b > 200) patchData[i + 3] = 0;
+      if (
+        r > 180 &&
+        g > 180 &&
+        b > 180 &&
+        Math.abs(r - g) < 20 &&
+        Math.abs(g - b) < 20
+      ) {
+        patchData[i + 3] = 0;
+      }
+    }
+
+    const imageData = new ImageData(
+      patchData,
+      frame.dims.width,
+      frame.dims.height
+    );
+
+    ctx.putImageData(imageData, frame.dims.left, frame.dims.top);
     texture.needsUpdate = true;
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadGif = async () => {
+      try {
+        const response = await fetch(src);
+        const buffer = await response.arrayBuffer();
+        const gif = parseGIF(buffer);
+        const parsedFrames = decompressFrames(gif, true) as GifFrame[];
+
+        if (cancelled || !parsedFrames.length || !canvasRef.current) return;
+
+        const width = (gif as any)?.lsd?.width ?? parsedFrames[0].dims.width;
+        const height = (gif as any)?.lsd?.height ?? parsedFrames[0].dims.height;
+
+        canvasRef.current.width = width;
+        canvasRef.current.height = height;
+
+        framesRef.current = parsedFrames;
+        frameIndexRef.current = 0;
+        accumulatorRef.current = 0;
+
+        drawFrame(parsedFrames[0], true);
+      } catch (error) {
+        console.warn(`Failed to decode GIF texture: ${src}`, error);
+      }
+    };
+
+    loadGif();
+
+    return () => {
+      cancelled = true;
+      framesRef.current = [];
+    };
+  }, [src, drawFrame]);
+
+  useFrame((_, delta) => {
+    const frames = framesRef.current;
+    if (!frames.length) return;
+
+    accumulatorRef.current += delta * 1000;
+
+    const currentFrame = frames[frameIndexRef.current];
+    const delay = Math.max(20, currentFrame.delay || 100);
+
+    if (accumulatorRef.current < delay) return;
+
+    accumulatorRef.current = 0;
+
+    const nextIndex = (frameIndexRef.current + 1) % frames.length;
+    const nextFrame = frames[nextIndex];
+
+    if (currentFrame.disposalType === 2 && canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(
+          currentFrame.dims.left,
+          currentFrame.dims.top,
+          currentFrame.dims.width,
+          currentFrame.dims.height
+        );
+      }
+    }
+
+    drawFrame(nextFrame);
+    frameIndexRef.current = nextIndex;
   });
 
   return textureRef.current;
