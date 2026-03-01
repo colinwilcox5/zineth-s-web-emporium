@@ -83,8 +83,8 @@ const FloatingIcon = ({
       basePos.current.z + oz
     );
 
-    // Slow rotation
-    meshRef.current.rotation.z = Math.sin(t * 0.5 + orbitOffset) * 0.15;
+    // Billboard: always face camera
+    meshRef.current.quaternion.copy(state.camera.quaternion);
 
     // Glitch effect on click
     if (clicked) {
