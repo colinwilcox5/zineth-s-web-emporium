@@ -373,7 +373,6 @@ const Minimap = ({ player }: { player: Player }) => {
     canvas.width = 64;
     canvas.height = 64;
 
-    const { MAP } = require('@/engine/map');
     const scale = 2;
 
     ctx.fillStyle = '#000';
