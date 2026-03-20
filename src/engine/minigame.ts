@@ -35,7 +35,7 @@ export function createBreakoutState(): BreakoutState {
   return {
     paddleX: GAME_W / 2 - PADDLE_W / 2,
     ballX: GAME_W / 2,
-    ballY: GAME_H - 30,
+    ballY: GAME_H - 60,
     ballDX: 3,
     ballDY: -3,
     bricks,

@@ -168,7 +168,7 @@ const WolfensteinRoom = () => {
     const onTouch = (e: TouchEvent) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = BREAKOUT_W / rect.width;
-      state.paddleX = (e.touches[0].clientX - rect.left) * scaleX - 20;
+      state.paddleX = (e.touches[0].clientX - rect.left) * scaleX - 40;
     };
     const onClick = () => {
       if (!state.running && state.lives > 0 && !state.won) {
