@@ -62,7 +62,7 @@ export function updateBreakout(state: BreakoutState): void {
 
   // Paddle collision
   if (
-    state.ballY >= GAME_H - PADDLE_H - BALL_R - 10 &&
+    state.ballY >= GAME_H - PADDLE_H - BALL_R - 20 &&
     state.ballY < GAME_H - 10 &&
     state.ballX >= state.paddleX &&
     state.ballX <= state.paddleX + PADDLE_W &&
