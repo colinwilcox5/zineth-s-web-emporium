@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import zLetter from "@/assets/zineth-z.png";
 import ringPink from "@/assets/zineth-ring-pink.png";
 import ringRed from "@/assets/zineth-ring-red.png";
