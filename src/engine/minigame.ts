@@ -4,16 +4,16 @@
 import { COLORS } from './map';
 
 const BRICK_COLORS = [COLORS.yellow, COLORS.skyBlue, COLORS.federalBlue, COLORS.green, COLORS.pink, COLORS.red];
-const GAME_W = 280;
-const GAME_H = 180;
-const PADDLE_W = 40;
-const PADDLE_H = 6;
-const BALL_R = 3;
+const GAME_W = 560;
+const GAME_H = 360;
+const PADDLE_W = 80;
+const PADDLE_H = 12;
+const BALL_R = 6;
 const BRICK_ROWS = 5;
 const BRICK_COLS = 10;
 const BRICK_W = GAME_W / BRICK_COLS;
-const BRICK_H = 8;
-const BRICK_TOP = 20;
+const BRICK_H = 16;
+const BRICK_TOP = 40;
 
 export interface BreakoutState {
   paddleX: number;
