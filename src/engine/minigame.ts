@@ -157,7 +157,7 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
   if (state.won) {
     ctx.fillStyle = COLORS.green;
     ctx.textAlign = 'center';
-    ctx.font = '12px monospace';
+    ctx.font = '24px monospace';
     ctx.fillText('YOU WIN', GAME_W / 2, GAME_H / 2);
   }
 
