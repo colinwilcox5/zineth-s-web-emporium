@@ -75,8 +75,8 @@ export function updateHeldItem(
   }
 
   if (isMoving) {
-    state.bobY = Math.sin(state.stepCounter * 0.15) * 4;
-    state.bobX = Math.cos(state.stepCounter * 0.075) * 2;
+    state.bobY = Math.sin(state.stepCounter * 0.15) * 8;
+    state.bobX = Math.cos(state.stepCounter * 0.075) * 4;
   }
 
   // Swap animation
