@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { MAP as LEVEL_MAP } from '@/engine/map';
 import { SCREEN_W, SCREEN_H, renderFrame, getInteractableObject } from '@/engine/raycaster';
 import type { Player } from '@/engine/raycaster';
 import { WORLD_OBJECTS, getRoomName, GLYPH_SEQUENCE, COLORS } from '@/engine/map';
