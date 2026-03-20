@@ -125,7 +125,7 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
     for (let col = 0; col < BRICK_COLS; col++) {
       if (!state.bricks[row][col]) continue;
       ctx.fillStyle = BRICK_COLORS[row % BRICK_COLORS.length];
-      ctx.fillRect(col * BRICK_W + 1, BRICK_TOP + row * BRICK_H + 1, BRICK_W - 2, BRICK_H - 2);
+      ctx.fillRect(col * BRICK_W + 2, BRICK_TOP + row * BRICK_H + 2, BRICK_W - 4, BRICK_H - 4);
     }
   }
 
