@@ -149,14 +149,13 @@ function drawOrb(
   state: HeldItemState,
   isNearInteractable: boolean
 ): void {
-  const radius = 11;
+  const radius = 22;
 
   if (isNearInteractable) {
-    // Proximity glow — pulsing pink
-    const pulseT = Date.now() * 0.003; // ~3 pulses/sec
+    const pulseT = Date.now() * 0.003;
     const glowAlpha = 0.3 + Math.sin(pulseT * Math.PI * 2) * 0.2;
     ctx.beginPath();
-    ctx.arc(x, y, radius + 6, 0, Math.PI * 2);
+    ctx.arc(x, y, radius + 12, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(255,72,176,${glowAlpha})`;
     ctx.fill();
 
@@ -165,7 +164,6 @@ function drawOrb(
     ctx.fillStyle = COLORS.pink;
     ctx.fill();
   } else {
-    // Idle color cycle
     const idx = Math.floor(state.colorCycleT);
     const nextIdx = (idx + 1) % RISO_CYCLE.length;
     const frac = state.colorCycleT - idx;
@@ -179,7 +177,7 @@ function drawOrb(
 
   // Highlight
   ctx.beginPath();
-  ctx.arc(x - 3, y - 3, 3, 0, Math.PI * 2);
+  ctx.arc(x - 6, y - 6, 6, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(255,255,255,0.3)';
   ctx.fill();
 }
