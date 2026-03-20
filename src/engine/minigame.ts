@@ -141,11 +141,11 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
 
   // Score & Lives
   ctx.fillStyle = COLORS.white;
-  ctx.font = '8px monospace';
+  ctx.font = '16px monospace';
   ctx.textAlign = 'left';
-  ctx.fillText(`SCORE: ${state.score}`, 4, 12);
+  ctx.fillText(`SCORE: ${state.score}`, 8, 24);
   ctx.textAlign = 'right';
-  ctx.fillText(`LIVES: ${state.lives}`, GAME_W - 4, 12);
+  ctx.fillText(`LIVES: ${state.lives}`, GAME_W - 8, 24);
 
   if (!state.running && state.lives > 0 && !state.won) {
     ctx.fillStyle = COLORS.yellow;
