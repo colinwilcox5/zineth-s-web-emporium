@@ -163,7 +163,7 @@ const WolfensteinRoom = () => {
     const onMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = BREAKOUT_W / rect.width;
-      state.paddleX = (e.clientX - rect.left) * scaleX - 20;
+      state.paddleX = (e.clientX - rect.left) * scaleX - 40;
     };
     const onTouch = (e: TouchEvent) => {
       const rect = canvas.getBoundingClientRect();
