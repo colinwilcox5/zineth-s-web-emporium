@@ -80,9 +80,13 @@ const ZinethLogo = ({ size = "w-40 h-40" }: ZinethLogoProps) => {
 
   return (
     <div
-      className={`${size} relative`}
+      className={`${size} relative cursor-pointer`}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
+      onClick={() => navigate('/wolfenstein')}
+      role="button"
+      tabIndex={0}
+      aria-label="Enter the restricted zone"
     >
       <img
         ref={pinkRef}
