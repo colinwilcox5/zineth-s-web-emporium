@@ -131,7 +131,7 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
 
   // Paddle
   ctx.fillStyle = COLORS.pink;
-  ctx.fillRect(state.paddleX, GAME_H - PADDLE_H - 10, PADDLE_W, PADDLE_H);
+  ctx.fillRect(state.paddleX, GAME_H - PADDLE_H - 20, PADDLE_W, PADDLE_H);
 
   // Ball
   ctx.fillStyle = COLORS.yellow;
