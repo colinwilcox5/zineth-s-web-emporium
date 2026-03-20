@@ -150,7 +150,7 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
   if (!state.running && state.lives > 0 && !state.won) {
     ctx.fillStyle = COLORS.yellow;
     ctx.textAlign = 'center';
-    ctx.font = '10px monospace';
+    ctx.font = '20px monospace';
     ctx.fillText('CLICK TO START', GAME_W / 2, GAME_H / 2);
   }
 
