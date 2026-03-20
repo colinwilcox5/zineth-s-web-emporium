@@ -71,7 +71,7 @@ export function updateBreakout(state: BreakoutState): void {
     state.ballDY = -state.ballDY;
     // Angle based on where ball hits paddle
     const hitPos = (state.ballX - state.paddleX) / PADDLE_W - 0.5;
-    state.ballDX = hitPos * 3;
+    state.ballDX = hitPos * 6;
   }
 
   // Ball out of bounds
