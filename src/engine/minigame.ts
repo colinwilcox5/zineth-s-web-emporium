@@ -81,9 +81,9 @@ export function updateBreakout(state: BreakoutState): void {
       state.running = false;
     } else {
       state.ballX = GAME_W / 2;
-      state.ballY = GAME_H - 30;
-      state.ballDY = -1.5;
-      state.ballDX = 1.5;
+      state.ballY = GAME_H - 60;
+      state.ballDY = -3;
+      state.ballDX = 3;
     }
   }
 
