@@ -97,65 +97,68 @@ export function renderFrame(
   objects: WorldObject[],
   zBuffer: Float64Array
 ): void {
-  // Clear
   // Ceiling
   ctx.fillStyle = COLORS.federalBlue;
   ctx.fillRect(0, 0, SCREEN_W, SCREEN_H / 2);
 
-  // Floor
-  ctx.fillStyle = darkenColor(COLORS.federalBlue, 0.5);
-  ctx.fillRect(0, SCREEN_H / 2, SCREEN_W, SCREEN_H / 2);
+  // Perspective floor grid via ImageData buffer
+  const floorStartY = Math.floor(SCREEN_H / 2) + 1;
+  const floorH = SCREEN_H - floorStartY;
+  const imgData = ctx.createImageData(SCREEN_W, floorH);
+  const pixels = imgData.data;
 
-  // Perspective floor grid
   const floorBaseR = 0x3D * 0.5, floorBaseG = 0x55 * 0.5, floorBaseB = 0x88 * 0.5;
   const gridR = 0x00, gridG = 0xA9, gridB = 0x5C;
-  
-  for (let y = Math.floor(SCREEN_H / 2) + 1; y < SCREEN_H; y++) {
-    // Row distance from camera
-    const rowDist = (SCREEN_H * 0.5) / (y - SCREEN_H * 0.5);
+
+  const leftAngle = player.angle - HALF_FOV;
+  const cosL = Math.cos(leftAngle);
+  const sinL = Math.sin(leftAngle);
+  const rightAngle = player.angle + HALF_FOV;
+  const cosR = Math.cos(rightAngle);
+  const sinR = Math.sin(rightAngle);
+
+  for (let row = 0; row < floorH; row++) {
+    const screenY = floorStartY + row;
+    const rowDist = (SCREEN_H * 0.5) / (screenY - SCREEN_H * 0.5);
     if (rowDist > MAX_DEPTH) continue;
-    
+
     const shade = Math.max(0.05, 1 - rowDist / MAX_DEPTH);
-    const cosA = Math.cos(player.angle);
-    const sinA = Math.sin(player.angle);
-    const leftAngle = player.angle - HALF_FOV;
-    const cosL = Math.cos(leftAngle);
-    const sinL = Math.sin(leftAngle);
-    const rightAngle = player.angle + HALF_FOV;
-    const cosR = Math.cos(rightAngle);
-    const sinR = Math.sin(rightAngle);
 
     const floorXL = player.x + rowDist * cosL;
     const floorYL = player.y + rowDist * sinL;
     const floorXR = player.x + rowDist * cosR;
     const floorYR = player.y + rowDist * sinR;
+    const dxRow = (floorXR - floorXL) / SCREEN_W;
+    const dyRow = (floorYR - floorYL) / SCREEN_W;
+
+    let worldX = floorXL;
+    let worldY = floorYL;
+    const rowOffset = row * SCREEN_W * 4;
 
     for (let x = 0; x < SCREEN_W; x++) {
-      const t = x / SCREEN_W;
-      const worldX = floorXL + (floorXR - floorXL) * t;
-      const worldY = floorYL + (floorYR - floorYL) * t;
-
-      // Check if on grid line (tile boundary)
       const fracX = worldX - Math.floor(worldX);
       const fracY = worldY - Math.floor(worldY);
       const lineThreshold = 0.04;
       const onGrid = fracX < lineThreshold || fracX > 1 - lineThreshold ||
                      fracY < lineThreshold || fracY > 1 - lineThreshold;
 
+      const idx = rowOffset + x * 4;
       if (onGrid) {
-        const r = Math.floor(gridR * shade);
-        const g = Math.floor(gridG * shade);
-        const b = Math.floor(gridB * shade);
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        pixels[idx] = Math.floor(gridR * shade);
+        pixels[idx + 1] = Math.floor(gridG * shade);
+        pixels[idx + 2] = Math.floor(gridB * shade);
       } else {
-        const r = Math.floor(floorBaseR * shade);
-        const g = Math.floor(floorBaseG * shade);
-        const b = Math.floor(floorBaseB * shade);
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        pixels[idx] = Math.floor(floorBaseR * shade);
+        pixels[idx + 1] = Math.floor(floorBaseG * shade);
+        pixels[idx + 2] = Math.floor(floorBaseB * shade);
       }
-      ctx.fillRect(x, y, 1, 1);
+      pixels[idx + 3] = 255;
+
+      worldX += dxRow;
+      worldY += dyRow;
     }
   }
+  ctx.putImageData(imgData, 0, floorStartY);
 
   // Cast rays
   for (let col = 0; col < SCREEN_W; col++) {
