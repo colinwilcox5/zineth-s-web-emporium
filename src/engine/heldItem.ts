@@ -105,18 +105,13 @@ export function renderHeldItem(
   isNearInteractable: boolean
 ): void {
   const centerX = SCREEN_W / 2;
-  const baseY = SCREEN_H - 10;
+  const baseY = SCREEN_H - 20;
 
   // Calculate swap offset
   let swapOffsetY = 0;
   if (state.swapping) {
     const t = state.swapTimer / state.swapDuration;
-    // Ease in-out: dip down then come back up
-    if (t < 0.5) {
-      swapOffsetY = Math.sin(t * Math.PI) * 40; // ease down
-    } else {
-      swapOffsetY = Math.sin(t * Math.PI) * 40; // ease up
-    }
+    swapOffsetY = Math.sin(t * Math.PI) * 80;
   }
 
   const x = centerX + state.bobX;
@@ -127,9 +122,9 @@ export function renderHeldItem(
 
   // Draw item
   if (state.current === 'orb') {
-    drawOrb(ctx, x, y - 16, state, isNearInteractable);
+    drawOrb(ctx, x, y - 32, state, isNearInteractable);
   } else {
-    drawZine(ctx, x, y - 20, isNearInteractable);
+    drawZine(ctx, x, y - 40, isNearInteractable);
   }
 }
 
