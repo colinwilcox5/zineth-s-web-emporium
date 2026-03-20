@@ -106,14 +106,55 @@ export function renderFrame(
   ctx.fillStyle = darkenColor(COLORS.federalBlue, 0.5);
   ctx.fillRect(0, SCREEN_H / 2, SCREEN_W, SCREEN_H / 2);
 
-  // Floor grid lines
-  ctx.strokeStyle = darkenColor(COLORS.green, 0.3);
-  ctx.lineWidth = 1;
-  for (let y = SCREEN_H / 2; y < SCREEN_H; y += 8) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(SCREEN_W, y);
-    ctx.stroke();
+  // Perspective floor grid
+  const floorBaseR = 0x3D * 0.5, floorBaseG = 0x55 * 0.5, floorBaseB = 0x88 * 0.5;
+  const gridR = 0x00, gridG = 0xA9, gridB = 0x5C;
+  
+  for (let y = Math.floor(SCREEN_H / 2) + 1; y < SCREEN_H; y++) {
+    // Row distance from camera
+    const rowDist = (SCREEN_H * 0.5) / (y - SCREEN_H * 0.5);
+    if (rowDist > MAX_DEPTH) continue;
+    
+    const shade = Math.max(0.05, 1 - rowDist / MAX_DEPTH);
+    const cosA = Math.cos(player.angle);
+    const sinA = Math.sin(player.angle);
+    const leftAngle = player.angle - HALF_FOV;
+    const cosL = Math.cos(leftAngle);
+    const sinL = Math.sin(leftAngle);
+    const rightAngle = player.angle + HALF_FOV;
+    const cosR = Math.cos(rightAngle);
+    const sinR = Math.sin(rightAngle);
+
+    const floorXL = player.x + rowDist * cosL;
+    const floorYL = player.y + rowDist * sinL;
+    const floorXR = player.x + rowDist * cosR;
+    const floorYR = player.y + rowDist * sinR;
+
+    for (let x = 0; x < SCREEN_W; x++) {
+      const t = x / SCREEN_W;
+      const worldX = floorXL + (floorXR - floorXL) * t;
+      const worldY = floorYL + (floorYR - floorYL) * t;
+
+      // Check if on grid line (tile boundary)
+      const fracX = worldX - Math.floor(worldX);
+      const fracY = worldY - Math.floor(worldY);
+      const lineThreshold = 0.04;
+      const onGrid = fracX < lineThreshold || fracX > 1 - lineThreshold ||
+                     fracY < lineThreshold || fracY > 1 - lineThreshold;
+
+      if (onGrid) {
+        const r = Math.floor(gridR * shade);
+        const g = Math.floor(gridG * shade);
+        const b = Math.floor(gridB * shade);
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+      } else {
+        const r = Math.floor(floorBaseR * shade);
+        const g = Math.floor(floorBaseG * shade);
+        const b = Math.floor(floorBaseB * shade);
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+      }
+      ctx.fillRect(x, y, 1, 1);
+    }
   }
 
   // Cast rays
