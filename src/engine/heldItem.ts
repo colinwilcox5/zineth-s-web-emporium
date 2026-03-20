@@ -188,34 +188,30 @@ function drawZine(
   y: number,
   isNearInteractable: boolean
 ): void {
-  const w = 24;
-  const h = 32;
+  const w = 48;
+  const h = 64;
   const left = x - w / 2;
   const top = y - h / 2;
 
-  // Glow outline when near interactable
   if (isNearInteractable) {
     ctx.strokeStyle = COLORS.pink;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(left - 2, top - 2, w + 4, h + 4);
+    ctx.lineWidth = 3;
+    ctx.strokeRect(left - 4, top - 4, w + 8, h + 8);
   }
 
-  // Zine body
   ctx.fillStyle = COLORS.yellow;
   ctx.fillRect(left, top, w, h);
 
-  // "Z" letter
   ctx.fillStyle = COLORS.skyBlue;
-  ctx.font = 'bold 14px monospace';
+  ctx.font = 'bold 28px monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('Z', x, y);
 
-  // Spine line
   ctx.strokeStyle = COLORS.federalBlue;
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(left + 2, top);
-  ctx.lineTo(left + 2, top + h);
+  ctx.moveTo(left + 4, top);
+  ctx.lineTo(left + 4, top + h);
   ctx.stroke();
 }

@@ -239,10 +239,10 @@ function renderSprites(
     // Label
     if (dist < 5 && obj.label) {
       const labelX = Math.floor(screenX);
-      const labelY = Math.floor(drawY - 6);
-      if (labelX > 10 && labelX < SCREEN_W - 40) {
+      const labelY = Math.floor(drawY - 12);
+      if (labelX > 20 && labelX < SCREEN_W - 80) {
         ctx.fillStyle = darkenColor(COLORS.white, shade);
-        ctx.font = '5px monospace';
+        ctx.font = '10px monospace';
         ctx.textAlign = 'center';
         ctx.fillText(obj.label, labelX, labelY);
       }

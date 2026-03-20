@@ -164,7 +164,7 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
   if (state.lives <= 0) {
     ctx.fillStyle = COLORS.red;
     ctx.textAlign = 'center';
-    ctx.font = '12px monospace';
+    ctx.font = '24px monospace';
     ctx.fillText('GAME OVER', GAME_W / 2, GAME_H / 2);
   }
 }
