@@ -294,7 +294,7 @@ const WolfensteinRoom = () => {
       )}
 
       {/* Minimap */}
-      {showMinimap && <Minimap player={playerRef.current} />}
+      {showMinimap && <Minimap playerRef={playerRef} />}
 
       {/* Art overlay */}
       {overlayMode === 'art' && (
