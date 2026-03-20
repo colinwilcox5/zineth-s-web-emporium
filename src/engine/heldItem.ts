@@ -75,8 +75,8 @@ export function updateHeldItem(
   }
 
   if (isMoving) {
-    state.bobY = Math.sin(state.stepCounter * 0.15) * 4;
-    state.bobX = Math.cos(state.stepCounter * 0.075) * 2;
+    state.bobY = Math.sin(state.stepCounter * 0.15) * 8;
+    state.bobX = Math.cos(state.stepCounter * 0.075) * 4;
   }
 
   // Swap animation
@@ -105,18 +105,13 @@ export function renderHeldItem(
   isNearInteractable: boolean
 ): void {
   const centerX = SCREEN_W / 2;
-  const baseY = SCREEN_H - 10;
+  const baseY = SCREEN_H - 20;
 
   // Calculate swap offset
   let swapOffsetY = 0;
   if (state.swapping) {
     const t = state.swapTimer / state.swapDuration;
-    // Ease in-out: dip down then come back up
-    if (t < 0.5) {
-      swapOffsetY = Math.sin(t * Math.PI) * 40; // ease down
-    } else {
-      swapOffsetY = Math.sin(t * Math.PI) * 40; // ease up
-    }
+    swapOffsetY = Math.sin(t * Math.PI) * 80;
   }
 
   const x = centerX + state.bobX;
@@ -127,24 +122,24 @@ export function renderHeldItem(
 
   // Draw item
   if (state.current === 'orb') {
-    drawOrb(ctx, x, y - 16, state, isNearInteractable);
+    drawOrb(ctx, x, y - 32, state, isNearInteractable);
   } else {
-    drawZine(ctx, x, y - 20, isNearInteractable);
+    drawZine(ctx, x, y - 40, isNearInteractable);
   }
 }
 
 function drawHands(ctx: CanvasRenderingContext2D, x: number, y: number): void {
   // Left hand
-  ctx.fillStyle = '#2a3f5f'; // slightly lighter federal blue
-  ctx.fillRect(x - 16, y - 6, 10, 14);
+  ctx.fillStyle = '#2a3f5f';
+  ctx.fillRect(x - 32, y - 12, 20, 28);
   ctx.fillStyle = COLORS.federalBlue;
-  ctx.fillRect(x - 15, y - 5, 8, 12);
+  ctx.fillRect(x - 30, y - 10, 16, 24);
 
   // Right hand
   ctx.fillStyle = '#2a3f5f';
-  ctx.fillRect(x + 6, y - 6, 10, 14);
+  ctx.fillRect(x + 12, y - 12, 20, 28);
   ctx.fillStyle = COLORS.federalBlue;
-  ctx.fillRect(x + 7, y - 5, 8, 12);
+  ctx.fillRect(x + 14, y - 10, 16, 24);
 }
 
 function drawOrb(
@@ -154,14 +149,13 @@ function drawOrb(
   state: HeldItemState,
   isNearInteractable: boolean
 ): void {
-  const radius = 11;
+  const radius = 22;
 
   if (isNearInteractable) {
-    // Proximity glow — pulsing pink
-    const pulseT = Date.now() * 0.003; // ~3 pulses/sec
+    const pulseT = Date.now() * 0.003;
     const glowAlpha = 0.3 + Math.sin(pulseT * Math.PI * 2) * 0.2;
     ctx.beginPath();
-    ctx.arc(x, y, radius + 6, 0, Math.PI * 2);
+    ctx.arc(x, y, radius + 12, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(255,72,176,${glowAlpha})`;
     ctx.fill();
 
@@ -170,7 +164,6 @@ function drawOrb(
     ctx.fillStyle = COLORS.pink;
     ctx.fill();
   } else {
-    // Idle color cycle
     const idx = Math.floor(state.colorCycleT);
     const nextIdx = (idx + 1) % RISO_CYCLE.length;
     const frac = state.colorCycleT - idx;
@@ -184,7 +177,7 @@ function drawOrb(
 
   // Highlight
   ctx.beginPath();
-  ctx.arc(x - 3, y - 3, 3, 0, Math.PI * 2);
+  ctx.arc(x - 6, y - 6, 6, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(255,255,255,0.3)';
   ctx.fill();
 }
@@ -195,34 +188,30 @@ function drawZine(
   y: number,
   isNearInteractable: boolean
 ): void {
-  const w = 24;
-  const h = 32;
+  const w = 48;
+  const h = 64;
   const left = x - w / 2;
   const top = y - h / 2;
 
-  // Glow outline when near interactable
   if (isNearInteractable) {
     ctx.strokeStyle = COLORS.pink;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(left - 2, top - 2, w + 4, h + 4);
+    ctx.lineWidth = 3;
+    ctx.strokeRect(left - 4, top - 4, w + 8, h + 8);
   }
 
-  // Zine body
   ctx.fillStyle = COLORS.yellow;
   ctx.fillRect(left, top, w, h);
 
-  // "Z" letter
   ctx.fillStyle = COLORS.skyBlue;
-  ctx.font = 'bold 14px monospace';
+  ctx.font = 'bold 28px monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('Z', x, y);
 
-  // Spine line
   ctx.strokeStyle = COLORS.federalBlue;
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(left + 2, top);
-  ctx.lineTo(left + 2, top + h);
+  ctx.moveTo(left + 4, top);
+  ctx.lineTo(left + 4, top + h);
   ctx.stroke();
 }

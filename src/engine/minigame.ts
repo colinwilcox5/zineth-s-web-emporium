@@ -4,16 +4,16 @@
 import { COLORS } from './map';
 
 const BRICK_COLORS = [COLORS.yellow, COLORS.skyBlue, COLORS.federalBlue, COLORS.green, COLORS.pink, COLORS.red];
-const GAME_W = 280;
-const GAME_H = 180;
-const PADDLE_W = 40;
-const PADDLE_H = 6;
-const BALL_R = 3;
+const GAME_W = 560;
+const GAME_H = 360;
+const PADDLE_W = 80;
+const PADDLE_H = 12;
+const BALL_R = 6;
 const BRICK_ROWS = 5;
 const BRICK_COLS = 10;
 const BRICK_W = GAME_W / BRICK_COLS;
-const BRICK_H = 8;
-const BRICK_TOP = 20;
+const BRICK_H = 16;
+const BRICK_TOP = 40;
 
 export interface BreakoutState {
   paddleX: number;
@@ -35,9 +35,9 @@ export function createBreakoutState(): BreakoutState {
   return {
     paddleX: GAME_W / 2 - PADDLE_W / 2,
     ballX: GAME_W / 2,
-    ballY: GAME_H - 30,
-    ballDX: 1.5,
-    ballDY: -1.5,
+    ballY: GAME_H - 60,
+    ballDX: 3,
+    ballDY: -3,
     bricks,
     score: 0,
     lives: 3,
@@ -62,8 +62,8 @@ export function updateBreakout(state: BreakoutState): void {
 
   // Paddle collision
   if (
-    state.ballY >= GAME_H - PADDLE_H - BALL_R - 10 &&
-    state.ballY < GAME_H - 10 &&
+    state.ballY >= GAME_H - PADDLE_H - BALL_R - 20 &&
+    state.ballY < GAME_H - 20 &&
     state.ballX >= state.paddleX &&
     state.ballX <= state.paddleX + PADDLE_W &&
     state.ballDY > 0
@@ -71,7 +71,7 @@ export function updateBreakout(state: BreakoutState): void {
     state.ballDY = -state.ballDY;
     // Angle based on where ball hits paddle
     const hitPos = (state.ballX - state.paddleX) / PADDLE_W - 0.5;
-    state.ballDX = hitPos * 3;
+    state.ballDX = hitPos * 6;
   }
 
   // Ball out of bounds
@@ -81,9 +81,9 @@ export function updateBreakout(state: BreakoutState): void {
       state.running = false;
     } else {
       state.ballX = GAME_W / 2;
-      state.ballY = GAME_H - 30;
-      state.ballDY = -1.5;
-      state.ballDX = 1.5;
+      state.ballY = GAME_H - 60;
+      state.ballDY = -3;
+      state.ballDX = 3;
     }
   }
 
@@ -125,13 +125,13 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
     for (let col = 0; col < BRICK_COLS; col++) {
       if (!state.bricks[row][col]) continue;
       ctx.fillStyle = BRICK_COLORS[row % BRICK_COLORS.length];
-      ctx.fillRect(col * BRICK_W + 1, BRICK_TOP + row * BRICK_H + 1, BRICK_W - 2, BRICK_H - 2);
+      ctx.fillRect(col * BRICK_W + 2, BRICK_TOP + row * BRICK_H + 2, BRICK_W - 4, BRICK_H - 4);
     }
   }
 
   // Paddle
   ctx.fillStyle = COLORS.pink;
-  ctx.fillRect(state.paddleX, GAME_H - PADDLE_H - 10, PADDLE_W, PADDLE_H);
+  ctx.fillRect(state.paddleX, GAME_H - PADDLE_H - 20, PADDLE_W, PADDLE_H);
 
   // Ball
   ctx.fillStyle = COLORS.yellow;
@@ -141,30 +141,30 @@ export function renderBreakout(ctx: CanvasRenderingContext2D, state: BreakoutSta
 
   // Score & Lives
   ctx.fillStyle = COLORS.white;
-  ctx.font = '8px monospace';
+  ctx.font = '16px monospace';
   ctx.textAlign = 'left';
-  ctx.fillText(`SCORE: ${state.score}`, 4, 12);
+  ctx.fillText(`SCORE: ${state.score}`, 8, 24);
   ctx.textAlign = 'right';
-  ctx.fillText(`LIVES: ${state.lives}`, GAME_W - 4, 12);
+  ctx.fillText(`LIVES: ${state.lives}`, GAME_W - 8, 24);
 
   if (!state.running && state.lives > 0 && !state.won) {
     ctx.fillStyle = COLORS.yellow;
     ctx.textAlign = 'center';
-    ctx.font = '10px monospace';
+    ctx.font = '20px monospace';
     ctx.fillText('CLICK TO START', GAME_W / 2, GAME_H / 2);
   }
 
   if (state.won) {
     ctx.fillStyle = COLORS.green;
     ctx.textAlign = 'center';
-    ctx.font = '12px monospace';
+    ctx.font = '24px monospace';
     ctx.fillText('YOU WIN', GAME_W / 2, GAME_H / 2);
   }
 
   if (state.lives <= 0) {
     ctx.fillStyle = COLORS.red;
     ctx.textAlign = 'center';
-    ctx.font = '12px monospace';
+    ctx.font = '24px monospace';
     ctx.fillText('GAME OVER', GAME_W / 2, GAME_H / 2);
   }
 }
