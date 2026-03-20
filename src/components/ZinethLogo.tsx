@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import zLetter from "@/assets/zineth-z.png";
 import ringPink from "@/assets/zineth-ring-pink.png";
 import ringRed from "@/assets/zineth-ring-red.png";
@@ -8,6 +9,7 @@ interface ZinethLogoProps {
 }
 
 const ZinethLogo = ({ size = "w-40 h-40" }: ZinethLogoProps) => {
+  const navigate = useNavigate();
   const [hovering, setHovering] = useState(false);
   const [resetting, setResetting] = useState(false);
   const pinkRef = useRef<HTMLImageElement>(null);
@@ -78,9 +80,13 @@ const ZinethLogo = ({ size = "w-40 h-40" }: ZinethLogoProps) => {
 
   return (
     <div
-      className={`${size} relative`}
+      className={`${size} relative cursor-pointer`}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
+      onClick={() => navigate('/wolfenstein')}
+      role="button"
+      tabIndex={0}
+      aria-label="Enter the restricted zone"
     >
       <img
         ref={pinkRef}
