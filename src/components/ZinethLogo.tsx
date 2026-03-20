@@ -9,6 +9,7 @@ interface ZinethLogoProps {
 }
 
 const ZinethLogo = ({ size = "w-40 h-40" }: ZinethLogoProps) => {
+  const navigate = useNavigate();
   const [hovering, setHovering] = useState(false);
   const [resetting, setResetting] = useState(false);
   const pinkRef = useRef<HTMLImageElement>(null);
