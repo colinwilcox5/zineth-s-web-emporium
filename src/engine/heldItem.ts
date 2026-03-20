@@ -130,16 +130,16 @@ export function renderHeldItem(
 
 function drawHands(ctx: CanvasRenderingContext2D, x: number, y: number): void {
   // Left hand
-  ctx.fillStyle = '#2a3f5f'; // slightly lighter federal blue
-  ctx.fillRect(x - 16, y - 6, 10, 14);
+  ctx.fillStyle = '#2a3f5f';
+  ctx.fillRect(x - 32, y - 12, 20, 28);
   ctx.fillStyle = COLORS.federalBlue;
-  ctx.fillRect(x - 15, y - 5, 8, 12);
+  ctx.fillRect(x - 30, y - 10, 16, 24);
 
   // Right hand
   ctx.fillStyle = '#2a3f5f';
-  ctx.fillRect(x + 6, y - 6, 10, 14);
+  ctx.fillRect(x + 12, y - 12, 20, 28);
   ctx.fillStyle = COLORS.federalBlue;
-  ctx.fillRect(x + 7, y - 5, 8, 12);
+  ctx.fillRect(x + 14, y - 10, 16, 24);
 }
 
 function drawOrb(
