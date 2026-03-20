@@ -294,7 +294,7 @@ const WolfensteinRoom = () => {
       )}
 
       {/* Minimap */}
-      {showMinimap && <Minimap player={playerRef.current} />}
+      {showMinimap && <Minimap playerRef={playerRef} />}
 
       {/* Art overlay */}
       {overlayMode === 'art' && (
@@ -381,7 +381,7 @@ const WolfensteinRoom = () => {
 };
 
 // Mini minimap component
-const Minimap = ({ player }: { player: Player }) => {
+const Minimap = ({ playerRef }: { playerRef: React.RefObject<Player> }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -390,26 +390,43 @@ const Minimap = ({ player }: { player: Player }) => {
     const ctx = canvas.getContext('2d')!;
     canvas.width = 64;
     canvas.height = 64;
-
     const scale = 2;
+    let frame = 0;
 
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 64, 64);
+    const draw = () => {
+      const player = playerRef.current;
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, 64, 64);
 
-    const ox = Math.floor(player.x) - 16;
-    const oy = Math.floor(player.y) - 16;
-    for (let y = 0; y < 32; y++) {
-      for (let x = 0; x < 32; x++) {
-        if (LEVEL_MAP[y]?.[x] > 0) {
-          ctx.fillStyle = 'rgba(0,255,92,0.3)';
-          ctx.fillRect((x - ox) * scale, (y - oy) * scale, scale, scale);
+      const ox = Math.floor(player.x) - 16;
+      const oy = Math.floor(player.y) - 16;
+      for (let y = 0; y < 32; y++) {
+        for (let x = 0; x < 32; x++) {
+          if (LEVEL_MAP[y]?.[x] > 0) {
+            ctx.fillStyle = 'rgba(0,255,92,0.3)';
+            ctx.fillRect((x - ox) * scale, (y - oy) * scale, scale, scale);
+          }
         }
       }
-    }
 
-    ctx.fillStyle = COLORS.pink;
-    ctx.fillRect((player.x - ox) * scale - 1, (player.y - oy) * scale - 1, 3, 3);
-  });
+      const px = (player.x - ox) * scale;
+      const py = (player.y - oy) * scale;
+      ctx.fillStyle = COLORS.pink;
+      ctx.fillRect(px - 1, py - 1, 3, 3);
+
+      // Direction indicator
+      ctx.strokeStyle = COLORS.pink;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px + Math.cos(player.angle) * 5, py + Math.sin(player.angle) * 5);
+      ctx.stroke();
+
+      frame = requestAnimationFrame(draw);
+    };
+    frame = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frame);
+  }, [playerRef]);
 
   return (
     <canvas ref={canvasRef}
