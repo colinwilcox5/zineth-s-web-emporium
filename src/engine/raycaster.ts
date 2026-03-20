@@ -4,8 +4,8 @@
 import { MAP, WALL_COLORS, COLORS, isWall } from './map';
 import type { WorldObject } from './map';
 
-export const SCREEN_W = 320;
-export const SCREEN_H = 200;
+export const SCREEN_W = 640;
+export const SCREEN_H = 400;
 const FOV = Math.PI / 3; // 60 degrees
 const HALF_FOV = FOV / 2;
 const MAX_DEPTH = 20;
