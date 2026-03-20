@@ -7,6 +7,7 @@ import type { WorldObject } from '@/engine/map';
 import { createInputState, setupDesktopControls, setupMobileControls, updatePlayer } from '@/engine/controls';
 import { createBreakoutState, updateBreakout, renderBreakout, BREAKOUT_W, BREAKOUT_H } from '@/engine/minigame';
 import { LORE_ENTRIES, ART_ENTRIES } from '@/engine/loreData';
+import { createHeldItemState, updateHeldItem, startSwap, renderHeldItem } from '@/engine/heldItem';
 
 type OverlayMode = 'none' | 'art' | 'lore' | 'arcade';
 
@@ -29,6 +30,8 @@ const WolfensteinRoom = () => {
   const animFrameRef = useRef(0);
   const breakoutRef = useRef(createBreakoutState());
   const cleanupRef = useRef<(() => void) | null>(null);
+  const heldItemRef = useRef(createHeldItemState());
+  const lastTimeRef = useRef(0);
 
   // Boot sequence
   useEffect(() => {
@@ -73,6 +76,8 @@ const WolfensteinRoom = () => {
     const player = playerRef.current;
     const input = inputRef.current;
     const zBuffer = new Float64Array(SCREEN_W);
+    const heldItem = heldItemRef.current;
+    lastTimeRef.current = performance.now();
 
     // Setup controls
     if (isMobile) {
@@ -83,13 +88,17 @@ const WolfensteinRoom = () => {
 
     let lastRoomUpdate = 0;
 
-    const gameLoop = () => {
-      updatePlayer(player, input);
+    const gameLoop = (now: number) => {
+      const dt = Math.min(now - lastTimeRef.current, 50);
+      lastTimeRef.current = now;
+
+      const isMoving = updatePlayer(player, input);
 
       // Check interactable
       const interactable = getInteractableObject(player, WORLD_OBJECTS);
-      if (interactable) {
-        setInteractHint(isMobile ? 'TAP TO INTERACT' : 'PRESS E TO INTERACT');
+      const isNearInteractable = interactable !== null;
+      if (isNearInteractable) {
+        setInteractHint(isMobile ? 'TAP TO INTERACT' : 'SPACE TO INTERACT');
       } else {
         setInteractHint('');
       }
@@ -102,14 +111,24 @@ const WolfensteinRoom = () => {
         input.interact = false;
       }
 
-      // Update room name periodically
-      const now = Date.now();
-      if (now - lastRoomUpdate > 500) {
-        setRoomName(getRoomName(player.x, player.y));
-        lastRoomUpdate = now;
+      // Handle item swap
+      if (input.swapItem) {
+        input.swapItem = false;
+        startSwap(heldItem);
       }
 
+      // Update room name periodically
+      const nowMs = Date.now();
+      if (nowMs - lastRoomUpdate > 500) {
+        setRoomName(getRoomName(player.x, player.y));
+        lastRoomUpdate = nowMs;
+      }
+
+      // Update held item
+      updateHeldItem(heldItem, isMoving, dt);
+
       renderFrame(ctx, player, WORLD_OBJECTS, zBuffer);
+      renderHeldItem(ctx, heldItem, isNearInteractable);
 
       animFrameRef.current = requestAnimationFrame(gameLoop);
     };
@@ -203,9 +222,8 @@ const WolfensteinRoom = () => {
             }
             return [];
           }
-          // Check if still valid prefix
           if (next[next.length - 1] !== GLYPH_SEQUENCE[next.length - 1]) {
-            return []; // Reset
+            return [];
           }
           return next;
         });
@@ -240,7 +258,7 @@ const WolfensteinRoom = () => {
       <canvas
         ref={canvasRef}
         className="block w-full h-full"
-        style={{ imageRendering: 'pixelated', cursor: 'none' }}
+        style={{ imageRendering: 'pixelated' }}
       />
 
       {/* HUD */}
@@ -249,9 +267,9 @@ const WolfensteinRoom = () => {
         {roomName}
       </div>
 
-      {/* Interaction hint */}
+      {/* Interaction hint — reduced opacity since orb glows */}
       {interactHint && overlayMode === 'none' && (
-        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 font-mono text-xs z-10 pointer-events-none px-3 py-1"
+        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 font-mono text-xs z-10 pointer-events-none px-3 py-1 opacity-50"
           style={{ color: COLORS.pink, background: 'rgba(0,0,0,0.7)' }}>
           {interactHint}
         </div>
@@ -345,11 +363,11 @@ const WolfensteinRoom = () => {
         </div>
       )}
 
-      {/* Pointer lock prompt (desktop only) */}
+      {/* Controls hint */}
       {!isMobile && overlayMode === 'none' && (
         <div className="fixed bottom-3 left-1/2 -translate-x-1/2 font-mono text-xs pointer-events-none opacity-40 z-10"
           style={{ color: COLORS.skyBlue }}>
-          CLICK TO LOOK · WASD MOVE · E INTERACT · M MAP · ESC EXIT
+          WASD MOVE · ←→ TURN · SPACE INTERACT · M MAP · Z SWAP
         </div>
       )}
 
@@ -378,7 +396,6 @@ const Minimap = ({ player }: { player: Player }) => {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, 64, 64);
 
-    // Draw map centered on player
     const ox = Math.floor(player.x) - 16;
     const oy = Math.floor(player.y) - 16;
     for (let y = 0; y < 32; y++) {
@@ -390,7 +407,6 @@ const Minimap = ({ player }: { player: Player }) => {
       }
     }
 
-    // Player dot
     ctx.fillStyle = COLORS.pink;
     ctx.fillRect((player.x - ox) * scale - 1, (player.y - oy) * scale - 1, 3, 3);
   });

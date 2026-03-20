@@ -12,7 +12,7 @@ export interface InputState {
   turnLeft: boolean;
   turnRight: boolean;
   interact: boolean;
-  mouseDeltaX: number;
+  swapItem: boolean;
   isMobile: boolean;
 }
 
@@ -25,7 +25,7 @@ export function createInputState(): InputState {
     turnLeft: false,
     turnRight: false,
     interact: false,
-    mouseDeltaX: 0,
+    swapItem: false,
     isMobile: false,
   };
 }
@@ -38,10 +38,12 @@ export function setupDesktopControls(
     switch (e.code) {
       case 'KeyW': case 'ArrowUp': input.forward = true; break;
       case 'KeyS': case 'ArrowDown': input.backward = true; break;
-      case 'KeyA': case 'ArrowLeft': input.strafeLeft = true; break;
-      case 'KeyD': case 'ArrowRight': input.strafeRight = true; break;
-      case 'KeyQ': input.turnLeft = true; break;
-      case 'KeyE': input.interact = true; break;
+      case 'KeyA': input.strafeLeft = true; break;
+      case 'KeyD': input.strafeRight = true; break;
+      case 'KeyQ': case 'ArrowLeft': input.turnLeft = true; break;
+      case 'KeyE': case 'ArrowRight': input.turnRight = true; break;
+      case 'Space': case 'KeyF': e.preventDefault(); input.interact = true; break;
+      case 'KeyZ': input.swapItem = true; break;
     }
   };
 
@@ -49,40 +51,26 @@ export function setupDesktopControls(
     switch (e.code) {
       case 'KeyW': case 'ArrowUp': input.forward = false; break;
       case 'KeyS': case 'ArrowDown': input.backward = false; break;
-      case 'KeyA': case 'ArrowLeft': input.strafeLeft = false; break;
-      case 'KeyD': case 'ArrowRight': input.strafeRight = false; break;
-      case 'KeyQ': input.turnLeft = false; break;
-      case 'KeyE': input.interact = false; break;
-    }
-  };
-
-  const onMouseMove = (e: MouseEvent) => {
-    if (document.pointerLockElement === canvas) {
-      input.mouseDeltaX += e.movementX;
+      case 'KeyA': input.strafeLeft = false; break;
+      case 'KeyD': input.strafeRight = false; break;
+      case 'KeyQ': case 'ArrowLeft': input.turnLeft = false; break;
+      case 'KeyE': case 'ArrowRight': input.turnRight = false; break;
+      case 'Space': case 'KeyF': input.interact = false; break;
     }
   };
 
   const onClick = () => {
-    if (document.pointerLockElement !== canvas) {
-      canvas.requestPointerLock();
-    } else {
-      input.interact = true;
-    }
+    input.interact = true;
   };
 
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
-  window.addEventListener('mousemove', onMouseMove);
   canvas.addEventListener('click', onClick);
 
   return () => {
     window.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('keyup', onKeyUp);
-    window.removeEventListener('mousemove', onMouseMove);
     canvas.removeEventListener('click', onClick);
-    if (document.pointerLockElement === canvas) {
-      document.exitPointerLock();
-    }
   };
 }
 
@@ -128,7 +116,6 @@ export function setupMobileControls(
     } else {
       // Vertical swipe — move
       if (dy < -40) {
-        // Swipe up — move forward one tile
         const newX = player.x + Math.cos(player.angle) * 1;
         const newY = player.y + Math.sin(player.angle) * 1;
         if (!isWall(newX, newY)) {
@@ -138,7 +125,6 @@ export function setupMobileControls(
           openSecretWall(newX, newY);
         }
       } else if (dy > 40) {
-        // Swipe down — move back
         const newX = player.x - Math.cos(player.angle) * 1;
         const newY = player.y - Math.sin(player.angle) * 1;
         if (!isWall(newX, newY)) {
@@ -160,18 +146,10 @@ export function setupMobileControls(
 
 const MOVE_SPEED = 0.04;
 const TURN_SPEED = 0.03;
-const MOUSE_SENSITIVITY = 0.002;
 const COLLISION_RADIUS = 0.2;
 
 export function updatePlayer(player: Player, input: InputState): boolean {
   let moved = false;
-
-  // Mouse look
-  if (input.mouseDeltaX !== 0) {
-    player.angle += input.mouseDeltaX * MOUSE_SENSITIVITY;
-    input.mouseDeltaX = 0;
-    moved = true;
-  }
 
   // Keyboard turn
   if (input.turnLeft) { player.angle -= TURN_SPEED; moved = true; }
