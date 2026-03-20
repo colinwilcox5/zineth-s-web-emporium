@@ -383,7 +383,7 @@ const Minimap = ({ player }: { player: Player }) => {
     const oy = Math.floor(player.y) - 16;
     for (let y = 0; y < 32; y++) {
       for (let x = 0; x < 32; x++) {
-        if (MAP[y]?.[x] > 0) {
+        if (LEVEL_MAP[y]?.[x] > 0) {
           ctx.fillStyle = 'rgba(0,255,92,0.3)';
           ctx.fillRect((x - ox) * scale, (y - oy) * scale, scale, scale);
         }
