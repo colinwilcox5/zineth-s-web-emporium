@@ -310,6 +310,52 @@
   animation: dolly-out 1.2s ease-in-out forwards;
 }
 
+/* Folder opening animation */
+@keyframes folderOpen {
+  0% {
+    left: 0;
+    width: 1000px;
+    background-color: #dce4ed;
+    border-radius: 8px;
+  }
+  35% {
+    left: 496px;
+    width: 8px;
+    background-color: #dce4ed;
+    border-radius: 2px;
+  }
+  45% {
+    left: 496px;
+    width: 8px;
+    background-color: #b8c8d8;
+    border-radius: 2px;
+  }
+  100% {
+    left: 0;
+    width: 500px;
+    background-color: #b8c8d8;
+    border-radius: 8px 0 0 8px;
+  }
+}
+
+.folder-cover-opening {
+  animation: folderOpen 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.folder-container-zooming {
+  transform: scale(2.5) translateX(-380px);
+  transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.folder-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.folder-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
 /* White background text color overrides for main site */
 .bg-white {
   --foreground: 0 0% 15%;

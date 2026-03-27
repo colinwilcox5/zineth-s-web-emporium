@@ -8,6 +8,7 @@ import ClothingShop from "@/components/ClothingShop";
 import LoreSection from "@/components/LoreSection";
 import RetroFooter from "@/components/RetroFooter";
 import StaticTransition from "@/components/StaticTransition";
+import FolderSection from "@/components/folders/FolderSection";
 
 const VoidScene = lazy(() => import("@/components/VoidScene"));
 
@@ -232,6 +233,9 @@ const Index = () => {
       <div id="gallery">
         <ArtGallery />
       </div>
+
+      {/* Digital Artifacts */}
+      <FolderSection />
 
       {/* Shop */}
       <div id="shop">
