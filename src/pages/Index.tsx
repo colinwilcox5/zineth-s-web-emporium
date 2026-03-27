@@ -234,6 +234,9 @@ const Index = () => {
         <ArtGallery />
       </div>
 
+      {/* Digital Artifacts */}
+      <FolderSection />
+
       {/* Shop */}
       <div id="shop">
         <ClothingShop />
