@@ -316,17 +316,23 @@
     left: 0;
     width: 1000px;
     background-color: #dce4ed;
-    border-radius: 8px;
+    border-radius: 12px;
   }
-  35% {
+  8% {
+    left: 0;
+    width: 500px;
+    background-color: #dce4ed;
+    border-radius: 12px 0 0 12px;
+  }
+  40% {
     left: 496px;
-    width: 8px;
+    width: 6px;
     background-color: #dce4ed;
     border-radius: 2px;
   }
-  45% {
+  50% {
     left: 496px;
-    width: 8px;
+    width: 6px;
     background-color: #b8c8d8;
     border-radius: 2px;
   }
@@ -334,7 +340,7 @@
     left: 0;
     width: 500px;
     background-color: #b8c8d8;
-    border-radius: 8px 0 0 8px;
+    border-radius: 12px 0 0 12px;
   }
 }
 
