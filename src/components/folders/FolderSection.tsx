@@ -52,7 +52,7 @@ const FolderSection = () => {
       {/* Grid */}
       <div
         className="grid gap-8"
-        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
+        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '40px' }}
       >
         {folders.map((folder, idx) => (
           <FolderCard key={folder.id} folder={folder} onClick={() => handleCardClick(idx)} />
