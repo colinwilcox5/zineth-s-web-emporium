@@ -21,13 +21,12 @@ const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
   };
 
   useEffect(() => {
-    // Force reflow then start animation
     if (coverRef.current) {
       void coverRef.current.offsetHeight;
     }
     addTimer(() => setOpening(true), 300);
-    addTimer(() => setDocVisible(true), 700);
-    addTimer(() => setInteriorGrid(true), 790);
+    addTimer(() => setDocVisible(true), 500);
+    addTimer(() => setInteriorGrid(true), 1100);
     addTimer(() => setShowClose(true), 500);
 
     return () => timers.current.forEach(clearTimeout);
@@ -75,29 +74,42 @@ const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
           height: '700px',
           maxWidth: '95vw',
           maxHeight: '85vh',
+          overflow: 'visible',
         }}
       >
         {/* Right panel (folder body) */}
         <div
-          className="absolute top-0 right-0 bottom-0 rounded-r-lg"
+          className="absolute top-0 right-0 bottom-0"
           style={{
             width: '502px',
             backgroundColor: '#dce4ed',
+            borderRadius: '0 12px 12px 0',
+            border: '1.5px solid rgba(0,0,0,0.15)',
+            borderLeft: 'none',
             ...gridBg(0.02, 24),
           }}
         >
-          {/* Tab on right panel */}
+          {/* Tab extending right */}
           <div
-            className="absolute top-4 right-4 px-3 py-1 rounded font-mono-retro"
+            className="absolute font-mono-retro flex items-center justify-center"
             style={{
-              backgroundColor: '#b8c8d8',
+              top: '80px',
+              right: '-40px',
+              width: '40px',
+              height: '90px',
+              backgroundColor: '#dce4ed',
+              borderRadius: '0 10px 10px 0',
+              border: '1.5px solid rgba(0,0,0,0.15)',
+              borderLeft: 'none',
+              writingMode: 'vertical-rl',
               fontSize: '8px',
               fontWeight: 700,
               color: '#3D5588',
             }}
           >
-            ZINETH
+            {folder.id}
           </div>
+
           <div
             className="absolute inset-0 flex items-center justify-center font-mono-retro"
             style={{ color: '#3D5588', fontSize: '14px', opacity: 0.15, letterSpacing: '4px' }}
@@ -184,7 +196,8 @@ const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
             left: 0,
             width: '1000px',
             backgroundColor: '#dce4ed',
-            borderRadius: '8px',
+            borderRadius: '12px',
+            border: '1.5px solid rgba(0,0,0,0.15)',
             ...(interiorGrid ? interiorGridBg : gridBg(0.03, 20)),
           }}
         />
