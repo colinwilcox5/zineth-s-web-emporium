@@ -9,6 +9,7 @@ import { generateNetwork, OMNIBUS_COLORS } from '@/components/omnibus/omnibusDat
 type LayerView = 'public' | 'gated';
 
 const OmnibusOfFun = () => {
+  const navigate = useNavigate();
   const [layer, setLayer] = useState<LayerView>('public');
   const network = useMemo(() => generateNetwork(), []);
   const activeCount = network.nodes.filter(n => n.active).length;
