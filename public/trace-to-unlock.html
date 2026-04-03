@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZINETH — Trace to Unlock</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFE800;
+    --pink: #FF48B0;
+    --logo-pink: #e087bf;
+    --sky-blue: #4982CF;
+    --federal-blue: #3D5588;
+    --green: #00A95C;
+    --red: #FF4C65;
+    --orange: #fa4616;
+    --dark-bg: #1a2a3a;
+    --darker-bg: #0f1a26;
+    --cream: #f2f0ec;
+    --book-red: #c0392b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--darker-bg);
+    color: var(--cream);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,169,92,0.03) 0px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(90deg, rgba(0,169,92,0.03) 0px, transparent 1px, transparent 40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── MARQUEE FOOTER ── */
+  .marquee-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--red);
+    padding: 6px 0;
+    overflow: hidden;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .marquee-bar span {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+  @keyframes marquee {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ── LAYOUT ── */
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .page-header .brand-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  .page-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--yellow);
+    text-shadow: 2px 2px 0 var(--red);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .page-header .subtitle {
+    font-size: 12px;
+    color: rgba(242,240,236,0.5);
+    letter-spacing: 1px;
+  }
+
+  /* ── INSTRUCTION CARD ── */
+  .instruction-card {
+    border: 2px solid var(--book-red);
+    outline: 1px solid var(--book-red);
+    outline-offset: 4px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+    background: rgba(26,42,58,0.6);
+  }
+  .instruction-card h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--yellow);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .instruction-card .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .instruction-card .step-row {
+    display: flex;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--cream);
+    opacity: 0.85;
+  }
+  .instruction-card .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--red);
+    color: var(--cream);
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 2px;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(26,42,58,0.5);
+    border: 1px solid rgba(242,240,236,0.08);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .status-item {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .status-item .label {
+    color: rgba(242,240,236,0.4);
+    margin-right: 6px;
+  }
+  .status-item .value {
+    color: var(--green);
+    font-weight: 700;
+  }
+  .status-item .value.warning { color: var(--yellow); }
+  .status-item .value.danger { color: var(--red); }
+
+  /* ── GAME AREA ── */
+  .game-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid rgba(242,240,236,0.1);
+    background: rgba(15,26,38,0.5);
+    cursor: crosshair;
+    aspect-ratio: 16/9;
+  }
+  .game-container svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /* Dots layer sits on top of the SVG */
+  .dots-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .dot-marker {
+    position: absolute;
+    pointer-events: all;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease;
+  }
+  .dot-marker:hover {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  .dot-marker.connected {
+    pointer-events: none;
+  }
+  .dot-marker .dot-ring {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(242,240,236,0.35);
+    background: rgba(242,240,236,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+  .dot-marker .dot-ring::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(242,240,236,0.4);
+    transition: all 0.25s ease;
+  }
+  .dot-marker.connected .dot-ring {
+    border-color: var(--logo-pink);
+    background: rgba(224,135,191,0.2);
+    box-shadow: 0 0 12px rgba(224,135,191,0.3);
+  }
+  .dot-marker.connected .dot-ring::after {
+    background: var(--logo-pink);
+  }
+  .dot-marker .dot-num {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(242,240,236,0.5);
+    font-family: 'Space Mono', monospace;
+    transition: color 0.25s ease;
+  }
+  .dot-marker.connected .dot-num {
+    color: var(--logo-pink);
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+  }
+  .btn-primary {
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+  .btn-primary:hover {
+    background: var(--yellow);
+    color: var(--darker-bg);
+  }
+  .btn-reset {
+    color: var(--red);
+    border-color: rgba(255,76,101,0.4);
+  }
+  .btn-reset:hover {
+    border-color: var(--red);
+    background: rgba(255,76,101,0.1);
+  }
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  /* ── FEEDBACK ── */
+  .feedback {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    border: 1px solid;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.success {
+    color: var(--green);
+    border-color: var(--green);
+    background: rgba(0,169,92,0.08);
+  }
+  .feedback.fail {
+    color: var(--red);
+    border-color: var(--red);
+    background: rgba(255,76,101,0.08);
+  }
+  .feedback.locked {
+    color: var(--red);
+    border-color: var(--red);
+    background: rgba(255,76,101,0.05);
+  }
+  .feedback h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  /* ── LOCKED OVERLAY ── */
+  .locked-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,26,38,0.95);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+  .locked-overlay.show { display: flex; }
+  .locked-overlay h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    color: var(--red);
+    margin-bottom: 12px;
+  }
+  .locked-overlay p {
+    font-size: 13px;
+    color: rgba(242,240,236,0.5);
+    line-height: 1.7;
+    max-width: 400px;
+  }
+
+  /* ── SHOP ── */
+  .shop-section {
+    display: none;
+    animation: shopFadeIn 0.8s ease forwards;
+  }
+  .shop-section.visible { display: block; }
+  @keyframes shopFadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .shop-header {
+    text-align: center;
+    padding: 40px 0 24px;
+    border-top: 1px solid rgba(242,240,236,0.08);
+    margin-top: 32px;
+  }
+  .shop-header .unlocked-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 4px 14px;
+    margin-bottom: 12px;
+  }
+  .shop-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 700;
+    color: var(--cream);
+  }
+  .shop-header p {
+    font-size: 12px;
+    color: rgba(242,240,236,0.5);
+    margin-top: 8px;
+  }
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    padding: 24px 0;
+  }
+  .product-card {
+    border: 1px solid rgba(242,240,236,0.1);
+    background: rgba(26,42,58,0.4);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-card:hover {
+    border-color: var(--pink);
+    background: rgba(26,42,58,0.6);
+  }
+  .product-card .product-image {
+    aspect-ratio: 1;
+    background: var(--dark-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .product-card .product-image::after {
+    content: attr(data-label);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(242,240,236,0.15);
+    text-transform: uppercase;
+  }
+  .product-card .product-image .swatch {
+    position: absolute;
+    inset: 20%;
+    border-radius: 2px;
+    opacity: 0.25;
+  }
+  .product-card .product-info { padding: 14px 16px; }
+  .product-card .product-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+  .product-card .product-detail {
+    font-size: 11px;
+    color: rgba(242,240,236,0.4);
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .product-card .product-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--yellow);
+  }
+  .product-card .edition-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--red);
+    color: var(--cream);
+    padding: 3px 8px;
+  }
+
+  @media (max-width: 600px) {
+    .status-bar { flex-direction: column; align-items: flex-start; }
+    .game-container { aspect-ratio: 4/3; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <span>&#9733; ZINETH DIGITAL&#8482; &#8212; TRACE THE SIGNAL &#8212; COMPLETE THE RING &#8212; EARN YOUR ACCESS &#8212; DO NOT SHARE THIS LINK &#8212; ZINETH DIGITAL&#8482; &#8212; TRACE THE SIGNAL &#8212; COMPLETE THE RING &#8212; EARN YOUR ACCESS &#9733;</span>
+</div>
+
+<!-- LOCKED OVERLAY -->
+<div class="locked-overlay" id="lockedOverlay">
+  <div>
+    <h2>ACCESS DENIED</h2>
+    <p>You have exhausted your attempts. This channel is now sealed. Return to the source material and try again when you are ready.</p>
+    <br>
+    <button class="btn btn-reset" onclick="location.reload()">Re-enter</button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <div class="brand-label">Zineth Digital&#8482; &#8212; Restricted Channel</div>
+    <h1>TRACE TO UNLOCK</h1>
+    <div class="subtitle">Complete the orbital ring. Earn your access.</div>
+  </header>
+
+  <!-- INSTRUCTIONS -->
+  <div class="instruction-card">
+    <h2>How This Works</h2>
+    <div class="steps">
+      <div class="step-row"><span class="step-number">1</span> The symbol below is missing its second orbital ring, shown as a dashed outline.</div>
+      <div class="step-row"><span class="step-number">2</span> Click the numbered dots in order (1 &#8594; 2 &#8594; 3 &#8230;) to trace the missing ring.</div>
+      <div class="step-row"><span class="step-number">3</span> Complete the trace in under 3 attempts to unlock the collection.</div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-item">
+      <span class="label">Attempts:</span>
+      <span class="value" id="attemptDisplay">0 / 3</span>
+    </div>
+    <div class="status-item">
+      <span class="label">Dots:</span>
+      <span class="value" id="dotDisplay">0 / 0</span>
+    </div>
+    <div class="status-item">
+      <span class="label">Status:</span>
+      <span class="value" id="statusDisplay">AWAITING INPUT</span>
+    </div>
+  </div>
+
+  <!-- ═══════════ GAME AREA ═══════════ -->
+  <div class="game-container" id="gameContainer">
+
+    <!-- Main game SVG — Zineth logo with interactive elements -->
+    <svg id="gameSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet">
+
+      <!-- ── ORANGE ORBITAL (always visible) ── -->
+      <path fill="#fa4616" d="M465.28,164.59c69.53,0,160.9,18.81,264.23,54.38,108.03,37.2,225.41,91.65,339.43,157.49,85.32,49.26,164.9,102.45,236.52,158.1,68.75,53.42,127.19,106.74,173.69,158.48,44.57,49.59,76.69,96.59,92.89,135.93,9.79,23.77,18.69,56.91,5.48,79.78-6.43,11.13-18.15,19.98-34.84,26.31-19.73,7.48-45.54,11.27-76.73,11.27-69.53,0-160.91-18.8-264.24-54.38-108.05-37.2-225.43-91.66-339.46-157.49-85.32-49.26-164.9-102.45-236.52-158.1-68.75-53.42-127.19-106.74-173.69-158.48-44.57-49.59-76.69-96.59-92.89-135.93-9.79-23.77-18.69-56.91-5.48-79.78,6.43-11.13,18.15-19.98,34.84-26.3,19.73-7.47,45.54-11.27,76.76-11.27h.01M465.25,129.59c-70.07,0-120.33,17.74-141.88,55.07-66.74,115.6,166.69,375.32,521.39,580.1,240.15,138.65,474.29,216.56,621.2,216.56,70.07,0,120.33-17.74,141.88-55.07,66.74-115.6-166.69-375.32-521.39-580.1-240.15-138.65-474.28-216.57-621.2-216.56h0Z"/>
+
+      <!-- ── ORANGE DOT (always visible) ── -->
+      <circle fill="#fa4616" cx="516.27" cy="148.38" r="75.89"/>
+
+      <!-- ── Z LETTERFORM (always visible) ── -->
+      <g>
+        <path fill="#000" d="M1231.86,778.63c-28.17,0-64.9-4.79-112.31-14.65-39.91-8.3-79.53-12.33-121.13-12.33-45.62,0-83.76,4.89-114.4,8.82-15.66,2.01-29.19,3.74-40.29,4.34-6.73.36-16.9,1.36-29.77,2.63-18.37,1.81-41.21,4.06-65.69,5.59-6.16,1.06-12.01,1.83-17.39,2.27-2.14.17-13.6,1.05-29.57,1.05-17.04,0-42.16-1.04-65.19-6.01-40.61-7.03-61.78-22.92-62.9-47.23-2.51-13.94,1.79-28.32,12.76-42.76,14.94-23.96,74.62-55.75,108.96-72.61.97-.48,1.6-.78,1.83-.9,5.57-2.97,11.45-6.15,17.91-9.63,22.44-12.11,53.17-28.68,102.92-54.18,36.48-18.7,76.85-36.06,112.47-51.38,34.4-14.8,66.9-28.77,90.15-41.43,29-15.79,35.42-25.23,35.7-30.36.27-4.96-6.1-9.63-11.49-12.67-19.43-10.98-43.16-13-63.88-14.03-3.81-.19-7.77-.29-11.75-.29-33.66,0-68.32,6.79-101.85,13.36-11.86,2.32-24.12,4.72-35.97,6.74-9.73,1.61-19.9,3.55-29.74,5.42-27.22,5.18-55.36,10.54-80.93,10.54-4.14,0-8.17-.14-11.98-.42-14.74-1.09-33.93-6.93-51.33-15.61-20.01-9.99-35.29-22.57-43.03-35.44-7.08-11.77-8.15-24.08-3.09-35.6,13.06-29.73,39.76-42.99,86.58-42.99,28.17,0,64.9,4.79,112.31,14.65,39.91,8.3,79.54,12.33,121.13,12.33,45.62,0,83.76-4.89,114.4-8.82,15.66-2.01,29.18-3.74,40.29-4.34,6.73-.36,16.9-1.37,29.77-2.63,29.56-2.91,74.24-7.31,115.95-7.31,61.21,0,98.98,9.27,115.49,28.34,7.69,8.88,10.66,19.71,8.85,32.2-10.12,69.83-95.68,96.66-158.15,116.26-14.39,4.51-27.98,8.78-38.93,13.03-23.41,9.1-85.22,33.51-153.6,63.84-50.39,25.82-134.51,68.96-135.05,95.87-.13,6.27,4.92,12.34,14.99,18.03,19.43,10.98,43.16,13,63.88,14.03,3.82.19,7.77.29,11.76.29,33.66,0,68.32-6.79,101.85-13.36,11.86-2.32,24.12-4.72,35.97-6.74,9.73-1.61,19.9-3.55,29.74-5.42,27.22-5.18,55.36-10.54,80.93-10.54,4.14,0,8.17.14,11.98.42,14.74,1.09,33.93,6.93,51.33,15.61,20.01,9.99,35.29,22.57,43.03,35.44,7.08,11.77,8.15,24.08,3.09,35.6-13.06,29.73-39.76,42.99-86.58,42.99Z"/>
+        <path fill="#fff" d="M697.46,305.2c27.47,0,63.52,4.64,111.02,14.52,44.85,9.33,85.88,12.47,122.42,12.47,69.73,0,123.05-11.44,155.03-13.17,23.18-1.25,86.54-9.93,145.37-9.93,64.89,0,124.28,10.57,118.08,53.31-11.81,81.49-134.87,101.68-193.11,124.3-35.64,13.84-94.44,37.59-154.04,64.03-99.7,51.1-174.73,94.46-120.45,125.11,20.05,11.33,44.14,13.72,66.67,14.84,4.02.2,8.04.3,12.07.3,46.47,0,94.02-12.56,138.88-20.19,36.07-5.97,75.36-15.88,109.61-15.88,3.91,0,7.75.13,11.51.41,36.76,2.72,109.45,38.36,92.12,77.8-11.02,25.07-32.82,39.21-80.79,39.21-27.47,0-63.52-4.64-111.02-14.52-44.85-9.33-85.88-12.47-122.42-12.47-69.73,0-123.05,11.44-155.03,13.17-16.69.9-54.2,5.65-95.86,8.24-5.98,1.04-11.73,1.81-17.17,2.25-2.6.21-13.81,1.03-29.05,1.03-18.19,0-42.11-1.16-63.99-5.89-33.2-5.72-56.97-18.01-57.81-41.73-2.56-13.42,2.44-26.4,11.68-38.46,17.13-28.09,105.6-69.94,108.54-71.51,25.41-13.57,57.05-31.12,120.75-63.77,126.74-64.96,292.31-110.12,227.05-146.98-20.05-11.33-44.14-13.72-66.67-14.84-4.02-.2-8.04-.3-12.07-.3-46.47,0-94.02,12.56-138.88,20.19-36.07,5.97-75.36,15.88-109.61,15.88-3.91,0-7.75-.13-11.51-.41-36.76-2.72-109.45-38.36-92.12-77.8,11.02-25.08,32.82-39.21,80.79-39.21M697.46,292.55c-25.38,0-45.04,3.8-60.09,11.63-14.69,7.64-25.25,19.13-32.28,35.14-5.92,13.48-4.73,27.79,3.46,41.4,18.95,31.5,70.75,51.98,99.31,54.1,3.96.29,8.15.44,12.45.44,26.17,0,54.61-5.42,82.11-10.66,9.8-1.87,19.94-3.8,29.56-5.39h.03s.03,0,.03,0c11.93-2.03,24.23-4.44,36.13-6.77,33.23-6.51,67.59-13.24,100.63-13.24,3.88,0,7.73.09,11.44.28,19.99,1,42.85,2.93,61.08,13.22,7,3.96,8.18,6.58,8.28,6.85-.07.54-1.57,8.29-32.06,24.94-23.02,12.57-55.53,26.55-89.96,41.36-35.71,15.36-76.19,32.77-112.85,51.56-49.78,25.51-80.54,42.11-103,54.22-6.33,3.42-12.32,6.64-17.88,9.61-.28.14-.85.42-1.68.83-19.88,9.76-37.82,19.34-53.31,28.49-30.95,18.27-49.96,33.39-58.07,46.19-11.86,15.7-16.52,31.52-13.85,47.07.83,14.89,8.55,27.58,22.38,36.74,11.12,7.36,26.04,12.59,45.61,15.99,23.54,5.06,49.09,6.12,66.4,6.12,16.21,0,27.91-.89,30.09-1.07,5.46-.45,11.38-1.21,17.61-2.28,24.47-1.54,47.24-3.78,65.57-5.58,12.79-1.26,22.9-2.25,29.49-2.61,11.34-.61,24.97-2.36,40.76-4.39,30.47-3.91,68.38-8.77,113.6-8.77,41.16,0,80.36,3.99,119.84,12.2,47.83,9.95,84.99,14.78,113.59,14.78,25.38,0,45.04-3.8,60.09-11.63,14.69-7.64,25.25-19.13,32.28-35.14,5.92-13.48,4.73-27.8-3.46-41.4-18.95-31.5-70.75-51.98-99.31-54.1-3.96-.29-8.15-.44-12.45-.44-26.16,0-54.61,5.42-82.11,10.66-9.8,1.87-19.94,3.8-29.56,5.39h-.03s-.03,0-.03,0c-11.93,2.03-24.23,4.44-36.13,6.77-33.23,6.51-67.59,13.24-100.63,13.24-3.88,0-7.73-.09-11.44-.28-19.99-1-42.85-2.93-61.08-13.22-4.44-2.51-11.87-7.45-11.77-12.39.08-3.74,3.68-14.77,35.39-36.28,25.19-17.09,61.04-36.05,96.07-54,70.12-31.1,134.94-56.58,153.16-63.66,10.75-4.18,24.25-8.41,38.53-12.89,32.05-10.05,68.37-21.44,99.1-39.27,17.43-10.11,30.92-21.03,41.26-33.39,12.12-14.49,19.58-30.89,22.16-48.73,2.06-14.18-1.52-27.06-10.33-37.24-10.18-11.76-26.85-19.88-50.96-24.82-18.44-3.78-41.75-5.7-69.3-5.7-42.01,0-86.88,4.42-116.57,7.34-12.79,1.26-22.9,2.25-29.49,2.61-11.34.61-24.97,2.36-40.75,4.39-30.47,3.91-68.38,8.77-113.6,8.77-41.16,0-80.36-3.99-119.84-12.2-47.83-9.94-84.98-14.78-113.59-14.78h0Z"/>
+      </g>
+
+      <!-- ── DASHED GUIDE: Pink orbital outline ── -->
+      <path id="pinkGuide"
+        d="M1453.43,129.59c-146.91,0-381.04,77.91-621.2,216.56-354.7,204.78-588.13,464.51-521.39,580.1,21.55,37.33,71.81,55.07,141.88,55.07,146.91,0,381.04-77.91,621.2-216.56,354.7-204.78,588.13-464.51,521.39-580.1-21.55-37.33-71.81-55.07-141.88-55.07h0Z"
+        fill="none" stroke="#e087bf" stroke-width="3" stroke-dasharray="18 12" opacity="0.35"/>
+
+      <!-- ── DASHED GUIDE: Pink dot outline ── -->
+      <circle id="pinkDotGuide" cx="562.73" cy="950.6" r="75.89"
+        fill="none" stroke="#e087bf" stroke-width="2.5" stroke-dasharray="12 8" opacity="0.35"/>
+
+      <!-- ── TRACE PATH: Draws in as user connects dots ── -->
+      <path id="tracePath"
+        d="M1453.43,129.59c-146.91,0-381.04,77.91-621.2,216.56-354.7,204.78-588.13,464.51-521.39,580.1,21.55,37.33,71.81,55.07,141.88,55.07,146.91,0,381.04-77.91,621.2-216.56,354.7-204.78,588.13-464.51,521.39-580.1-21.55-37.33-71.81-55.07-141.88-55.07h0Z"
+        fill="none" stroke="#e087bf" stroke-width="55" stroke-linecap="round" opacity="0.8"/>
+
+      <!-- ── REVEAL: Solid pink orbital (hidden until success) ── -->
+      <path id="pinkOrbitalReveal" opacity="0"
+        fill="#e087bf" d="M1453.43,164.59c31.19,0,57.01,3.79,76.73,11.27,16.69,6.33,28.41,15.18,34.84,26.31,13.21,22.87,4.31,56.01-5.48,79.78-16.2,39.34-48.32,86.34-92.89,135.93-46.5,51.73-104.94,105.05-173.69,158.48-71.62,55.65-151.19,108.84-236.52,158.1-114.03,65.83-231.41,120.29-339.46,157.49-103.33,35.57-194.71,54.38-264.24,54.38-31.19,0-57.01-3.79-76.73-11.27-16.69-6.33-28.41-15.18-34.84-26.31-13.21-22.87-4.31-56.01,5.48-79.78,16.2-39.34,48.32-86.34,92.89-135.93,46.5-51.73,104.94-105.05,173.69-158.48,71.62-55.65,151.19-108.84,236.52-158.1,114.03-65.83,231.41-120.29,339.46-157.49,103.33-35.57,194.71-54.38,264.24-54.38M1453.43,129.59c-146.91,0-381.04,77.91-621.2,216.56-354.7,204.78-588.13,464.51-521.39,580.1,21.55,37.33,71.81,55.07,141.88,55.07,146.91,0,381.04-77.91,621.2-216.56,354.7-204.78,588.13-464.51,521.39-580.1-21.55-37.33-71.81-55.07-141.88-55.07h0Z"/>
+
+      <!-- ── REVEAL: Solid pink dot (hidden until success) ── -->
+      <circle id="pinkDotReveal" cx="562.73" cy="950.6" r="75.89" fill="#e087bf" opacity="0"/>
+
+    </svg>
+
+    <!-- Dots overlay (HTML elements positioned over SVG) -->
+    <div class="dots-overlay" id="dotsOverlay"></div>
+
+  </div>
+
+  <!-- Buttons -->
+  <div class="btn-group">
+    <button class="btn btn-reset" onclick="resetAttempt()">Clear Path</button>
+    <button class="btn btn-primary" onclick="submitAttempt()">Submit Trace</button>
+  </div>
+
+  <!-- Feedback -->
+  <div class="feedback" id="feedback"></div>
+
+  <!-- ═══════════ SHOP SECTION ═══════════ -->
+  <div class="shop-section" id="shopSection">
+    <div class="shop-header">
+      <div class="unlocked-badge">Access Granted</div>
+      <h2>The Collection</h2>
+      <p>Limited items. Authenticated access only.</p>
+    </div>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════
+
+const MAX_ATTEMPTS = 3;
+const NUM_DOTS = 10;
+let attempts = 0;
+let connectedDots = [];
+let isUnlocked = false;
+let dotPositions = []; // computed from SVG path
+let totalPathLength = 0;
+
+// ═══════════════════════════════════════════
+//  PRODUCTS (swap with real data later)
+// ═══════════════════════════════════════════
+
+const PRODUCTS = [
+  { name: 'Signal Tee \u2014 Black', detail: '100% Cotton / Riso Screen Print', price: '$48', color: '#FFE800', edition: 'Edition of 50' },
+  { name: 'Depth Hoodie \u2014 Navy', detail: 'Heavyweight French Terry / Embroidered', price: '$98', color: '#4982CF', edition: null },
+  { name: 'Node Cap \u2014 Green', detail: '6-Panel / Woven Patch', price: '$36', color: '#00A95C', edition: 'Edition of 30' },
+  { name: 'Trace Longsleeve \u2014 Cream', detail: 'Oversized Fit / Back Print', price: '$56', color: '#FF48B0', edition: null },
+  { name: 'Glyph Tote', detail: '12oz Canvas / Zineth Branding', price: '$28', color: '#FF4C65', edition: null },
+  { name: 'Void Crewneck \u2014 Charcoal', detail: 'Midweight / Puff Print', price: '$78', color: '#3D5588', edition: 'Edition of 40' },
+];
+
+// ═══════════════════════════════════════════
+//  INIT: Compute dot positions from SVG path
+// ═══════════════════════════════════════════
+
+function init() {
+  const tracePath = document.getElementById('tracePath');
+  const guidePath = document.getElementById('pinkGuide');
+
+  // Get total path length
+  totalPathLength = guidePath.getTotalLength();
+
+  // Hide trace path initially via dashoffset
+  tracePath.style.strokeDasharray = totalPathLength;
+  tracePath.style.strokeDashoffset = totalPathLength;
+  tracePath.style.transition = 'stroke-dashoffset 0.4s ease';
+
+  // Compute dot positions evenly along the path
+  dotPositions = [];
+  for (let i = 0; i < NUM_DOTS; i++) {
+    const len = (i / NUM_DOTS) * totalPathLength;
+    const pt = guidePath.getPointAtLength(len);
+    dotPositions.push({ x: pt.x, y: pt.y, svgX: pt.x, svgY: pt.y });
+  }
+
+  renderDots();
+  updateDisplay();
+}
+
+// ═══════════════════════════════════════════
+//  RENDER DOTS as positioned HTML elements
+// ═══════════════════════════════════════════
+
+function renderDots() {
+  const overlay = document.getElementById('dotsOverlay');
+  const container = document.getElementById('gameContainer');
+  const svg = document.getElementById('gameSvg');
+  overlay.innerHTML = '';
+
+  dotPositions.forEach((dot, i) => {
+    const el = document.createElement('div');
+    el.className = 'dot-marker' + (connectedDots.includes(i + 1) ? ' connected' : '');
+    el.dataset.dotNum = i + 1;
+
+    // Convert SVG coords to percentage positions
+    // viewBox is 0 0 1920 1080
+    const pctX = (dot.svgX / 1920) * 100;
+    const pctY = (dot.svgY / 1080) * 100;
+    el.style.left = pctX + '%';
+    el.style.top = pctY + '%';
+
+    el.innerHTML = `
+      <span class="dot-num">${i + 1}</span>
+      <div class="dot-ring"></div>
+    `;
+
+    el.addEventListener('click', () => handleDotClick(i + 1));
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); handleDotClick(i + 1); }, { passive: false });
+
+    overlay.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════
+//  GAME INTERACTION
+// ═══════════════════════════════════════════
+
+function handleDotClick(dotNum) {
+  if (isUnlocked || attempts >= MAX_ATTEMPTS) return;
+  if (connectedDots.includes(dotNum)) return;
+
+  // Must follow sequential order
+  const expectedNext = connectedDots.length + 1;
+
+  if (dotNum === expectedNext) {
+    // Correct dot!
+    connectedDots.push(dotNum);
+    updateDisplay();
+    updateTracePath();
+    renderDots();
+
+    // Auto-submit when all dots connected
+    if (connectedDots.length === NUM_DOTS) {
+      setTimeout(() => submitAttempt(), 500);
+    }
+  } else {
+    // Wrong dot — flash red
+    const el = document.querySelector(`[data-dot-num="${dotNum}"]`);
+    if (el) {
+      const ring = el.querySelector('.dot-ring');
+      ring.style.borderColor = '#FF4C65';
+      ring.style.boxShadow = '0 0 12px rgba(255,76,101,0.5)';
+      setTimeout(() => {
+        ring.style.borderColor = '';
+        ring.style.boxShadow = '';
+      }, 400);
+    }
+  }
+}
+
+function updateTracePath() {
+  const tracePath = document.getElementById('tracePath');
+  const progress = connectedDots.length / NUM_DOTS;
+  const offset = totalPathLength * (1 - progress);
+  tracePath.style.strokeDashoffset = offset;
+}
+
+// ═══════════════════════════════════════════
+//  GAME LOGIC
+// ═══════════════════════════════════════════
+
+function updateDisplay() {
+  document.getElementById('dotDisplay').textContent = `${connectedDots.length} / ${NUM_DOTS}`;
+}
+
+function resetAttempt() {
+  if (isUnlocked) return;
+  connectedDots = [];
+  updateDisplay();
+
+  // Reset trace path
+  const tracePath = document.getElementById('tracePath');
+  tracePath.style.transition = 'none';
+  tracePath.style.strokeDashoffset = totalPathLength;
+  // Re-enable transition after reset
+  requestAnimationFrame(() => {
+    tracePath.style.transition = 'stroke-dashoffset 0.4s ease';
+  });
+
+  document.getElementById('statusDisplay').textContent = 'AWAITING INPUT';
+  document.getElementById('statusDisplay').className = 'value';
+  hideFeedback();
+  renderDots();
+}
+
+function submitAttempt() {
+  if (isUnlocked) return;
+
+  const isCorrect = connectedDots.length === NUM_DOTS &&
+    connectedDots.every((d, i) => d === i + 1);
+
+  if (isCorrect) {
+    // ── SUCCESS ──
+    isUnlocked = true;
+    document.getElementById('statusDisplay').textContent = 'UNLOCKED';
+    document.getElementById('statusDisplay').style.color = 'var(--green)';
+    showFeedback('success', 'Signal Verified', 'The ring is complete. You have earned access to the collection.');
+
+    // Animate: fade trace → reveal solid orbital + dot
+    setTimeout(() => {
+      // Hide guide lines
+      document.getElementById('pinkGuide').style.transition = 'opacity 0.6s ease';
+      document.getElementById('pinkGuide').style.opacity = '0';
+      document.getElementById('pinkDotGuide').style.transition = 'opacity 0.6s ease';
+      document.getElementById('pinkDotGuide').style.opacity = '0';
+
+      // Fade out trace, fade in solid
+      const tracePath = document.getElementById('tracePath');
+      tracePath.style.transition = 'opacity 0.8s ease';
+      tracePath.style.opacity = '0';
+
+      document.getElementById('pinkOrbitalReveal').style.transition = 'opacity 1s ease';
+      document.getElementById('pinkOrbitalReveal').style.opacity = '1';
+      document.getElementById('pinkDotReveal').style.transition = 'opacity 1s ease 0.3s';
+      document.getElementById('pinkDotReveal').style.opacity = '1';
+
+      // Hide dot markers
+      document.getElementById('dotsOverlay').style.transition = 'opacity 0.6s ease';
+      document.getElementById('dotsOverlay').style.opacity = '0';
+    }, 600);
+
+    // Reveal shop
+    setTimeout(revealShop, 2000);
+
+  } else {
+    // ── FAIL ──
+    attempts++;
+    document.getElementById('attemptDisplay').textContent = `${attempts} / ${MAX_ATTEMPTS}`;
+
+    if (attempts >= MAX_ATTEMPTS) {
+      document.getElementById('statusDisplay').textContent = 'LOCKED';
+      document.getElementById('statusDisplay').className = 'value danger';
+      showFeedback('locked', 'Channel Sealed', 'Maximum attempts reached. Access denied.');
+      setTimeout(() => {
+        document.getElementById('lockedOverlay').classList.add('show');
+      }, 1500);
+    } else {
+      document.getElementById('statusDisplay').textContent = 'TRACE INCORRECT';
+      document.getElementById('statusDisplay').className = 'value warning';
+      const remaining = MAX_ATTEMPTS - attempts;
+      showFeedback('fail', 'Incorrect Trace',
+        `The path does not match. ${remaining} attempt${remaining > 1 ? 's' : ''} remaining.`);
+      setTimeout(() => {
+        resetAttempt();
+        hideFeedback();
+        document.getElementById('statusDisplay').textContent = 'AWAITING INPUT';
+        document.getElementById('statusDisplay').className = 'value';
+      }, 2000);
+    }
+  }
+}
+
+function showFeedback(type, title, msg) {
+  const el = document.getElementById('feedback');
+  el.className = `feedback show ${type}`;
+  el.innerHTML = `<h3>${title}</h3><p>${msg}</p>`;
+}
+
+function hideFeedback() {
+  document.getElementById('feedback').className = 'feedback';
+}
+
+// ═══════════════════════════════════════════
+//  SHOP REVEAL
+// ═══════════════════════════════════════════
+
+function revealShop() {
+  const grid = document.getElementById('shopGrid');
+  grid.innerHTML = '';
+
+  PRODUCTS.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <div class="product-image" data-label="Product Image">
+        <div class="swatch" style="background:${product.color};"></div>
+      </div>
+      ${product.edition ? `<span class="edition-tag">${product.edition}</span>` : ''}
+      <div class="product-info">
+        <div class="product-name">${product.name}</div>
+        <div class="product-detail">${product.detail}</div>
+        <div class="product-price">${product.price}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('shopSection').classList.add('visible');
+  setTimeout(() => {
+    document.getElementById('shopSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 200);
+}
+
+// ═══════════════════════════════════════════
+//  START
+// ═══════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
