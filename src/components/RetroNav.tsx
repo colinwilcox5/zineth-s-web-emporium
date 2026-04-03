@@ -31,6 +31,12 @@ const RetroNav = () => {
           >
             [OMNIBUS OF FUN]
           </button>
+          <a
+            href="/trace-to-unlock.html"
+            className="font-terminal text-sm text-foreground hover:text-primary hover:bg-muted px-3 py-1 border border-transparent hover:border-border transition-all"
+          >
+            [TRACE TO UNLOCK]
+          </a>
         </div>
         <span className="font-terminal text-xs text-muted-foreground flicker">
           ONLINE
