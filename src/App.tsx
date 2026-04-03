@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import { lazy, Suspense } from "react";
 const WolfensteinRoom = lazy(() => import("./pages/WolfensteinRoom"));
+const OmnibusOfFun = lazy(() => import("./pages/OmnibusOfFun"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,11 @@ const App = () => (
           <Route path="/wolfenstein" element={
             <Suspense fallback={<div className="h-screen w-full bg-black" />}>
               <WolfensteinRoom />
+            </Suspense>
+          } />
+          <Route path="/omnibus" element={
+            <Suspense fallback={<div className="h-screen w-full" style={{ background: '#0f1a26' }} />}>
+              <OmnibusOfFun />
             </Suspense>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
