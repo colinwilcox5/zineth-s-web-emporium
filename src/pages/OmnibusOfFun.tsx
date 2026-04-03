@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SignalGraph from '@/components/omnibus/SignalGraph';
 import InstructionCard from '@/components/omnibus/InstructionCard';
 import NodeList from '@/components/omnibus/NodeList';
