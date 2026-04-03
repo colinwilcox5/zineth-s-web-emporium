@@ -22,6 +22,27 @@ const OmnibusOfFun = () => {
       color: OMNIBUS_COLORS.cream,
       fontFamily: '"Space Mono", monospace',
     }}>
+      {/* Back button */}
+      <button
+        onClick={() => navigate('/')}
+        style={{
+          position: 'fixed', top: 16, left: 16, zIndex: 100,
+          fontFamily: '"Space Mono", monospace',
+          fontSize: 10,
+          padding: '6px 14px',
+          border: `1px solid ${OMNIBUS_COLORS.federalBlue}`,
+          background: 'rgba(15,26,38,0.9)',
+          color: OMNIBUS_COLORS.cream,
+          cursor: 'pointer',
+          letterSpacing: 1,
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = OMNIBUS_COLORS.yellow; (e.currentTarget as HTMLElement).style.color = OMNIBUS_COLORS.yellow; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = OMNIBUS_COLORS.federalBlue; (e.currentTarget as HTMLElement).style.color = OMNIBUS_COLORS.cream; }}
+      >
+        ← BACK TO ZINETH
+      </button>
+
       {/* Layer Switcher (will be removed when gating is wired up) */}
       <div style={{
         position: 'fixed', top: 16, right: 16, zIndex: 100,
