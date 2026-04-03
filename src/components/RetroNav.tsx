@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 const RetroNav = () => {
+  const navigate = useNavigate();
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
@@ -22,6 +25,12 @@ const RetroNav = () => {
               [{link.label}]
             </button>
           ))}
+          <button
+            onClick={() => navigate("/omnibus")}
+            className="font-terminal text-sm text-foreground hover:text-primary hover:bg-muted px-3 py-1 border border-transparent hover:border-border transition-all"
+          >
+            [OMNIBUS OF FUN]
+          </button>
         </div>
         <span className="font-terminal text-xs text-muted-foreground flicker">
           ONLINE
