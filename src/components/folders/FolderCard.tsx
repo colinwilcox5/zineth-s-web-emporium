@@ -110,13 +110,14 @@ const FolderCard = ({ folder, onClick }: FolderCardProps) => {
       <div
         className="absolute rounded-lg"
         style={{
-          top: '3%',
+          top: '2%',
           left: '3%',
           bottom: '3%',
-          right: 'calc(28px + 4%)',
+          right: 'calc(28px + 2%)',
           backgroundColor: '#f2f0ec',
           border: '1px solid rgba(0,0,0,0.06)',
           zIndex: 0,
+          borderTopRightRadius: '8px',
         }}
       />
 
