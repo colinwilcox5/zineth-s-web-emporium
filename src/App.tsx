@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import { lazy, Suspense } from "react";
 const WolfensteinRoom = lazy(() => import("./pages/WolfensteinRoom"));
 const OmnibusOfFun = lazy(() => import("./pages/OmnibusOfFun"));
+const Omnibus = lazy(() => import("./pages/Omnibus"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
