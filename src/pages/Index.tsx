@@ -249,7 +249,7 @@ const Index = () => {
         {/* Lore */}
         <LoreSection />
 
-        <MarqueeBar text="★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★" />
+        <MarqueeBar text="★ END OF TRANSMISSION ★ ENTER THE OMNIBUS → /omnibus ★ END OF TRANSMISSION ★ ENTER THE OMNIBUS → /omnibus ★" />
 
         <RetroFooter />
       </div>

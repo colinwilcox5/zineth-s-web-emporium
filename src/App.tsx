@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import { lazy, Suspense } from "react";
 const WolfensteinRoom = lazy(() => import("./pages/WolfensteinRoom"));
 const OmnibusOfFun = lazy(() => import("./pages/OmnibusOfFun"));
+const Omnibus = lazy(() => import("./pages/Omnibus"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,11 @@ const App = () => (
             </Suspense>
           } />
           <Route path="/omnibus" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <Omnibus />
+            </Suspense>
+          } />
+          <Route path="/omnibus-of-fun" element={
             <Suspense fallback={<div className="h-screen w-full" style={{ background: '#0f1a26' }} />}>
               <OmnibusOfFun />
             </Suspense>
