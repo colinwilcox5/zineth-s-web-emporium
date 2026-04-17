@@ -121,7 +121,7 @@ export const fogForestScene: SceneConfig = {
   background: <FogForest />,
   hotspots: [
     {
-      area: { left: 42, top: 44, width: 16, height: 22 },
+      area: { left: 35, top: 38, width: 30, height: 36 },
       label: 'Approach the mansion',
       to: 'idol-doorway',
       tooltip: 'Approach',
