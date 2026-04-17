@@ -376,6 +376,37 @@ const WolfensteinRoom = () => {
         style={{ color: COLORS.yellow, border: `1px solid ${COLORS.yellow}`, background: 'rgba(0,0,0,0.5)' }}>
         [ EXIT ]
       </a>
+
+      {/* Hidden portal — small picture frame leading to /omnibus */}
+      {overlayMode === 'none' && (
+        <a
+          href="/omnibus"
+          aria-label="Enter the Omnibus"
+          className="fixed z-10 transition-opacity"
+          style={{
+            bottom: 14, right: 14,
+            width: 28, height: 36,
+            background: 'linear-gradient(135deg, #6a6a6a, #1a1a1a 50%, #6a6a6a)',
+            padding: 3,
+            border: `1px solid ${COLORS.yellow}`,
+            opacity: 0.45,
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.45'; }}
+        >
+          <div style={{
+            width: '100%', height: '100%',
+            background: '#0A0A0A',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'monospace',
+            fontSize: 14, fontWeight: 700, color: '#dcdcdc',
+            letterSpacing: 0,
+          }}>
+            Z
+          </div>
+        </a>
+      )}
     </div>
   );
 };
