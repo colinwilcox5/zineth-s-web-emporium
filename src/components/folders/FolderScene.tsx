@@ -54,8 +54,8 @@ const FolderScene = ({ folder, onClose, onZoom, startRect }: FolderSceneProps) =
   };
 
   // Compute initial transform from startRect → centered target
-  const targetW = Math.min(1000, window.innerWidth * 0.95);
-  const targetH = Math.min(700, window.innerHeight * 0.85);
+  const targetW = 1000;
+  const targetH = 700;
   const targetCx = window.innerWidth / 2;
   const targetCy = window.innerHeight / 2;
 
@@ -225,7 +225,7 @@ const FolderScene = ({ folder, onClose, onZoom, startRect }: FolderSceneProps) =
           className={`absolute top-0 bottom-0 z-[3] ${opening ? 'folder-cover-opening' : ''}`}
           style={{
             left: 0,
-            width: '1000px',
+            width: '100%',
             backgroundColor: '#dce4ed',
             borderRadius: '12px',
             border: '1.5px solid rgba(0,0,0,0.15)',
