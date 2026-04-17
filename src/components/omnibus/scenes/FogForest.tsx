@@ -61,16 +61,42 @@ const FogForest = () => {
         }} />
       ))}
 
-      {/* Center hint sigil — only visible faintly */}
+      {/* Beckoning sigil over the mansion */}
       <div style={{
         position: 'absolute',
-        left: '50%', top: '49%',
+        left: '50%', top: '47%',
         transform: 'translate(-50%, -50%)',
-        opacity: 0.18,
+        opacity: 0.55,
         pointerEvents: 'none',
+        animation: 'sigilBeacon 3.2s ease-in-out infinite',
+        filter: `drop-shadow(0 0 12px ${SIGIL_COLORS.pink})`,
       }}>
-        <ChromeSigil size={56} />
+        <ChromeSigil size={72} />
       </div>
+
+      {/* Path hint text */}
+      <div style={{
+        position: 'absolute',
+        left: '50%', bottom: '8%',
+        transform: 'translateX(-50%)',
+        fontFamily: '"Space Mono", monospace',
+        fontSize: 11,
+        letterSpacing: 4,
+        color: SIGIL_COLORS.cream,
+        opacity: 0.55,
+        pointerEvents: 'none',
+        textShadow: '0 0 8px rgba(0,0,0,0.9)',
+        animation: 'sigilBeacon 3.2s ease-in-out infinite',
+      }}>
+        — APPROACH THE MANSION —
+      </div>
+
+      <style>{`
+        @keyframes sigilBeacon {
+          0%, 100% { opacity: 0.35; }
+          50% { opacity: 0.85; }
+        }
+      `}</style>
 
       {/* Heavy dither */}
       <DitherOverlay color={SIGIL_COLORS.green} opacity={0.18} />
@@ -95,7 +121,7 @@ export const fogForestScene: SceneConfig = {
   background: <FogForest />,
   hotspots: [
     {
-      area: { left: 42, top: 44, width: 16, height: 22 },
+      area: { left: 35, top: 38, width: 30, height: 36 },
       label: 'Approach the mansion',
       to: 'idol-doorway',
       tooltip: 'Approach',
