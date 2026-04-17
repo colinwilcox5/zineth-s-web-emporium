@@ -26,6 +26,11 @@ const App = () => (
             </Suspense>
           } />
           <Route path="/omnibus" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <Omnibus />
+            </Suspense>
+          } />
+          <Route path="/omnibus-of-fun" element={
             <Suspense fallback={<div className="h-screen w-full" style={{ background: '#0f1a26' }} />}>
               <OmnibusOfFun />
             </Suspense>
