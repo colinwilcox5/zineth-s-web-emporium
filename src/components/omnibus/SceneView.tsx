@@ -43,8 +43,8 @@ const SceneView = ({ scene, onHotspotActivate, onHoverChange, onBack, debug, dev
         </div>
       )}
 
-      {/* Hotspots */}
-      <div style={{ position: 'absolute', inset: 0 }}>
+      {/* Hotspots — wrapper must not block clicks to the scene background */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         {scene.hotspots.map((h, i) => (
           <Hotspot
             key={`${scene.id}-${i}-${h.label}`}
