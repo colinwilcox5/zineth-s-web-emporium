@@ -34,6 +34,7 @@ const Hotspot = ({ config, onActivate, onHoverChange, debug }: HotspotProps) => 
         width: `${config.area.width}%`,
         height: `${config.area.height}%`,
         cursor: config.noCursorGlow ? 'auto' : 'none',
+        pointerEvents: 'auto',
         background: debug
           ? (hover ? 'rgba(255,72,176,0.25)' : 'rgba(255,72,176,0.05)')
           : 'transparent',
