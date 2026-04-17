@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { FolderItem } from "./folderData";
+import type { Rect } from "./FolderSection";
 
 interface FolderSceneProps {
   folder: FolderItem;
   onClose: () => void;
   onZoom: () => void;
+  startRect?: Rect | null;
 }
 
-const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
+const FolderScene = ({ folder, onClose, onZoom, startRect }: FolderSceneProps) => {
+  const [arrived, setArrived] = useState(false);
   const [opening, setOpening] = useState(false);
   const [docVisible, setDocVisible] = useState(false);
   const [interiorGrid, setInteriorGrid] = useState(false);
@@ -24,10 +27,13 @@ const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
     if (coverRef.current) {
       void coverRef.current.offsetHeight;
     }
-    addTimer(() => setOpening(true), 300);
-    addTimer(() => setDocVisible(true), 500);
-    addTimer(() => setInteriorGrid(true), 1100);
-    addTimer(() => setShowClose(true), 500);
+    // First: dolly the folder in from its rail rect to centered/full size
+    addTimer(() => setArrived(true), 30);
+    // Then begin the cover-opening sequence after the dolly settles (~900ms)
+    addTimer(() => setOpening(true), 1100);
+    addTimer(() => setDocVisible(true), 1300);
+    addTimer(() => setInteriorGrid(true), 1900);
+    addTimer(() => setShowClose(true), 1100);
 
     return () => timers.current.forEach(clearTimeout);
   }, []);
@@ -47,10 +53,31 @@ const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
     backgroundSize: '24px 24px',
   };
 
+  // Compute initial transform from startRect → centered target
+  const targetW = 1000;
+  const targetH = 700;
+  const targetCx = window.innerWidth / 2;
+  const targetCy = window.innerHeight / 2;
+
+  let initialTransform = "translate(-50%, -50%) scale(0.05)";
+  if (startRect) {
+    const startCx = startRect.left + startRect.width / 2;
+    const startCy = startRect.top + startRect.height / 2;
+    const dx = startCx - targetCx;
+    const dy = startCy - targetCy;
+    const scale = startRect.width / targetW;
+    initialTransform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${scale})`;
+  }
+  const arrivedTransform = "translate(-50%, -50%) scale(1)";
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
-      style={{ backgroundColor: 'rgba(245, 245, 240, 0.95)' }}
+      className="fixed inset-0 z-50"
+      style={{
+        backgroundColor: 'rgba(245, 245, 240, 0.95)',
+        opacity: arrived ? 1 : 0,
+        transition: 'opacity 600ms ease',
+      }}
     >
       {/* Close button */}
       <button
@@ -66,15 +93,19 @@ const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
         [ CLOSE ]
       </button>
 
-      {/* Folder container */}
+      {/* Folder container — dollies from startRect to center */}
       <div
-        className={`relative ${zooming ? 'folder-container-zooming' : ''}`}
+        className={`${zooming ? 'folder-container-zooming' : ''}`}
         style={{
-          width: '1000px',
-          height: '700px',
-          maxWidth: '95vw',
-          maxHeight: '85vh',
+          position: 'fixed',
+          left: '50%',
+          top: '50%',
+          width: `${targetW}px`,
+          height: `${targetH}px`,
           overflow: 'visible',
+          transform: arrived ? arrivedTransform : initialTransform,
+          transition: 'transform 900ms cubic-bezier(0.16, 1, 0.3, 1)',
+          willChange: 'transform',
         }}
       >
         {/* Right panel (folder body) */}
@@ -194,7 +225,7 @@ const FolderScene = ({ folder, onClose, onZoom }: FolderSceneProps) => {
           className={`absolute top-0 bottom-0 z-[3] ${opening ? 'folder-cover-opening' : ''}`}
           style={{
             left: 0,
-            width: '1000px',
+            width: '100%',
             backgroundColor: '#dce4ed',
             borderRadius: '12px',
             border: '1.5px solid rgba(0,0,0,0.15)',

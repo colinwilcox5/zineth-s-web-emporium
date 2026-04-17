@@ -18,6 +18,7 @@ const Index = () => {
   const [booting, setBooting] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const [transitionDone, setTransitionDone] = useState(false);
+  const [folderOpen, setFolderOpen] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const titleBoxRef = useRef<HTMLDivElement>(null);
 
@@ -204,50 +205,57 @@ const Index = () => {
         />
       )}
 
-      <RetroNav />
-      <button
-        onClick={enterVoid}
-        className="fixed top-4 right-4 z-50 font-pixel text-xs border-2 border-foreground bg-background/90 text-foreground px-3 py-2 hover:bg-foreground hover:text-background transition-all"
+      {/* Page root — dollies back when a folder opens */}
+      <div
+        className={`dolly-back-root ${folderOpen ? "dolly-back" : ""}`}
+        style={{ paddingRight: "200px" }}
       >
-        [ ENTER VOID ]
-      </button>
+        <RetroNav />
+        <button
+          onClick={enterVoid}
+          className="fixed top-4 right-4 z-50 font-pixel text-xs border-2 border-foreground bg-background/90 text-foreground px-3 py-2 hover:bg-foreground hover:text-background transition-all"
+          style={{ right: "216px" }}
+        >
+          [ ENTER VOID ]
+        </button>
 
-      {/* Hero */}
-      <section id="hero" className="py-20 flex flex-col items-center justify-center text-center px-4">
-        <ZinethLogo size="w-32 h-32" />
-        <div ref={titleBoxRef} className="relative">
-          <div className="bg-void px-8 py-4 md:px-12 md:py-6 inline-block">
-            <GlitchTitle />
+        {/* Hero */}
+        <section id="hero" className="py-20 flex flex-col items-center justify-center text-center px-4">
+          <ZinethLogo size="w-32 h-32" />
+          <div ref={titleBoxRef} className="relative">
+            <div className="bg-void px-8 py-4 md:px-12 md:py-6 inline-block">
+              <GlitchTitle />
+            </div>
           </div>
+          <p className="font-terminal text-muted-foreground text-lg mt-6 max-w-xl">
+            A frequency for those who seek beyond the surface.
+            <br />
+            Digital artifacts. Limited armor. Ancient signals.
+          </p>
+        </section>
+
+        <MarqueeBar text="▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓" />
+
+        {/* Gallery */}
+        <div id="gallery">
+          <ArtGallery />
         </div>
-        <p className="font-terminal text-muted-foreground text-lg mt-6 max-w-xl">
-          A frequency for those who seek beyond the surface.
-          <br />
-          Digital artifacts. Limited armor. Ancient signals.
-        </p>
-      </section>
 
-      <MarqueeBar text="▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓ CLASSIFIED ▓▓▓" />
+        {/* Shop */}
+        <div id="shop">
+          <ClothingShop />
+        </div>
 
-      {/* Gallery */}
-      <div id="gallery">
-        <ArtGallery />
+        {/* Lore */}
+        <LoreSection />
+
+        <MarqueeBar text="★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★" />
+
+        <RetroFooter />
       </div>
 
-      {/* Digital Artifacts */}
-      <FolderSection />
-
-      {/* Shop */}
-      <div id="shop">
-        <ClothingShop />
-      </div>
-
-      {/* Lore */}
-      <LoreSection />
-
-      <MarqueeBar text="★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★ END OF TRANSMISSION ★" />
-
-      <RetroFooter />
+      {/* Folder rail — outside the dolly-back wrapper so it stays sharp */}
+      <FolderSection onOpenChange={setFolderOpen} />
     </div>
   );
 };

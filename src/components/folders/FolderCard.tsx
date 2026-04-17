@@ -1,8 +1,9 @@
+import { useRef } from "react";
 import type { FolderItem } from "./folderData";
 
 interface FolderCardProps {
   folder: FolderItem;
-  onClick: () => void;
+  onClick: (el: HTMLElement) => void;
 }
 
 const backPageClipPath = `polygon(
@@ -56,11 +57,13 @@ const frontCoverClipPath = `polygon(
 )`;
 
 const FolderCard = ({ folder, onClick }: FolderCardProps) => {
+  const ref = useRef<HTMLButtonElement>(null);
   return (
     <button
-      onClick={onClick}
+      ref={ref}
+      onClick={() => ref.current && onClick(ref.current)}
       className="folder-card group relative w-full text-left transition-all duration-300 hover:-translate-y-1"
-      style={{ paddingRight: '28px' }}
+      style={{ paddingRight: '20px' }}
     >
       {/* Layer 1 — Back page (with tab via clip-path) */}
       <div
