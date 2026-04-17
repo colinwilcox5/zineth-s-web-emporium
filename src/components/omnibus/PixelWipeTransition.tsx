@@ -20,28 +20,29 @@ interface PixelWipeProps {
 
 const PixelWipeTransition = ({ triggerKey, onMidTransition, children }: PixelWipeProps) => {
   const [phase, setPhase] = useState<'idle' | 'in' | 'hold' | 'out'>('idle');
-  const firstRender = useRef(true);
+  const lastKey = useRef<string | number>(triggerKey);
   const cellDelays = useRef<{ inDelay: number; outDelay: number }[]>([]);
+  const midRef = useRef(onMidTransition);
+  midRef.current = onMidTransition;
 
-  // Generate stable random delays per trigger
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
+    // Only run when triggerKey actually changes from its previous value.
+    // Survives StrictMode double-mount and avoids the "swallowed first click" bug.
+    if (lastKey.current === triggerKey) return;
+    lastKey.current = triggerKey;
+
     cellDelays.current = Array.from({ length: COLS * ROWS }, () => ({
       inDelay: Math.random() * 600,
       outDelay: Math.random() * 600,
     }));
     setPhase('in');
     const t1 = setTimeout(() => {
-      onMidTransition?.();
+      midRef.current?.();
       setPhase('hold');
     }, FADE_IN_DURATION);
     const t2 = setTimeout(() => setPhase('out'), FADE_IN_DURATION + HOLD_DURATION);
     const t3 = setTimeout(() => setPhase('idle'), FADE_IN_DURATION + HOLD_DURATION + FADE_OUT_DURATION);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerKey]);
 
   const showOverlay = phase !== 'idle';
