@@ -1,15 +1,29 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import FolderCard from "./FolderCard";
 import FolderScene from "./FolderScene";
 import FolderContentPage from "./FolderContentPage";
 import { folders } from "./folderData";
 
-const FolderSection = () => {
+export type Rect = { left: number; top: number; width: number; height: number };
+
+interface FolderSectionProps {
+  onOpenChange?: (open: boolean) => void;
+}
+
+const FolderSection = ({ onOpenChange }: FolderSectionProps) => {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [showScene, setShowScene] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [startRect, setStartRect] = useState<Rect | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
 
-  const handleCardClick = useCallback((idx: number) => {
+  useEffect(() => {
+    onOpenChange?.(showScene || showContent);
+  }, [showScene, showContent, onOpenChange]);
+
+  const handleCardClick = useCallback((idx: number, el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    setStartRect({ left: r.left, top: r.top, width: r.width, height: r.height });
     setSelectedIdx(idx);
     setShowScene(true);
     setShowContent(false);
@@ -19,6 +33,7 @@ const FolderSection = () => {
     setShowScene(false);
     setShowContent(false);
     setSelectedIdx(null);
+    setStartRect(null);
   }, []);
 
   const handleZoom = useCallback(() => {
@@ -29,46 +44,65 @@ const FolderSection = () => {
     setShowContent(false);
     setShowScene(false);
     setSelectedIdx(null);
+    setStartRect(null);
   }, []);
 
   const selectedFolder = selectedIdx !== null ? folders[selectedIdx] : null;
 
   return (
-    <section className="py-16 px-6 md:px-12 max-w-6xl mx-auto">
-      {/* Section header */}
-      <div
-        className="font-mono-retro pb-3 mb-10"
-        style={{
-          fontSize: '11px',
-          color: '#999',
-          textTransform: 'uppercase',
-          letterSpacing: '2px',
-          borderBottom: '1px solid #ddd',
-        }}
+    <>
+      <aside
+        className={`folder-rail ${collapsed ? "collapsed" : ""}`}
+        aria-label="Digital artifacts rail"
       >
-        [ DIGITAL ARTIFACTS ] — SELECT FILE TO ACCESS
-      </div>
+        <button
+          className="folder-rail-handle font-mono-retro"
+          onClick={() => setCollapsed((c) => !c)}
+          aria-label={collapsed ? "Open files rail" : "Close files rail"}
+        >
+          {collapsed ? "◂ FILES" : "FILES ▸"}
+        </button>
 
-      {/* Grid */}
-      <div
-        className="grid gap-8"
-        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '40px' }}
-      >
-        {folders.map((folder, idx) => (
-          <FolderCard key={folder.id} folder={folder} onClick={() => handleCardClick(idx)} />
-        ))}
-      </div>
+        <div
+          className="font-mono-retro px-3 pt-3 pb-2"
+          style={{
+            fontSize: "9px",
+            color: "#999",
+            textTransform: "uppercase",
+            letterSpacing: "2px",
+            borderBottom: "1px solid #ddd",
+          }}
+        >
+          [ ARTIFACTS ]
+        </div>
 
-      {/* Folder scene overlay */}
+        <div
+          className="flex-1 overflow-y-auto px-3 py-3"
+          style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+        >
+          {folders.map((folder, idx) => (
+            <FolderCard
+              key={folder.id}
+              folder={folder}
+              onClick={(el) => handleCardClick(idx, el)}
+            />
+          ))}
+        </div>
+      </aside>
+
       {showScene && selectedFolder && !showContent && (
-        <FolderScene folder={selectedFolder} onClose={handleClose} onZoom={handleZoom} />
+        <FolderScene
+          folder={selectedFolder}
+          onClose={handleClose}
+          onZoom={handleZoom}
+          startRect={startRect}
+        />
       )}
 
-      {/* Content page */}
       {showContent && selectedFolder && (
         <FolderContentPage folder={selectedFolder} onBack={handleBack} />
       )}
-    </section>
+    </>
   );
 };
 
