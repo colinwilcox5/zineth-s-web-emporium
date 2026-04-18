@@ -118,6 +118,10 @@ export const SharedSceneKeyframes = () => (
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    @keyframes realSigilSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
     @keyframes lavaButtonPulse {
       0%, 100% { box-shadow: 0 0 12px #FF4C65, 0 0 24px rgba(255,232,0,0.5), inset 0 0 8px rgba(255,232,0,0.4); }
       50% { box-shadow: 0 0 20px #FF4C65, 0 0 40px rgba(255,232,0,0.8), inset 0 0 14px rgba(255,232,0,0.7); }
@@ -125,6 +129,11 @@ export const SharedSceneKeyframes = () => (
     @keyframes fogDrift {
       from { transform: translateX(0); }
       to { transform: translateX(-50%); }
+    }
+    @keyframes fogBandDrift {
+      0% { transform: translateX(-12%); }
+      50% { transform: translateX(12%); }
+      100% { transform: translateX(-12%); }
     }
     @keyframes treeSway {
       0%, 100% { transform: rotate(-1deg); }
@@ -135,13 +144,17 @@ export const SharedSceneKeyframes = () => (
       50% { opacity: 0.4; }
     }
     @keyframes chandelierSway {
-      0%, 100% { transform: translateX(-50%) rotate(-1.5deg); }
-      50% { transform: translateX(-50%) rotate(1.5deg); }
+      0%, 100% { transform: translateX(-50%) rotate(-3deg); }
+      50% { transform: translateX(-50%) rotate(3deg); }
     }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-6px); }
       75% { transform: translateX(6px); }
+    }
+    @keyframes sigilBeacon {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 0.85; }
     }
   `}</style>
 );
