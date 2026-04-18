@@ -1,22 +1,52 @@
 // SCENE 02 — THE FOG FOREST
-// Painterly tree silhouettes, oppressive fog, no instructional text.
+// Painterly tree silhouettes (irregular SVG paths, edge-wobble filter, 3 depth layers).
 import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
 import { RealSigil } from '../RealSigil';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
-// Hand-drawn-feeling tree silhouettes via SVG path (no straight triangles).
-const TREE_PATHS = [
-  // each: [xPct, yBaseline%, scale, sway, dStr]
-  { x: 4,  s: 0.95, sway: 9,  d: 'M50,180 C48,160 42,140 30,120 C28,118 36,108 42,100 C32,92 38,78 46,68 C40,60 44,46 52,40 C60,46 64,60 58,68 C66,78 72,92 62,100 C68,108 76,118 74,120 C62,140 56,160 54,180 Z' },
-  { x: 14, s: 0.7,  sway: 11, d: 'M50,180 C46,158 40,138 32,118 C36,110 30,96 38,84 C32,76 40,60 50,48 C60,60 68,76 62,84 C70,96 64,110 68,118 C60,138 54,158 52,180 Z' },
-  { x: 24, s: 1.05, sway: 12, d: 'M50,180 C44,156 36,134 22,114 C28,108 18,90 30,76 C22,68 32,52 50,42 C68,52 78,68 70,76 C82,90 72,108 78,114 C64,134 56,156 54,180 Z' },
-  { x: 36, s: 0.62, sway: 8,  d: 'M50,180 C48,162 44,144 36,126 C40,118 34,104 42,92 C36,84 42,70 50,60 C58,70 64,84 58,92 C66,104 60,118 64,126 C56,144 52,162 50,180 Z' },
-  { x: 60, s: 0.78, sway: 10, d: 'M50,180 C46,160 40,142 30,122 C34,114 28,100 36,88 C30,80 38,64 50,52 C62,64 70,80 64,88 C72,100 66,114 70,122 C60,142 54,160 52,180 Z' },
-  { x: 70, s: 1.0,  sway: 13, d: 'M50,180 C42,156 34,134 20,114 C26,108 16,90 28,76 C20,68 30,52 50,40 C70,52 80,68 72,76 C84,90 74,108 80,114 C66,134 58,156 56,180 Z' },
-  { x: 84, s: 0.85, sway: 9,  d: 'M50,180 C46,160 40,140 30,122 C34,114 28,100 36,86 C30,78 38,64 50,54 C62,64 70,78 64,86 C72,100 66,114 70,122 C60,140 54,160 52,180 Z' },
-  { x: 92, s: 0.6,  sway: 11, d: 'M50,180 C48,164 44,148 38,132 C42,124 36,110 44,98 C38,90 44,76 50,68 C56,76 62,90 56,98 C64,110 58,124 62,132 C56,148 52,164 50,180 Z' },
+// Irregular hand-drawn tree silhouettes — varied trunks, jagged branches, no equal angles.
+// Each path is intentionally lopsided.
+const TREE_SHAPES = [
+  // Tall lopsided pine
+  'M50,200 C49,180 47,160 44,142 C40,138 35,130 32,120 C36,118 40,114 43,108 C38,102 30,92 28,80 C34,80 41,82 46,78 C42,68 34,54 32,42 C40,46 49,52 52,46 C56,52 62,60 60,68 C66,70 72,68 70,76 C66,84 60,92 64,98 C70,104 74,110 70,118 C66,126 60,132 58,140 C56,160 54,180 53,200 Z',
+  // Squat gnarled
+  'M50,200 C48,184 44,170 38,156 C42,150 36,140 40,128 C34,124 30,114 36,104 C30,98 36,84 44,76 C38,68 46,56 52,52 C58,58 64,68 60,76 C68,82 72,94 66,104 C72,114 70,124 64,128 C68,140 62,150 66,156 C60,170 56,184 52,200 Z',
+  // Leaning narrow
+  'M50,200 C50,182 50,164 48,148 C44,144 42,134 44,124 C40,118 42,108 46,100 C42,94 44,82 48,74 C44,66 50,52 54,44 C58,52 64,66 60,74 C64,82 66,94 62,100 C66,108 68,118 64,124 C66,134 64,144 60,148 C58,164 56,182 54,200 Z',
+  // Wide bushy
+  'M50,200 C46,182 38,164 28,148 C32,144 24,134 30,122 C22,118 18,104 28,94 C20,86 28,68 42,58 C36,48 46,38 50,32 C54,38 64,48 58,58 C72,68 80,86 72,94 C82,104 78,118 70,122 C76,134 68,144 72,148 C62,164 54,182 52,200 Z',
+  // Skeletal tall
+  'M50,200 C49,182 48,164 46,146 C42,140 40,128 44,118 C38,112 40,98 44,88 C38,80 42,64 50,52 C58,64 62,80 56,88 C60,98 62,112 56,118 C60,128 58,140 54,146 C52,164 51,182 50,200 Z',
+  // Hunched
+  'M50,200 C48,186 42,172 36,160 C40,154 32,142 38,132 C30,124 36,108 46,98 C40,88 48,72 56,64 C62,72 70,88 64,98 C74,108 70,124 62,132 C68,142 60,154 64,160 C58,172 54,186 52,200 Z',
+];
+
+// Three depth layers — clusters not even spacing.
+const FAR_LAYER = [
+  { x: 6, s: 0.45, shape: 4 }, { x: 11, s: 0.4, shape: 2 }, { x: 13, s: 0.5, shape: 0 },
+  { x: 28, s: 0.42, shape: 5 }, { x: 33, s: 0.48, shape: 1 }, { x: 41, s: 0.44, shape: 3 },
+  { x: 56, s: 0.46, shape: 4 }, { x: 62, s: 0.4, shape: 2 }, { x: 67, s: 0.5, shape: 0 },
+  { x: 81, s: 0.42, shape: 5 }, { x: 89, s: 0.48, shape: 1 }, { x: 94, s: 0.44, shape: 3 },
+];
+
+const MID_LAYER = [
+  { x: 3, s: 0.7, shape: 1 }, { x: 9, s: 0.65, shape: 3 },
+  { x: 24, s: 0.75, shape: 0 }, { x: 31, s: 0.68, shape: 5 },
+  { x: 52, s: 0.72, shape: 2 }, { x: 59, s: 0.66, shape: 4 },
+  { x: 76, s: 0.7, shape: 0 }, { x: 84, s: 0.74, shape: 3 },
+];
+
+const NEAR_LAYER = [
+  { x: -2, s: 1.1, shape: 3, sway: 9 },
+  { x: 8, s: 0.95, shape: 0, sway: 11 },
+  { x: 22, s: 1.2, shape: 5, sway: 8 },
+  { x: 38, s: 0.9, shape: 1, sway: 12 },
+  { x: 64, s: 1.05, shape: 2, sway: 10 },
+  { x: 78, s: 1.15, shape: 3, sway: 9 },
+  { x: 92, s: 1.0, shape: 4, sway: 11 },
 ];
 
 const FogForest = () => (
@@ -25,14 +55,28 @@ const FogForest = () => (
     background: `linear-gradient(180deg, ${SIGIL_COLORS.federalBlue} 0%, #16182a 50%, ${SIGIL_COLORS.black} 100%)`,
     overflow: 'hidden',
   }}>
-    {/* Distant blurred fog mass — heavy oppressive base */}
+    {/* SVG defs — edge-wobble filter shared by all tree paths */}
+    <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
+      <defs>
+        <filter id="tree-edge-wobble" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" />
+          <feDisplacementMap in="SourceGraphic" scale="3" />
+        </filter>
+        <filter id="tree-edge-wobble-strong" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="13" />
+          <feDisplacementMap in="SourceGraphic" scale="5" />
+        </filter>
+      </defs>
+    </svg>
+
+    {/* Distant blurred fog mass */}
     <div style={{
       position: 'absolute', inset: 0,
       background: `radial-gradient(ellipse at 50% 60%, rgba(40,50,90,0.55) 0%, transparent 70%)`,
       filter: 'blur(20px)',
     }} />
 
-    {/* Distant mansion silhouette — feathered edges */}
+    {/* Distant mansion silhouette */}
     <div style={{
       position: 'absolute',
       left: '46%', top: '50%',
@@ -43,7 +87,7 @@ const FogForest = () => (
       filter: 'blur(2.5px)',
     }} />
 
-    {/* Beckoning sigil over the mansion — uses real PNG now */}
+    {/* Beckoning sigil */}
     <div style={{
       position: 'absolute',
       left: '50%', top: '46%',
@@ -55,7 +99,7 @@ const FogForest = () => (
       <RealSigil size={84} glow />
     </div>
 
-    {/* Three drifting fog bands (mid layer) */}
+    {/* Drifting fog bands */}
     {[
       { top: '38%', height: '14%', color: 'rgba(73,130,207,0.18)', dur: '24s', delay: '0s' },
       { top: '58%', height: '20%', color: 'rgba(255,72,176,0.10)', dur: '30s', delay: '-8s' },
@@ -72,31 +116,57 @@ const FogForest = () => (
       }} />
     ))}
 
-    {/* Painterly trees — SVG paths, each unique */}
-    {TREE_PATHS.map((t, i) => {
-      const widthPct = 11 * t.s;
-      const heightPct = 78 * t.s;
-      return (
-        <div key={i} style={{
-          position: 'absolute',
-          left: `${t.x}%`, bottom: '-2%',
-          width: `${widthPct}%`, height: `${heightPct}%`,
-          transformOrigin: 'bottom center',
-          animation: `treeSway ${t.sway}s ease-in-out infinite`,
-          animationDelay: `${i * 0.4}s`,
-          filter: i < 4 ? 'blur(0.4px)' : 'blur(0.2px)',
-        }}>
-          <svg viewBox="0 0 100 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
-            <path d={t.d} fill={SIGIL_COLORS.black} fillOpacity={0.92} />
-          </svg>
-        </div>
-      );
-    })}
+    {/* FAR layer — tiny, lost in haze */}
+    {FAR_LAYER.map((t, i) => (
+      <div key={`far-${i}`} style={{
+        position: 'absolute',
+        left: `${t.x}%`, bottom: '8%',
+        width: `${8 * t.s}%`, height: `${48 * t.s}%`,
+        opacity: 0.25,
+        filter: 'blur(2px)',
+      }}>
+        <svg viewBox="0 0 100 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+          <path d={TREE_SHAPES[t.shape]} fill="#3a3050" filter="url(#tree-edge-wobble)" />
+        </svg>
+      </div>
+    ))}
 
-    {/* Heavy global texture — forest needs to feel thick */}
+    {/* MID layer — purple, semi-transparent */}
+    {MID_LAYER.map((t, i) => (
+      <div key={`mid-${i}`} style={{
+        position: 'absolute',
+        left: `${t.x}%`, bottom: '0%',
+        width: `${10 * t.s}%`, height: `${64 * t.s}%`,
+        opacity: 0.55,
+        filter: 'blur(0.8px)',
+      }}>
+        <svg viewBox="0 0 100 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+          <path d={TREE_SHAPES[t.shape]} fill="#1a1530" filter="url(#tree-edge-wobble)" />
+        </svg>
+      </div>
+    ))}
+
+    {/* NEAR layer — darkest, largest, most irregular, swaying */}
+    {NEAR_LAYER.map((t, i) => (
+      <div key={`near-${i}`} style={{
+        position: 'absolute',
+        left: `${t.x}%`, bottom: '-3%',
+        width: `${12 * t.s}%`, height: `${82 * t.s}%`,
+        transformOrigin: 'bottom center',
+        animation: `treeSway ${t.sway}s ease-in-out infinite`,
+        animationDelay: `${i * 0.5}s`,
+      }}>
+        <svg viewBox="0 0 100 200" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+          <path d={TREE_SHAPES[t.shape]} fill={SIGIL_COLORS.black} fillOpacity={0.96} filter="url(#tree-edge-wobble-strong)" />
+        </svg>
+      </div>
+    ))}
+
+    {/* Heavy global texture */}
     <DitherOverlay color={SIGIL_COLORS.green} opacity={0.18} />
     <DitherOverlay color={SIGIL_COLORS.pink} opacity={0.06} />
-    <TextureOverlay intensity={0.4} blend="overlay" />
+    <TextureOverlay intensity={0.5} />
+    <ScanlineOverlay />
 
     {/* Vignette */}
     <div style={{

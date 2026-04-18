@@ -6,6 +6,7 @@ import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
 import { RealSigil } from '../RealSigil';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
 interface IdolDoorwayProps {
   doorsOpening: boolean;
@@ -87,7 +88,8 @@ const IdolDoorway = ({ doorsOpening }: IdolDoorwayProps) => (
     </div>
 
     <DitherOverlay opacity={0.2} />
-    <TextureOverlay intensity={0.22} blend="overlay" />
+    <TextureOverlay intensity={0.4} />
+    <ScanlineOverlay />
   </div>
 );
 

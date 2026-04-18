@@ -5,6 +5,7 @@ import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
 import { RealSigilVideo } from '../RealSigil';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
 const SecretAlcove = () => (
   <div style={{
@@ -48,7 +49,8 @@ const SecretAlcove = () => (
     </div>
 
     <DitherOverlay opacity={0.18} />
-    <TextureOverlay intensity={0.18} blend="overlay" />
+    <TextureOverlay intensity={0.4} />
+    <ScanlineOverlay />
   </div>
 );
 

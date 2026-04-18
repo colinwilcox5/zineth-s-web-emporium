@@ -4,6 +4,7 @@ import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { Archway, DitherOverlay } from '../sceneShared';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
 const Foyer = () => (
   <div style={{
@@ -97,7 +98,8 @@ const Foyer = () => (
     </div>
 
     <DitherOverlay opacity={0.15} />
-    <TextureOverlay intensity={0.18} blend="overlay" />
+    <TextureOverlay intensity={0.4} />
+    <ScanlineOverlay />
   </div>
 );
 
