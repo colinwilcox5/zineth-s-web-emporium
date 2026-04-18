@@ -2,6 +2,7 @@
 import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
+import { TextureOverlay } from '../TextureOverlay';
 
 const SHELF_COLORS = [SIGIL_COLORS.pink, SIGIL_COLORS.yellow, SIGIL_COLORS.green, SIGIL_COLORS.skyBlue, SIGIL_COLORS.red];
 
@@ -83,6 +84,7 @@ const LoreVault = () => (
     }} />
 
     <DitherOverlay opacity={0.14} />
+    <TextureOverlay intensity={0.18} />
   </div>
 );
 

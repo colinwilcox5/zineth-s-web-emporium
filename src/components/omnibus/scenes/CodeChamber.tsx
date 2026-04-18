@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
+import { TextureOverlay } from '../TextureOverlay';
 
 const CodeChamber = () => {
   const [code, setCode] = useState('');
@@ -134,6 +135,7 @@ const CodeChamber = () => {
       </div>
 
       <DitherOverlay opacity={0.15} />
+      <TextureOverlay intensity={0.18} />
     </div>
   );
 };

@@ -2,6 +2,7 @@
 import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay, Stub } from '../sceneShared';
+import { TextureOverlay } from '../TextureOverlay';
 
 const ArtGallery = () => (
   <div style={{
@@ -43,6 +44,7 @@ const ArtGallery = () => (
     }} />
 
     <DitherOverlay opacity={0.12} />
+    <TextureOverlay intensity={0.18} />
   </div>
 );
 
