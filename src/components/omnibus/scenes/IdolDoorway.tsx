@@ -1,8 +1,11 @@
 // SCENE 03 — THE IDOL DOORWAY
+// Spotlit Z-sigil carved into stone, double doors, no instructional text.
 import { useState, useEffect } from 'react';
 import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
-import { DitherOverlay, ChromeSigil } from '../sceneShared';
+import { DitherOverlay } from '../sceneShared';
+import { RealSigil } from '../RealSigil';
+import { TextureOverlay } from '../TextureOverlay';
 
 interface IdolDoorwayProps {
   doorsOpening: boolean;
@@ -14,10 +17,10 @@ const IdolDoorway = ({ doorsOpening }: IdolDoorwayProps) => (
     background: `linear-gradient(180deg, ${SIGIL_COLORS.federalBlue} 0%, #2a2a3a 40%, #1a1410 100%)`,
     overflow: 'hidden',
   }}>
-    {/* Spotlight */}
+    {/* Spotlight from above */}
     <div style={{
       position: 'absolute', left: '20%', right: '20%', top: 0, bottom: 0,
-      background: `radial-gradient(ellipse at 50% 30%, ${SIGIL_COLORS.pink}25 0%, transparent 60%), radial-gradient(ellipse at 50% 50%, ${SIGIL_COLORS.yellow}18 0%, transparent 50%)`,
+      background: `radial-gradient(ellipse at 50% 25%, ${SIGIL_COLORS.cream}30 0%, ${SIGIL_COLORS.yellow}20 25%, transparent 60%), radial-gradient(ellipse at 50% 50%, ${SIGIL_COLORS.pink}20 0%, transparent 50%)`,
       pointerEvents: 'none',
     }} />
 
@@ -28,6 +31,13 @@ const IdolDoorway = ({ doorsOpening }: IdolDoorwayProps) => (
       border: '4px solid #222',
       boxShadow: 'inset 0 0 40px rgba(0,0,0,0.8)',
     }}>
+      {/* Subtle stone crack lines */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+        <path d="M 5% 18% L 12% 30% L 8% 48% L 18% 70%" stroke="rgba(0,0,0,0.45)" strokeWidth="1" fill="none" />
+        <path d="M 90% 12% L 82% 28% L 88% 50% L 78% 80%" stroke="rgba(0,0,0,0.45)" strokeWidth="1" fill="none" />
+        <path d="M 30% 8% L 42% 16%" stroke="rgba(0,0,0,0.35)" strokeWidth="0.8" fill="none" />
+      </svg>
+
       {/* Top scrollwork */}
       <div style={{
         position: 'absolute', left: 0, right: 0, top: 0, height: '12%',
@@ -36,25 +46,25 @@ const IdolDoorway = ({ doorsOpening }: IdolDoorwayProps) => (
         borderBottom: `2px solid ${SIGIL_COLORS.yellow}`,
       }} />
 
-      {/* Bas-relief sigil */}
+      {/* Carved sigil — REAL PNG with stone-carving filter */}
       <div style={{
-        position: 'absolute', left: '25%', right: '25%', top: '15%', height: '35%',
+        position: 'absolute', left: '20%', right: '20%', top: '14%', height: '38%',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        filter: 'contrast(1.4) sepia(0.3) brightness(0.85)',
       }}>
-        <ChromeSigil size={140} />
+        <RealSigil size="100%" variant="stone" />
       </div>
 
-      {/* Doors */}
+      {/* Double doors with vertical seam */}
       <div style={{
-        position: 'absolute', left: '20%', right: '20%', top: '52%', bottom: '8%',
+        position: 'absolute', left: '20%', right: '20%', top: '54%', bottom: '8%',
         display: 'flex',
+        boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.8)',
       }}>
         <div style={{
           flex: 1,
           background: `linear-gradient(180deg, #3a2818, #1a1208)`,
           border: `2px solid ${SIGIL_COLORS.yellow}40`,
-          borderRight: 'none',
+          borderRight: `1px solid ${SIGIL_COLORS.black}`,
           transform: doorsOpening ? 'translateX(-100%)' : 'translateX(0)',
           transition: 'transform 1s ease-in',
         }} />
@@ -62,7 +72,7 @@ const IdolDoorway = ({ doorsOpening }: IdolDoorwayProps) => (
           flex: 1,
           background: `linear-gradient(180deg, #3a2818, #1a1208)`,
           border: `2px solid ${SIGIL_COLORS.yellow}40`,
-          borderLeft: 'none',
+          borderLeft: `1px solid ${SIGIL_COLORS.black}`,
           transform: doorsOpening ? 'translateX(100%)' : 'translateX(0)',
           transition: 'transform 1s ease-in',
         }} />
@@ -77,6 +87,7 @@ const IdolDoorway = ({ doorsOpening }: IdolDoorwayProps) => (
     </div>
 
     <DitherOverlay opacity={0.2} />
+    <TextureOverlay intensity={0.22} blend="overlay" />
   </div>
 );
 
@@ -97,7 +108,6 @@ export const IdolDoorwayWithLogic = ({ onEnterMansion, onBack: _onBack }: IdolDo
   return (
     <>
       <IdolDoorway doorsOpening={opening} />
-      {/* Door click hotspot */}
       <div
         onClick={() => !opening && setOpening(true)}
         style={{
@@ -110,7 +120,6 @@ export const IdolDoorwayWithLogic = ({ onEnterMansion, onBack: _onBack }: IdolDo
   );
 };
 
-// Scene config builder — needs handlers
 export const idolDoorwayScene = (handlers: { onEnterMansion: () => void; onBack: () => void }): SceneConfig => ({
   id: 'idol-doorway',
   title: 'The Idol Doorway',
