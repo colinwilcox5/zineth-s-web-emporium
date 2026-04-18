@@ -94,9 +94,22 @@ const PixelWipeTransition = ({ triggerKey, onMidTransition, children }: PixelWip
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               animation: 'sigilFlash 220ms ease-out',
             }}>
-              <div style={{ width: 96, height: 96, filter: 'drop-shadow(0 0 18px #4982CF)' }}>
-                <SigilSvg size={96} />
+              {/* MP4 hero sigil; SVG fallback rendered behind for safety */}
+              <div style={{ position: 'absolute', filter: 'drop-shadow(0 0 18px #4982CF)' }}>
+                <SigilSvg size={120} />
               </div>
+              <video
+                src="/omnibus/sigil/metal-logo-short.mp4"
+                autoPlay
+                muted
+                playsInline
+                style={{
+                  width: 200,
+                  height: 200,
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 18px #4982CF)',
+                }}
+              />
             </div>
           )}
           <style>{`

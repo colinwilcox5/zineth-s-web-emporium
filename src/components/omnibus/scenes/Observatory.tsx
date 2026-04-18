@@ -1,10 +1,12 @@
 // SCENE 01 — THE OBSERVATORY
-// Cosmic black menu screen with rotating chrome sigil, picture-frame viewport,
-// and metal control panel (QUIT / BYPASS / ENTER).
+// Cosmic black menu screen with rotating REAL chrome sigil, picture-frame
+// viewport, and metal control panel (QUIT / BYPASS / ENTER).
 import { useState, useMemo } from 'react';
 import type { SceneConfig, SceneId } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { ChromeSigil, DitherOverlay } from '../sceneShared';
+import { RealSigil } from '../RealSigil';
+import { TextureOverlay } from '../TextureOverlay';
 
 interface ObservatoryProps {
   hovered: SceneId | 'home' | null;
@@ -57,13 +59,13 @@ const Observatory = ({ hovered, onEnter, onQuit, onBypass }: ObservatoryProps) =
         <ChromeSigil size={14} />
       </div>
 
-      {/* Left: rotating big sigil */}
+      {/* Left: rotating big REAL sigil — ~30% of frame width */}
       <div style={{
-        position: 'absolute', left: '8%', top: '20%',
-        width: '28%', aspectRatio: '1',
+        position: 'absolute', left: '6%', top: '14%',
+        width: '30%', aspectRatio: '1',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <ChromeSigil size={260} spinDuration={20} glow />
+        <RealSigil size="100%" glow spinDuration={20} />
       </div>
 
       {/* Right: picture-frame viewport */}
@@ -116,6 +118,7 @@ const Observatory = ({ hovered, onEnter, onQuit, onBypass }: ObservatoryProps) =
       </div>
 
       <DitherOverlay color={SIGIL_COLORS.black} opacity={0.12} />
+      <TextureOverlay intensity={0.08} blend="overlay" />
     </div>
   );
 };
