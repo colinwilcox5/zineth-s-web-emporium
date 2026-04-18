@@ -64,8 +64,9 @@ export const ChromeSigil = ({ size, glow = false, spinDuration }: { size: number
   </div>
 );
 
-/** Architectural arch placeholder — symmetric Riso pillar w/ archway. */
-export const Archway = ({ label, glow = false }: { label: string; glow?: boolean }) => (
+/** Architectural arch placeholder — symmetric Riso pillar w/ archway.
+ * Label rendered only when `showLabel` is true (dev / legacy). */
+export const Archway = ({ label, glow = false, showLabel = false }: { label?: string; glow?: boolean; showLabel?: boolean }) => (
   <div style={{
     width: '100%', height: '100%', position: 'relative',
     background: glow
@@ -77,13 +78,45 @@ export const Archway = ({ label, glow = false }: { label: string; glow?: boolean
       position: 'absolute', left: 0, top: 0, bottom: 0, width: '14%',
       background: `linear-gradient(to right, ${SIGIL_COLORS.yellow} 0%, ${SIGIL_COLORS.pink} 50%, ${SIGIL_COLORS.yellow} 100%)`,
       filter: 'brightness(0.85)',
-    }} />
+    }}>
+      <div style={{
+        position: 'absolute', left: '-15%', right: '-15%', top: 0, height: '5%',
+        background: `linear-gradient(180deg, ${SIGIL_COLORS.yellow}, #6a4818)`,
+        borderBottom: `1px solid ${SIGIL_COLORS.black}`,
+      }} />
+      <div style={{
+        position: 'absolute', inset: '5% 0 5% 0',
+        backgroundImage: `repeating-linear-gradient(90deg, transparent 0 18%, rgba(0,0,0,0.35) 18%, rgba(0,0,0,0.35) 19%, transparent 19% 36%)`,
+        opacity: 0.6,
+      }} />
+      <div style={{
+        position: 'absolute', left: '-15%', right: '-15%', bottom: 0, height: '4%',
+        background: `linear-gradient(180deg, #6a4818, ${SIGIL_COLORS.yellow})`,
+        borderTop: `1px solid ${SIGIL_COLORS.black}`,
+      }} />
+    </div>
     {/* Right pillar */}
     <div style={{
       position: 'absolute', right: 0, top: 0, bottom: 0, width: '14%',
       background: `linear-gradient(to right, ${SIGIL_COLORS.yellow} 0%, ${SIGIL_COLORS.pink} 50%, ${SIGIL_COLORS.yellow} 100%)`,
       filter: 'brightness(0.85)',
-    }} />
+    }}>
+      <div style={{
+        position: 'absolute', left: '-15%', right: '-15%', top: 0, height: '5%',
+        background: `linear-gradient(180deg, ${SIGIL_COLORS.yellow}, #6a4818)`,
+        borderBottom: `1px solid ${SIGIL_COLORS.black}`,
+      }} />
+      <div style={{
+        position: 'absolute', inset: '5% 0 5% 0',
+        backgroundImage: `repeating-linear-gradient(90deg, transparent 0 18%, rgba(0,0,0,0.35) 18%, rgba(0,0,0,0.35) 19%, transparent 19% 36%)`,
+        opacity: 0.6,
+      }} />
+      <div style={{
+        position: 'absolute', left: '-15%', right: '-15%', bottom: 0, height: '4%',
+        background: `linear-gradient(180deg, #6a4818, ${SIGIL_COLORS.yellow})`,
+        borderTop: `1px solid ${SIGIL_COLORS.black}`,
+      }} />
+    </div>
     {/* Arch crown */}
     <div style={{
       position: 'absolute', left: '14%', right: '14%', top: 0, height: '18%',
@@ -91,23 +124,32 @@ export const Archway = ({ label, glow = false }: { label: string; glow?: boolean
       borderRadius: '50% 50% 0 0 / 100% 100% 0 0',
       background: SIGIL_COLORS.federalBlue,
     }} />
+    {/* Keystone */}
+    <div style={{
+      position: 'absolute', left: '47%', right: '47%', top: '-2%', height: '8%',
+      background: `linear-gradient(180deg, ${SIGIL_COLORS.yellow}, #6a4818)`,
+      border: `1px solid ${SIGIL_COLORS.black}`,
+      boxShadow: '0 2px 4px rgba(0,0,0,0.6)',
+    }} />
     {/* Inner darkness / passage */}
     <div style={{
       position: 'absolute', left: '14%', right: '14%', top: '18%', bottom: 0,
       background: glow
         ? `radial-gradient(ellipse at 50% 80%, ${SIGIL_COLORS.yellow}40, ${SIGIL_COLORS.black})`
-        : SIGIL_COLORS.black,
+        : `radial-gradient(ellipse at 50% 80%, #0a1428 0%, ${SIGIL_COLORS.black} 80%)`,
     }} />
-    <div style={{
-      position: 'absolute', left: '14%', right: '14%', top: '18%', bottom: 0,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: '"Space Mono", monospace',
-      fontSize: 9, letterSpacing: 2, color: SIGIL_COLORS.cream, opacity: 0.5,
-      textTransform: 'uppercase',
-      pointerEvents: 'none',
-    }}>
-      {label}
-    </div>
+    {showLabel && label && (
+      <div style={{
+        position: 'absolute', left: '14%', right: '14%', top: '18%', bottom: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: '"Space Mono", monospace',
+        fontSize: 9, letterSpacing: 2, color: SIGIL_COLORS.cream, opacity: 0.5,
+        textTransform: 'uppercase',
+        pointerEvents: 'none',
+      }}>
+        {label}
+      </div>
+    )}
   </div>
 );
 
