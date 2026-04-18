@@ -5,6 +5,7 @@ import { SIGIL_COLORS } from '../sceneTypes';
 import { Archway, DitherOverlay } from '../sceneShared';
 import { RealSigil } from '../RealSigil';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
 const GreatRoom = () => (
   <div style={{
@@ -142,7 +143,8 @@ const GreatRoom = () => (
     }} />
 
     <DitherOverlay opacity={0.12} />
-    <TextureOverlay intensity={0.18} blend="overlay" />
+    <TextureOverlay intensity={0.35} />
+    <ScanlineOverlay />
   </div>
 );
 

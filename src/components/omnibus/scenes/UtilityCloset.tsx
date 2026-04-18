@@ -3,6 +3,7 @@ import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 import PatchPanel from '../patchPanel/PatchPanel';
 import NominationTerminal from '../patchPanel/NominationTerminal';
 
@@ -88,7 +89,8 @@ const UtilityCloset = () => (
     }} />
 
     <DitherOverlay opacity={0.18} color="#000" />
-    <TextureOverlay intensity={0.35} />
+    <TextureOverlay intensity={0.55} />
+    <ScanlineOverlay intensity={0.12} />
   </div>
 );
 

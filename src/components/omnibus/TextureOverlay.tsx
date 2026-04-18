@@ -16,7 +16,7 @@ interface TextureOverlayProps {
   blend?: 'overlay' | 'multiply' | 'screen' | 'soft-light';
 }
 
-export const TextureOverlay = ({ intensity = 0.18, blend = 'overlay' }: TextureOverlayProps) => (
+export const TextureOverlay = ({ intensity = 0.35, blend = 'multiply' }: TextureOverlayProps) => (
   <div
     aria-hidden
     style={{

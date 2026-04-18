@@ -5,6 +5,7 @@ import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
 const ArcadeBackground = () => {
   const [zoomed, setZoomed] = useState(false);
@@ -45,7 +46,8 @@ const ArcadeBackground = () => {
       )}
 
       <DitherOverlay opacity={0.16} />
-      <TextureOverlay intensity={0.18} />
+      <TextureOverlay intensity={0.3} />
+      <ScanlineOverlay />
     </div>
   );
 };

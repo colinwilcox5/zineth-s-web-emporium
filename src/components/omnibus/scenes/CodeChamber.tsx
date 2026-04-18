@@ -4,6 +4,7 @@ import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
 const CodeChamber = () => {
   const [code, setCode] = useState('');
@@ -135,7 +136,8 @@ const CodeChamber = () => {
       </div>
 
       <DitherOverlay opacity={0.15} />
-      <TextureOverlay intensity={0.18} />
+      <TextureOverlay intensity={0.35} />
+      <ScanlineOverlay intensity={0.1} />
     </div>
   );
 };

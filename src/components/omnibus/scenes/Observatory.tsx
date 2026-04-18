@@ -7,6 +7,7 @@ import { SIGIL_COLORS } from '../sceneTypes';
 import { ChromeSigil, DitherOverlay } from '../sceneShared';
 import { RealSigil } from '../RealSigil';
 import { TextureOverlay } from '../TextureOverlay';
+import { ScanlineOverlay } from '../ScanlineOverlay';
 
 interface ObservatoryProps {
   hovered: SceneId | 'home' | null;
@@ -118,7 +119,8 @@ const Observatory = ({ hovered, onEnter, onQuit, onBypass }: ObservatoryProps) =
       </div>
 
       <DitherOverlay color={SIGIL_COLORS.black} opacity={0.12} />
-      <TextureOverlay intensity={0.08} blend="overlay" />
+      <TextureOverlay intensity={0.12} />
+      <ScanlineOverlay intensity={0.03} />
     </div>
   );
 };
