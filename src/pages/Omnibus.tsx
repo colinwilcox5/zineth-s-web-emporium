@@ -63,7 +63,9 @@ const Omnibus = () => {
       onBypass: () => { /* reserved for gated use */ },
       hovered: observatoryHover,
     }),
-    'fog-forest': fogForestScene,
+    'fog-forest': fogForestScene({
+      onAdvance: () => goTo('idol-doorway'),
+    }),
     'idol-doorway': idolDoorwayScene({
       onEnterMansion: () => goTo('foyer'),
       onBack: () => goTo('fog-forest'),
