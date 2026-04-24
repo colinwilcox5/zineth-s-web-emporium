@@ -2,11 +2,18 @@ import { useEffect, useRef, useState } from 'react';
 
 /**
  * Custom Z-sigil cursor for the Omnibus.
- * Tracks mouse position via transform, two states (default / interactive).
+ * Static by default; scales up + glows red + rotates when hovering an
+ * interactive element (button, a, [role="button"], [data-interactive="true"]).
+ * Detection is global via document.elementFromPoint — no per-element wiring.
  * Hidden on touch devices.
+ *
+ * The legacy `interactive` prop is accepted but ignored (auto-detected now).
  */
-const CursorSigil = ({ interactive }: { interactive: boolean }) => {
-  const ref = useRef<HTMLDivElement>(null);
+const CursorSigil = (_props: { interactive?: boolean } = {}) => {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const lastHoverRef = useRef(false);
   const [touchDevice, setTouchDevice] = useState(false);
 
   useEffect(() => {
@@ -16,41 +23,49 @@ const CursorSigil = ({ interactive }: { interactive: boolean }) => {
   useEffect(() => {
     if (touchDevice) return;
     const onMove = (e: MouseEvent) => {
-      if (!ref.current) return;
-      ref.current.style.transform = `translate3d(${e.clientX - 12}px, ${e.clientY - 12}px, 0)`;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const wrap = wrapRef.current;
+        const inner = innerRef.current;
+        if (!wrap || !inner) return;
+        wrap.style.transform = `translate3d(${e.clientX - 14}px, ${e.clientY - 14}px, 0)`;
+
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const interactive = !!el?.closest(
+          'button, a, [role="button"], [data-interactive="true"]'
+        );
+        if (interactive !== lastHoverRef.current) {
+          lastHoverRef.current = interactive;
+          inner.classList.toggle('is-hovering', interactive);
+          inner.classList.toggle('is-default', !interactive);
+        }
+      });
     };
     window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [touchDevice]);
 
   if (touchDevice) return null;
 
   return (
     <div
-      ref={ref}
+      ref={wrapRef}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
-        width: 24,
-        height: 24,
+        width: 28,
+        height: 28,
         pointerEvents: 'none',
         zIndex: 9999,
-        transition: 'filter 150ms ease-out, opacity 150ms ease-out',
-        opacity: interactive ? 1 : 0.65,
-        filter: interactive
-          ? 'drop-shadow(0 0 6px #4982CF) drop-shadow(0 0 12px #4982CF)'
-          : 'none',
-        animation: interactive ? 'sigilCursorSpin 2s linear infinite' : 'none',
       }}
     >
-      <SigilSvg />
-      <style>{`
-        @keyframes sigilCursorSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      <div ref={innerRef} className="cursor-sigil is-default">
+        <SigilSvg size={28} />
+      </div>
     </div>
   );
 };
