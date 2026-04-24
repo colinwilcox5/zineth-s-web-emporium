@@ -13,11 +13,14 @@ import FolderSection from "@/components/folders/FolderSection";
 const VoidScene = lazy(() => import("@/components/VoidScene"));
 
 const Index = () => {
-  const [entered, setEntered] = useState(false);
+  // Persist "entered" across navigations so back-buttons from sub-routes
+  // (e.g. /omnibus → /) land on the main site, not the brown landing page.
+  const hasEntered = typeof window !== "undefined" && sessionStorage.getItem("zineth:entered") === "1";
+  const [entered, setEntered] = useState(hasEntered);
   const [bootText, setBootText] = useState("");
   const [booting, setBooting] = useState(false);
-  const [transitioning, setTransitioning] = useState(false);
-  const [transitionDone, setTransitionDone] = useState(false);
+  const [transitioning, setTransitioning] = useState(hasEntered);
+  const [transitionDone, setTransitionDone] = useState(hasEntered);
   const [folderOpen, setFolderOpen] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const titleBoxRef = useRef<HTMLDivElement>(null);
@@ -45,6 +48,7 @@ const Index = () => {
       } else {
         clearInterval(interval);
         setTimeout(() => {
+          sessionStorage.setItem("zineth:entered", "1");
           setEntered(true);
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
