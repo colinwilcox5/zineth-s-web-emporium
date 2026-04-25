@@ -54,6 +54,8 @@ const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
 
   // Auto-zoom-then-advance state
   const [autoZooming, setAutoZooming] = useState(false);
+  // Door slide-apart animation state
+  const [doorsOpening, setDoorsOpening] = useState(false);
 
   // Parallax shifts (sky locked; magnitudes increase toward camera)
   const SKY_SHIFT      = { x: 0, y: 0 };
@@ -72,29 +74,18 @@ const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
   const STEPS_SCALE    = 1.16 + zoom * 1.60;  // slides past
   const SIDE_SCALE     = 1.22 + zoom * 2.40;  // extreme foreground
 
-  // Click handler — auto-zoom-then-advance if not already zoomed in
+  // Doors share shrine-ish parallax/zoom (sit just in front of shrine, behind mid columns)
+  const DOOR_SHIFT  = { x: parallax.x * -3.5, y: parallax.y * -1.8 };
+  const DOOR_SCALE  = 1.08 + zoom * 0.75;
+  const DOOR_L_OPEN = doorsOpening ? '-110%' : '0%';
+  const DOOR_R_OPEN = doorsOpening ? '110%'  : '0%';
+
+  // Click handler — play door slide-apart, then fire pixel-wipe transition
   const handleArchClick = useCallback(() => {
-    if (autoZooming) return;
-    const t = getTargetZoom();
-    if (t >= 0.7) {
-      onEnterMansion();
-      return;
-    }
-    // Animate target to 1 over ~1s, then fire transition
-    setAutoZooming(true);
-    const start = performance.now();
-    const from = t;
-    const duration = 1000;
-    const animate = (now: number) => {
-      const k = Math.min(1, (now - start) / duration);
-      // ease-out cubic
-      const eased = 1 - Math.pow(1 - k, 3);
-      setTargetZoom(from + (1 - from) * eased);
-      if (k < 1) requestAnimationFrame(animate);
-      else onEnterMansion();
-    };
-    requestAnimationFrame(animate);
-  }, [autoZooming, getTargetZoom, setTargetZoom, onEnterMansion]);
+    if (doorsOpening) return;
+    setDoorsOpening(true);
+    setTimeout(() => onEnterMansion(), 1200);
+  }, [doorsOpening, onEnterMansion]);
 
   // Subtle hint, fades after 5s
   const [hintVisible, setHintVisible] = useState(true);
@@ -129,18 +120,59 @@ const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
         <img src="/omnibus/assets/scene-03-idol-doorway-shrine.png" alt="" style={layerImg} draggable={false} />
       </div>
 
+      {/* Layer 3.5: Doors — sit inside the archway opening, behind the mid columns.
+          Outer wrapper handles parallax + zoom; inner halves carry slide-apart translateX. */}
+      <div style={layerWrap(DOOR_SCALE, DOOR_SHIFT, 4)} aria-hidden>
+        <div style={{ position: 'absolute', left: '37%', top: '52%', width: '26%', height: '32%', overflow: 'visible' }}>
+          {/* Left half */}
+          <img
+            src="/omnibus/assets/scene-03-idol-doorway-door-left.png"
+            alt=""
+            draggable={false}
+            style={{
+              position: 'absolute',
+              left: 0, top: 0, width: '50%', height: '100%',
+              objectFit: 'cover',
+              imageRendering: 'pixelated',
+              userSelect: 'none',
+              pointerEvents: 'none',
+              transform: `translateX(${DOOR_L_OPEN})`,
+              transition: doorsOpening ? 'transform 1.2s ease-in' : 'none',
+              transformOrigin: 'right center',
+            }}
+          />
+          {/* Right half */}
+          <img
+            src="/omnibus/assets/scene-03-idol-doorway-door-right.png"
+            alt=""
+            draggable={false}
+            style={{
+              position: 'absolute',
+              left: '50%', top: 0, width: '50%', height: '100%',
+              objectFit: 'cover',
+              imageRendering: 'pixelated',
+              userSelect: 'none',
+              pointerEvents: 'none',
+              transform: `translateX(${DOOR_R_OPEN})`,
+              transition: doorsOpening ? 'transform 1.2s ease-in' : 'none',
+              transformOrigin: 'left center',
+            }}
+          />
+        </div>
+      </div>
+
       {/* Layer 4: Mid columns (Phase 2 will add doors here) */}
-      <div style={layerWrap(MID_COL_SCALE, MID_COL_SHIFT, 4)} aria-hidden>
+      <div style={layerWrap(MID_COL_SCALE, MID_COL_SHIFT, 5)} aria-hidden>
         <img src="/omnibus/assets/scene-03-idol-doorway-mid-columns.png" alt="" style={layerImg} draggable={false} />
       </div>
 
       {/* Layer 5: Foreground steps */}
-      <div style={layerWrap(STEPS_SCALE, STEPS_SHIFT, 5)} aria-hidden>
+      <div style={layerWrap(STEPS_SCALE, STEPS_SHIFT, 6)} aria-hidden>
         <img src="/omnibus/assets/scene-03-idol-doorway-steps.png" alt="" style={layerImg} draggable={false} />
       </div>
 
       {/* Layer 6: Side stairs — extreme foreground */}
-      <div style={layerWrap(SIDE_SCALE, SIDE_SHIFT, 6)} aria-hidden>
+      <div style={layerWrap(SIDE_SCALE, SIDE_SHIFT, 7)} aria-hidden>
         <img src="/omnibus/assets/scene-03-idol-doorway-stairs-side.png" alt="" style={layerImg} draggable={false} />
       </div>
       {/* ===== END FINAL ART SWAP POINT ===== */}
@@ -155,6 +187,7 @@ const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
       <button
         type="button"
         onClick={handleArchClick}
+        disabled={doorsOpening}
         aria-label="Enter the mansion"
         style={{
           position: 'absolute',
@@ -163,7 +196,7 @@ const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
           border: 'none',
           padding: 0,
           cursor: 'none',
-          zIndex: 10,
+          zIndex: 20,
         }}
       />
 
