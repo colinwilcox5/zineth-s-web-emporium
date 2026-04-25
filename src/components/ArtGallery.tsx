@@ -2,12 +2,14 @@ import artPiece1 from "@/assets/art-piece-1.png";
 import artPiece2 from "@/assets/art-piece-2.png";
 import artPiece3 from "@/assets/art-piece-3.png";
 import artPiece2Video from "@/assets/art-piece-2.mp4";
+import discordiaShape from "@/assets/discordia-shape.png";
+import discordiaShapeGlow from "@/assets/discordia-shape-glow.png";
 import { useRef } from "react";
 
 const pieces = [
   { src: artPiece1, title: "VOID_GEOMETRY.exe", id: "ZN-001", status: "ARCHIVED" },
   { src: artPiece2, video: artPiece2Video, title: "DATAMIND_v3.corrupt", id: "ZN-002", status: "ACTIVE" },
-  { src: artPiece3, title: "ALL_SEEING.ritual", id: "ZN-003", status: "SEALED" },
+  { src: discordiaShape, hoverSrc: discordiaShapeGlow, title: "ALL_SEEING.ritual", id: "ZN-003", status: "SEALED" },
 ];
 
 const ArtGallery = () => {
@@ -58,6 +60,20 @@ const ArtGallery = () => {
                   aria-label={piece.title}
                   className="w-full aspect-square object-cover group-hover:rgb-cycle transition-all duration-500"
                 />
+              ) : piece.hoverSrc ? (
+                <div className="relative w-full aspect-square">
+                  <img
+                    src={piece.src}
+                    alt={piece.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0"
+                  />
+                  <img
+                    src={piece.hoverSrc}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100"
+                  />
+                </div>
               ) : (
                 <img
                   src={piece.src}
