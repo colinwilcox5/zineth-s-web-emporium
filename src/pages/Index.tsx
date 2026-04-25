@@ -40,7 +40,10 @@ const Index = () => {
       setEntered(true);
       setTransitioning(true);
       setTransitionDone(true);
+      // Kick straight into the 3D void scene (static overlay plays on top).
       setStaticActive(true);
+      setVoidActive(true);
+      setShowVoid(true);
     }
   }, []);
 
