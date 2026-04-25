@@ -791,10 +791,12 @@ function submitAttempt() {
     if (attempts >= MAX_ATTEMPTS) {
       document.getElementById('statusDisplay').textContent = 'LOCKED';
       document.getElementById('statusDisplay').className = 'value danger';
-      showFeedback('locked', 'Channel Sealed', 'Maximum attempts reached. Access denied.');
+      showFeedback('locked', 'Signal Lost', 'The channel collapses inward. You are being pulled through.');
+      // Flag the void redirect, then send the user to the main site where the void takes over.
+      try { sessionStorage.setItem('zineth:enterVoid', '1'); } catch (e) {}
       setTimeout(() => {
-        document.getElementById('lockedOverlay').classList.add('show');
-      }, 1500);
+        window.location.href = '/';
+      }, 1800);
     } else {
       document.getElementById('statusDisplay').textContent = 'TRACE INCORRECT';
       document.getElementById('statusDisplay').className = 'value warning';
