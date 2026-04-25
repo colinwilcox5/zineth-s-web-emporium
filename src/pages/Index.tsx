@@ -30,6 +30,20 @@ const Index = () => {
   const [staticActive, setStaticActive] = useState(false);
   const [showVoid, setShowVoid] = useState(false);
 
+  // Pulled-into-void redirect from /trace-to-unlock.html (3 failed attempts)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem("zineth:enterVoid") === "1") {
+      sessionStorage.removeItem("zineth:enterVoid");
+      // Mark as entered so exiting the void lands on the main site, not the brown landing page.
+      sessionStorage.setItem("zineth:entered", "1");
+      setEntered(true);
+      setTransitioning(true);
+      setTransitionDone(true);
+      setStaticActive(true);
+    }
+  }, []);
+
   const bootSequence = [
     "INITIALIZING ZINETH PROTOCOL...",
     "SCANNING FREQUENCIES... ██████████ OK",
