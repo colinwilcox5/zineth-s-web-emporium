@@ -1,11 +1,18 @@
 // SCENE 08 — THE ARCADE
 // Outer view of cabinet + close-up zoom showing game placeholder.
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { SceneConfig } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { DitherOverlay } from '../sceneShared';
 import { TextureOverlay } from '../TextureOverlay';
 import { ScanlineOverlay } from '../ScanlineOverlay';
+import {
+  createBreakoutState,
+  updateBreakout,
+  renderBreakout,
+  BREAKOUT_W,
+  BREAKOUT_H,
+} from '@/engine/minigame';
 
 const ArcadeBackground = () => {
   const [zoomed, setZoomed] = useState(false);
@@ -89,7 +96,7 @@ const CabinetGraphic = ({ closeUp = false }: { closeUp?: boolean }) => (
       textAlign: 'center',
       padding: 12,
     }}>
-      {closeUp ? 'GAME PLACEHOLDER\n— TO BE WIRED IN FROM /WOLFENSTEIN —' : '...'}
+      {closeUp ? <BreakoutScreen /> : '...'}
     </div>
     {/* Controls */}
     <div style={{
@@ -106,6 +113,84 @@ const CabinetGraphic = ({ closeUp = false }: { closeUp?: boolean }) => (
     </div>
   </div>
 );
+
+// Breakout mini-game embedded in the cabinet screen
+const BreakoutScreen = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const stateRef = useRef(createBreakoutState());
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    canvas.width = BREAKOUT_W;
+    canvas.height = BREAKOUT_H;
+    const state = stateRef.current;
+
+    const onMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = BREAKOUT_W / rect.width;
+      state.paddleX = (e.clientX - rect.left) * scaleX - 40;
+    };
+    const onTouch = (e: TouchEvent) => {
+      if (!e.touches[0]) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = BREAKOUT_W / rect.width;
+      state.paddleX = (e.touches[0].clientX - rect.left) * scaleX - 40;
+    };
+    const onClick = () => {
+      if (state.won || state.lives <= 0) {
+        stateRef.current = createBreakoutState();
+        stateRef.current.running = true;
+        return;
+      }
+      if (!state.running) state.running = true;
+    };
+
+    canvas.addEventListener('mousemove', onMove);
+    canvas.addEventListener('touchmove', onTouch, { passive: true });
+    canvas.addEventListener('click', onClick);
+
+    let frame = 0;
+    const loop = () => {
+      updateBreakout(stateRef.current);
+      renderBreakout(ctx, stateRef.current);
+      frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      canvas.removeEventListener('mousemove', onMove);
+      canvas.removeEventListener('touchmove', onTouch);
+      canvas.removeEventListener('click', onClick);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={wrapRef}
+      style={{
+        width: '100%', height: '100%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        pointerEvents: 'auto',
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: '100%', height: '100%',
+          objectFit: 'contain',
+          imageRendering: 'pixelated',
+          cursor: 'none',
+          display: 'block',
+        }}
+      />
+    </div>
+  );
+};
 
 const CloseUpCabinet = ({ onExit }: { onExit: () => void }) => (
   <>
