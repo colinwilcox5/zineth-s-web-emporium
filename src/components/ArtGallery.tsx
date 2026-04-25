@@ -1,12 +1,12 @@
 import artPiece1 from "@/assets/art-piece-1.png";
 import artPiece2 from "@/assets/art-piece-2.png";
 import artPiece3 from "@/assets/art-piece-3.png";
-import artPiece2Video from "@/assets/art-piece-2.mp4.asset.json";
+import artPiece2Video from "@/assets/art-piece-2.mp4";
 import { useRef } from "react";
 
 const pieces = [
   { src: artPiece1, title: "VOID_GEOMETRY.exe", id: "ZN-001", status: "ARCHIVED" },
-  { src: artPiece2, video: artPiece2Video.url, title: "DATAMIND_v3.corrupt", id: "ZN-002", status: "ACTIVE" },
+  { src: artPiece2, video: artPiece2Video, title: "DATAMIND_v3.corrupt", id: "ZN-002", status: "ACTIVE" },
   { src: artPiece3, title: "ALL_SEEING.ritual", id: "ZN-003", status: "SEALED" },
 ];
 
