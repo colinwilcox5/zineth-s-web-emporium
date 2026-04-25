@@ -539,9 +539,21 @@ const VoidScene = ({ onExitVoid }: { onExitVoid?: () => void }) => {
     <div className="w-full h-screen" style={{ background: "#050505" }}>
       <Canvas
         camera={{ position: [0, 0, 12], fov: 60 }}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ antialias: true, alpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: false, failIfMajorPerformanceCaveat: false }}
+        dpr={[1, 1.5]}
         onCreated={({ gl }) => {
           gl.setClearColor("#050505");
+          // Recover gracefully if the WebGL context is lost (HMR, GPU pressure, etc.)
+          const canvas = gl.domElement;
+          const handleLost = (e: Event) => {
+            e.preventDefault();
+            console.warn('[VoidScene] WebGL context lost — attempting recovery');
+          };
+          const handleRestored = () => {
+            console.info('[VoidScene] WebGL context restored');
+          };
+          canvas.addEventListener('webglcontextlost', handleLost as EventListener, false);
+          canvas.addEventListener('webglcontextrestored', handleRestored as EventListener, false);
         }}
       >
         <Suspense fallback={null}>
