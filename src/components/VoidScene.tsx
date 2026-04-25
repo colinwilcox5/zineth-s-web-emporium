@@ -414,30 +414,37 @@ const SceneContent = ({ onLogoClick }: { onLogoClick?: () => void }) => {
   const graffitiAnimated = useAnimatedGifTexture(graffitiImg);
 
   // Set nearest filter + strip backgrounds for static textures
-  Object.values(staticTextures).forEach((tex) => {
-    tex.magFilter = THREE.NearestFilter;
-    tex.minFilter = THREE.NearestFilter;
+  // (Side-effect — must NOT run during render. Done once per texture in an effect.)
+  useEffect(() => {
+    Object.values(staticTextures).forEach((tex) => {
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.NearestFilter;
 
-    if (tex.image) {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (ctx && tex.image instanceof HTMLImageElement) {
+      if (tex.image && tex.image instanceof HTMLImageElement) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
         canvas.width = tex.image.width;
         canvas.height = tex.image.height;
         ctx.drawImage(tex.image, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i], g = data[i + 1], b = data[i + 2];
-          if (r > 200 && g > 200 && b > 200) data[i + 3] = 0;
-          if (r > 180 && g > 180 && b > 180 && Math.abs(r - g) < 20 && Math.abs(g - b) < 20) data[i + 3] = 0;
+        try {
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i], g = data[i + 1], b = data[i + 2];
+            if (r > 200 && g > 200 && b > 200) data[i + 3] = 0;
+            if (r > 180 && g > 180 && b > 180 && Math.abs(r - g) < 20 && Math.abs(g - b) < 20) data[i + 3] = 0;
+          }
+          ctx.putImageData(imageData, 0, 0);
+          tex.image = canvas as unknown as HTMLImageElement;
+          tex.needsUpdate = true;
+        } catch (err) {
+          console.warn('[VoidScene] Could not process texture (CORS?)', err);
         }
-        ctx.putImageData(imageData, 0, 0);
-        tex.image = canvas as unknown as HTMLImageElement;
-        tex.needsUpdate = true;
       }
-    }
-  });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const textures: Record<string, THREE.Texture> = {
     ...staticTextures,
