@@ -200,9 +200,17 @@ const CloseUpCabinet = ({ onExit }: { onExit: () => void }) => (
     }} />
     <div style={{
       position: 'absolute', left: '15%', right: '15%', top: '8%', bottom: '8%',
-      pointerEvents: 'none',
+      pointerEvents: 'auto',
     }}>
       <CabinetGraphic closeUp />
+    </div>
+    {/* Exit hint */}
+    <div style={{
+      position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
+      fontFamily: '"Space Mono", monospace', fontSize: 10, letterSpacing: 2,
+      color: SIGIL_COLORS.yellow, opacity: 0.6, pointerEvents: 'none',
+    }}>
+      CLICK OUTSIDE TO EXIT · CLICK SCREEN TO PLAY · MOUSE = PADDLE
     </div>
   </>
 );
