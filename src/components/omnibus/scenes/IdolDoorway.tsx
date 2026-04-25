@@ -47,13 +47,11 @@ interface IdolDoorwayProps {
 const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const parallax = useMouseParallax(sceneRef);
-  const { zoom, setTargetZoom, getTargetZoom } = useHoverZoom(sceneRef, {
+  const { zoom, getTargetZoom } = useHoverZoom(sceneRef, {
     lerp: 0.08,
     falloff: 0.7,
   });
 
-  // Auto-zoom-then-advance state
-  const [autoZooming, setAutoZooming] = useState(false);
   // Door slide-apart animation state
   const [doorsOpening, setDoorsOpening] = useState(false);
 
