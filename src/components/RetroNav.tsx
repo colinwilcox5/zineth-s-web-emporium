@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
-const RetroNav = () => {
+interface RetroNavProps {
+  onEnterVoid?: () => void;
+}
+
+const RetroNav = ({ onEnterVoid }: RetroNavProps) => {
   const navigate = useNavigate();
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -37,6 +41,14 @@ const RetroNav = () => {
           >
             [TRACE TO UNLOCK]
           </a>
+          {onEnterVoid && (
+            <button
+              onClick={onEnterVoid}
+              className="font-terminal text-sm text-foreground hover:text-primary hover:bg-muted px-3 py-1 border border-transparent hover:border-border transition-all"
+            >
+              [ ENTER VOID ]
+            </button>
+          )}
         </div>
         <span className="font-terminal text-xs text-muted-foreground flicker">
           ONLINE
