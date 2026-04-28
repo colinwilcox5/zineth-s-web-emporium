@@ -121,7 +121,7 @@ const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
       {/* Layer 3.5: Doors — sit inside the archway opening, behind the mid columns.
           Outer wrapper handles parallax + zoom; inner halves carry slide-apart translateX. */}
       <div style={layerWrap(DOOR_SCALE, DOOR_SHIFT, 4)} aria-hidden>
-        <div style={{ position: 'absolute', left: '36%', top: '59%', width: '20%', height: '39%', overflow: 'visible' }}>
+        <div style={{ position: 'absolute', left: '38%', top: '52%', width: '20%', height: '36%', overflow: 'visible' }}>
           {/* Left half */}
           <img
             src="/omnibus/assets/scene-03-idol-doorway-door-left.png"
@@ -189,7 +189,7 @@ const IdolDoorway = ({ onEnterMansion }: IdolDoorwayProps) => {
         aria-label="Enter the mansion"
         style={{
           position: 'absolute',
-          left: '36%', top: '59%', width: '20%', height: '39%',
+          left: '38%', top: '52%', width: '20%', height: '36%',
           background: 'transparent',
           border: 'none',
           padding: 0,
