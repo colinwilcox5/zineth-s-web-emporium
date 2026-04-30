@@ -70,7 +70,9 @@ const Omnibus = () => {
       onEnterMansion: () => goTo('foyer'),
       onBack: () => goTo('fog-forest'),
     }),
-    foyer: foyerScene,
+    foyer: foyerScene({
+      onEnterGreatRoom: () => goTo('great-room'),
+    }),
     'great-room': greatRoomScene,
     'art-gallery': artGalleryScene,
     'lore-vault': loreVaultScene,
