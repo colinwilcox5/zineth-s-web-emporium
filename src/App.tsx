@@ -8,6 +8,7 @@ import { lazy, Suspense } from "react";
 const WolfensteinRoom = lazy(() => import("./pages/WolfensteinRoom"));
 const OmnibusOfFun = lazy(() => import("./pages/OmnibusOfFun"));
 const Omnibus = lazy(() => import("./pages/Omnibus"));
+const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,21 @@ const App = () => (
           <Route path="/omnibus-of-fun" element={
             <Suspense fallback={<div className="h-screen w-full" style={{ background: '#0f1a26' }} />}>
               <OmnibusOfFun />
+            </Suspense>
+          } />
+          <Route path="/shop" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ComingSoon title="Shop" />
+            </Suspense>
+          } />
+          <Route path="/reading" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ComingSoon title="Reading Room" />
+            </Suspense>
+          } />
+          <Route path="/arcade" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ComingSoon title="Arcade" />
             </Suspense>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
