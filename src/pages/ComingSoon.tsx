@@ -1,11 +1,8 @@
-import { useNavigate } from 'react-router-dom';
-
 interface ComingSoonProps {
   title: string;
 }
 
 const ComingSoon = ({ title }: ComingSoonProps) => {
-  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -32,7 +29,10 @@ const ComingSoon = ({ title }: ComingSoonProps) => {
         {title} — coming soon
       </h1>
       <button
-        onClick={() => navigate('/omnibus')}
+        onClick={() => {
+          if (window.history.length > 1) window.history.back();
+          else window.location.href = '/omnibus';
+        }}
         style={{
           fontFamily: '"Space Mono", monospace',
           fontSize: 12,
