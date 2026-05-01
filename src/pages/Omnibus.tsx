@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CursorSigil from '@/components/omnibus/CursorSigil';
 import PixelWipeTransition from '@/components/omnibus/PixelWipeTransition';
@@ -27,13 +27,48 @@ const Omnibus = () => {
   const [pendingSceneId, setPendingSceneId] = useState<SceneId | null>(null);
   const [transitionKey, setTransitionKey] = useState(0);
   const [hovered, setHovered] = useState<HotspotConfig | null>(null);
+  // When true, the next scene change came from a popstate (browser back/fwd)
+  // and must NOT push another history entry.
+  const fromPopRef = useRef(false);
 
-  // Trigger a transition to a new scene
+  // Trigger a transition to a new scene. By default this pushes a browser
+  // history entry so the back button walks the procession in reverse.
   const goTo = useCallback((id: SceneId) => {
     if (id === currentSceneId) return;
+    if (!fromPopRef.current) {
+      try {
+        window.history.pushState({ omnibusScene: id }, '', `/omnibus#${id}`);
+      } catch { /* noop */ }
+    }
+    fromPopRef.current = false;
     setPendingSceneId(id);
     setTransitionKey((k) => k + 1);
   }, [currentSceneId]);
+
+  // Seed the initial history entry + handle browser back/forward inside Omnibus.
+  useEffect(() => {
+    // Replace the current entry so its state carries the starting scene id.
+    try {
+      window.history.replaceState(
+        { omnibusScene: 'observatory' },
+        '',
+        window.location.pathname + window.location.search,
+      );
+    } catch { /* noop */ }
+
+    const onPop = (e: PopStateEvent) => {
+      const target = (e.state && (e.state as { omnibusScene?: SceneId }).omnibusScene) as
+        | SceneId
+        | undefined;
+      if (!target) return;
+      fromPopRef.current = true;
+      setPendingSceneId(target);
+      setTransitionKey((k) => k + 1);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Mid-transition swap
   const handleMid = useCallback(() => {
