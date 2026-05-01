@@ -611,10 +611,18 @@
       <!-- ── REVEAL: Solid pink dot (hidden until success) ── -->
       <circle id="pinkDotReveal" cx="562.73" cy="950.6" r="75.89" fill="#e087bf" opacity="0"/>
 
+      <!-- ── DRAG PREVIEW LINE (Pattern B live feedback) ── -->
+      <line id="previewLine" x1="0" y1="0" x2="0" y2="0"
+        stroke="#FF48B0" stroke-width="14" stroke-linecap="round"
+        opacity="0" style="transition: opacity 0.2s ease; pointer-events: none;"/>
+
     </svg>
 
     <!-- Dots overlay (HTML elements positioned over SVG) -->
     <div class="dots-overlay" id="dotsOverlay"></div>
+
+    <!-- Completion flash -->
+    <div class="flash-overlay" id="flashOverlay"></div>
 
   </div>
 
