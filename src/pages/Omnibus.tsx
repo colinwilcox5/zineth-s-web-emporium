@@ -23,7 +23,16 @@ const Omnibus = () => {
   const debug = useMemo(() => new URLSearchParams(location.search).has('debug'), [location.search]);
   const devLabel = useMemo(() => new URLSearchParams(location.search).has('dev'), [location.search]);
 
-  const [currentSceneId, setCurrentSceneId] = useState<SceneId>('observatory');
+  const [currentSceneId, setCurrentSceneId] = useState<SceneId>(() => {
+    if (typeof window === 'undefined') return 'observatory';
+    const fromState = (window.history.state && (window.history.state as { omnibusScene?: SceneId }).omnibusScene) as
+      | SceneId
+      | undefined;
+    if (fromState) return fromState;
+    const hash = window.location.hash.replace(/^#/, '') as SceneId;
+    if (hash) return hash;
+    return 'observatory';
+  });
   const [pendingSceneId, setPendingSceneId] = useState<SceneId | null>(null);
   const [transitionKey, setTransitionKey] = useState(0);
   const [hovered, setHovered] = useState<HotspotConfig | null>(null);
@@ -47,13 +56,20 @@ const Omnibus = () => {
 
   // Seed the initial history entry + handle browser back/forward inside Omnibus.
   useEffect(() => {
-    // Replace the current entry so its state carries the starting scene id.
+    // Ensure the current entry carries an omnibusScene state for popstate matching.
     try {
-      window.history.replaceState(
-        { omnibusScene: 'observatory' },
-        '',
-        window.location.pathname + window.location.search,
-      );
+      const existing = (window.history.state && (window.history.state as { omnibusScene?: SceneId }).omnibusScene) as
+        | SceneId
+        | undefined;
+      if (!existing) {
+        const hash = window.location.hash.replace(/^#/, '') as SceneId;
+        const seed = (hash || 'observatory') as SceneId;
+        window.history.replaceState(
+          { omnibusScene: seed },
+          '',
+          window.location.pathname + window.location.search + (hash ? `#${seed}` : ''),
+        );
+      }
     } catch { /* noop */ }
 
     const onPop = (e: PopStateEvent) => {
