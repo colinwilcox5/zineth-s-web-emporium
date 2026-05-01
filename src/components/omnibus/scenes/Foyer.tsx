@@ -46,22 +46,22 @@ const Foyer = ({ onEnterGreatRoom }: FoyerProps) => {
   const { zoom } = useHoverZoom(sceneRef, { lerp: 0.08, falloff: 0.7 });
 
   // Parallax shifts (back wall locked-ish, columns shift most)
-  const BACK_SHIFT    = { x: parallax.x *  -1.5, y: parallax.y * -0.8 };
-  const ARCH_SHIFT    = { x: parallax.x *  -2,   y: parallax.y * -1 };
-  const LWALL_SHIFT   = { x: parallax.x *  -3.5, y: parallax.y * -1.8 };
-  const RWALL_SHIFT   = { x: parallax.x *  -3.5, y: parallax.y * -1.8 };
-  const CEILING_SHIFT = { x: parallax.x *  -2.5, y: parallax.y * -1.5 };
-  const FLOOR_SHIFT   = { x: parallax.x *  -5,   y: parallax.y * -2.5 };
-  const COLUMNS_SHIFT = { x: parallax.x *  -4,   y: parallax.y * -2 };
+  const BACK_SHIFT    = { x: parallax.x *  -0.8, y: parallax.y * -0.4 };
+  const ARCH_SHIFT    = { x: parallax.x *  -1.2, y: parallax.y * -0.6 };
+  const LWALL_SHIFT   = { x: parallax.x *  -2,   y: parallax.y * -1 };
+  const RWALL_SHIFT   = { x: parallax.x *  -2,   y: parallax.y * -1 };
+  const CEILING_SHIFT = { x: parallax.x *  -1.5, y: parallax.y * -0.8 };
+  const FLOOR_SHIFT   = { x: parallax.x *  -2.5, y: parallax.y * -1.2 };
+  const COLUMNS_SHIFT = { x: parallax.x *  -2,   y: parallax.y * -1 };
 
   // Scales: base bleed + zoom growth
-  const BACK_SCALE    = 1.04 + zoom * 0.10;
-  const ARCH_SCALE    = 1.06 + zoom * 0.20;
-  const LWALL_SCALE   = 1.08 + zoom * 0.50;
-  const RWALL_SCALE   = 1.08 + zoom * 0.50;
-  const CEILING_SCALE = 1.06 + zoom * 0.30;
-  const FLOOR_SCALE   = 1.14 + zoom * 1.20;
-  const COLUMNS_SCALE = 1.20 + zoom * 1.80;
+  const BACK_SCALE    = 1.02 + zoom * 0.04;
+  const ARCH_SCALE    = 1.03 + zoom * 0.08;
+  const LWALL_SCALE   = 1.04 + zoom * 0.12;
+  const RWALL_SCALE   = 1.04 + zoom * 0.12;
+  const CEILING_SCALE = 1.03 + zoom * 0.08;
+  const FLOOR_SCALE   = 1.05 + zoom * 0.20;
+  const COLUMNS_SCALE = 1.06 + zoom * 0.30;
 
   const handleClick = useCallback(() => {
     if (zoom >= 0.7) {
