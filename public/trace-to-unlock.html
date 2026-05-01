@@ -256,6 +256,61 @@
     color: var(--logo-pink);
   }
 
+  /* ── NEXT-DOT PULSE (Pattern A/B affordance) ── */
+  @keyframes pulse-next {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,72,176,0.55); }
+    50%      { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(255,72,176,0); }
+  }
+  .dot-marker.next .dot-ring {
+    border-color: var(--pink);
+    background: rgba(255,72,176,0.15);
+    animation: pulse-next 800ms ease-in-out infinite;
+  }
+  .dot-marker.next .dot-num {
+    color: var(--pink);
+  }
+  /* The drag handle: only the last-completed dot is grabbable. */
+  .dot-marker.drag-source {
+    pointer-events: all;
+    cursor: grab;
+  }
+  .dot-marker.drag-source.dragging {
+    cursor: grabbing;
+  }
+
+  /* ── WRONG-DOT SHAKE ── */
+  @keyframes shake-dot {
+    0%, 100% { transform: translate(-50%, -50%) translateX(0); }
+    20%      { transform: translate(-50%, -50%) translateX(-4px); }
+    40%      { transform: translate(-50%, -50%) translateX(4px); }
+    60%      { transform: translate(-50%, -50%) translateX(-3px); }
+    80%      { transform: translate(-50%, -50%) translateX(3px); }
+  }
+  .dot-marker.shake { animation: shake-dot 150ms ease-in-out 1; }
+  .dot-marker.shake .dot-ring {
+    border-color: var(--red) !important;
+    box-shadow: 0 0 12px rgba(255,76,101,0.55) !important;
+  }
+
+  /* ── COMPLETION FLASH OVERLAY ── */
+  .flash-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--yellow);
+    opacity: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 5;
+  }
+  .flash-overlay.fire {
+    animation: flash-yellow 300ms ease-out 1;
+  }
+  @keyframes flash-yellow {
+    0%   { opacity: 0; }
+    35%  { opacity: 0.85; }
+    100% { opacity: 0; }
+  }
+
   /* ── BUTTONS ── */
   .btn {
     font-family: 'Space Mono', monospace;
