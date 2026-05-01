@@ -256,6 +256,61 @@
     color: var(--logo-pink);
   }
 
+  /* ── NEXT-DOT PULSE (Pattern A/B affordance) ── */
+  @keyframes pulse-next {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,72,176,0.55); }
+    50%      { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(255,72,176,0); }
+  }
+  .dot-marker.next .dot-ring {
+    border-color: var(--pink);
+    background: rgba(255,72,176,0.15);
+    animation: pulse-next 800ms ease-in-out infinite;
+  }
+  .dot-marker.next .dot-num {
+    color: var(--pink);
+  }
+  /* The drag handle: only the last-completed dot is grabbable. */
+  .dot-marker.drag-source {
+    pointer-events: all;
+    cursor: grab;
+  }
+  .dot-marker.drag-source.dragging {
+    cursor: grabbing;
+  }
+
+  /* ── WRONG-DOT SHAKE ── */
+  @keyframes shake-dot {
+    0%, 100% { transform: translate(-50%, -50%) translateX(0); }
+    20%      { transform: translate(-50%, -50%) translateX(-4px); }
+    40%      { transform: translate(-50%, -50%) translateX(4px); }
+    60%      { transform: translate(-50%, -50%) translateX(-3px); }
+    80%      { transform: translate(-50%, -50%) translateX(3px); }
+  }
+  .dot-marker.shake { animation: shake-dot 150ms ease-in-out 1; }
+  .dot-marker.shake .dot-ring {
+    border-color: var(--red) !important;
+    box-shadow: 0 0 12px rgba(255,76,101,0.55) !important;
+  }
+
+  /* ── COMPLETION FLASH OVERLAY ── */
+  .flash-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--yellow);
+    opacity: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 5;
+  }
+  .flash-overlay.fire {
+    animation: flash-yellow 300ms ease-out 1;
+  }
+  @keyframes flash-yellow {
+    0%   { opacity: 0; }
+    35%  { opacity: 0.85; }
+    100% { opacity: 0; }
+  }
+
   /* ── BUTTONS ── */
   .btn {
     font-family: 'Space Mono', monospace;
@@ -556,10 +611,18 @@
       <!-- ── REVEAL: Solid pink dot (hidden until success) ── -->
       <circle id="pinkDotReveal" cx="562.73" cy="950.6" r="75.89" fill="#e087bf" opacity="0"/>
 
+      <!-- ── DRAG PREVIEW LINE (Pattern B live feedback) ── -->
+      <line id="previewLine" x1="0" y1="0" x2="0" y2="0"
+        stroke="#FF48B0" stroke-width="14" stroke-linecap="round"
+        opacity="0" style="transition: opacity 0.2s ease; pointer-events: none;"/>
+
     </svg>
 
     <!-- Dots overlay (HTML elements positioned over SVG) -->
     <div class="dots-overlay" id="dotsOverlay"></div>
+
+    <!-- Completion flash -->
+    <div class="flash-overlay" id="flashOverlay"></div>
 
   </div>
 
@@ -648,10 +711,18 @@ function renderDots() {
   const svg = document.getElementById('gameSvg');
   overlay.innerHTML = '';
 
+  const nextNum = connectedDots.length + 1;        // pulses
+  const lastNum = connectedDots.length;            // drag source (0 = none yet)
+
   dotPositions.forEach((dot, i) => {
+    const num = i + 1;
     const el = document.createElement('div');
-    el.className = 'dot-marker' + (connectedDots.includes(i + 1) ? ' connected' : '');
-    el.dataset.dotNum = i + 1;
+    let cls = 'dot-marker';
+    if (connectedDots.includes(num)) cls += ' connected';
+    if (num === nextNum && nextNum <= NUM_DOTS) cls += ' next';
+    if (num === lastNum && lastNum >= 1) cls += ' drag-source';
+    el.className = cls;
+    el.dataset.dotNum = num;
 
     // Convert SVG coords to percentage positions
     // viewBox is 0 0 1920 1080
@@ -661,12 +732,13 @@ function renderDots() {
     el.style.top = pctY + '%';
 
     el.innerHTML = `
-      <span class="dot-num">${i + 1}</span>
+      <span class="dot-num">${num}</span>
       <div class="dot-ring"></div>
     `;
 
-    el.addEventListener('click', () => handleDotClick(i + 1));
-    el.addEventListener('touchstart', (e) => { e.preventDefault(); handleDotClick(i + 1); }, { passive: false });
+    // ── Pattern A: tap on a dot ──
+    // ── Pattern B: pointerdown on the last-completed (drag-source) dot ──
+    el.addEventListener('pointerdown', (e) => onDotPointerDown(e, num));
 
     overlay.appendChild(el);
   });
@@ -676,37 +748,159 @@ function renderDots() {
 //  GAME INTERACTION
 // ═══════════════════════════════════════════
 
-function handleDotClick(dotNum) {
-  if (isUnlocked || attempts >= MAX_ATTEMPTS) return;
-  if (connectedDots.includes(dotNum)) return;
+// ═══════════════════════════════════════════
+//  POINTER INTERACTION (Pattern A + Pattern B)
+// ═══════════════════════════════════════════
 
-  // Must follow sequential order
-  const expectedNext = connectedDots.length + 1;
+let dragState = null; // { fromNum, pointerId, moveHandler, upHandler }
+const DRAG_THRESHOLD_PX = 6;        // movement before we treat it as a drag
+const DROP_TOLERANCE_PX = 30;       // release within this of next dot = success
 
-  if (dotNum === expectedNext) {
-    // Correct dot!
-    connectedDots.push(dotNum);
-    updateDisplay();
-    updateTracePath();
-    renderDots();
+function gameAvailable() {
+  return !isUnlocked && attempts < MAX_ATTEMPTS;
+}
 
-    // Auto-submit when all dots connected
-    if (connectedDots.length === NUM_DOTS) {
-      setTimeout(() => submitAttempt(), 500);
-    }
-  } else {
-    // Wrong dot — flash red
-    const el = document.querySelector(`[data-dot-num="${dotNum}"]`);
-    if (el) {
-      const ring = el.querySelector('.dot-ring');
-      ring.style.borderColor = '#FF4C65';
-      ring.style.boxShadow = '0 0 12px rgba(255,76,101,0.5)';
-      setTimeout(() => {
-        ring.style.borderColor = '';
-        ring.style.boxShadow = '';
-      }, 400);
-    }
+function shakeDot(dotNum) {
+  const el = document.querySelector(`[data-dot-num="${dotNum}"]`);
+  if (!el) return;
+  el.classList.remove('shake');
+  // force reflow so the animation can replay
+  void el.offsetWidth;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 450);
+}
+
+function advanceToNext() {
+  const dotNum = connectedDots.length + 1;
+  if (dotNum > NUM_DOTS) return;
+  connectedDots.push(dotNum);
+  updateDisplay();
+  updateTracePath();
+  renderDots();
+
+  if (connectedDots.length === NUM_DOTS) {
+    fireCompletionFlash();
+    setTimeout(() => submitAttempt(), 450);
   }
+}
+
+function onDotPointerDown(e, dotNum) {
+  if (!gameAvailable()) return;
+  e.preventDefault();
+
+  const expectedNext = connectedDots.length + 1;
+  const lastCompleted = connectedDots.length;
+
+  // Pattern B: drag from the last completed dot.
+  if (lastCompleted >= 1 && dotNum === lastCompleted) {
+    startDrag(e, dotNum);
+    return;
+  }
+
+  // Pattern A: a tap on the next dot advances immediately.
+  if (dotNum === expectedNext) {
+    advanceToNext();
+    return;
+  }
+
+  // Otherwise — wrong dot. Shake + don't reset.
+  if (!connectedDots.includes(dotNum)) {
+    shakeDot(dotNum);
+  }
+}
+
+// ── Pattern B drag handling ──
+function startDrag(e, fromNum) {
+  const svg = document.getElementById('gameSvg');
+  const sourceEl = document.querySelector(`[data-dot-num="${fromNum}"]`);
+  if (!svg || !sourceEl) return;
+
+  sourceEl.classList.add('dragging');
+  try { sourceEl.setPointerCapture(e.pointerId); } catch (_) {}
+
+  const startPt = svgPointFromEvent(svg, e);
+  const fromDot = dotPositions[fromNum - 1];
+
+  const preview = document.getElementById('previewLine');
+  preview.setAttribute('x1', fromDot.svgX);
+  preview.setAttribute('y1', fromDot.svgY);
+  preview.setAttribute('x2', fromDot.svgX);
+  preview.setAttribute('y2', fromDot.svgY);
+  preview.style.opacity = '0';
+
+  let moved = false;
+
+  const onMove = (ev) => {
+    const pt = svgPointFromEvent(svg, ev);
+    const dx = pt.x - startPt.x;
+    const dy = pt.y - startPt.y;
+    if (!moved && Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+      moved = true;
+      preview.style.opacity = '0.85';
+    }
+    if (moved) {
+      preview.setAttribute('x2', pt.x);
+      preview.setAttribute('y2', pt.y);
+    }
+  };
+
+  const onUp = (ev) => {
+    sourceEl.classList.remove('dragging');
+    try { sourceEl.releasePointerCapture(ev.pointerId); } catch (_) {}
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+    dragState = null;
+
+    // Treat short, no-move releases as a tap on the source dot — no-op
+    // (source is already connected; we just hide the preview).
+    if (!moved) {
+      preview.style.opacity = '0';
+      return;
+    }
+
+    // Did the user release within tolerance of the expected next dot?
+    const expectedNext = connectedDots.length + 1;
+    if (expectedNext <= NUM_DOTS) {
+      const target = dotPositions[expectedNext - 1];
+      const releasePt = svgPointFromEvent(svg, ev);
+      const dist = Math.hypot(releasePt.x - target.svgX, releasePt.y - target.svgY);
+      // Convert tolerance from screen px to SVG units using current scale.
+      const rect = svg.getBoundingClientRect();
+      const scale = svg.viewBox.baseVal.width / rect.width;
+      const toleranceSvg = DROP_TOLERANCE_PX * scale;
+
+      if (dist <= toleranceSvg) {
+        preview.style.opacity = '0';
+        advanceToNext();
+        return;
+      }
+    }
+
+    // Miss — fade preview, leave progress intact.
+    preview.style.opacity = '0';
+  };
+
+  dragState = { fromNum, pointerId: e.pointerId };
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
+}
+
+function svgPointFromEvent(svg, ev) {
+  const rect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const x = ((ev.clientX - rect.left) / rect.width) * vb.width;
+  const y = ((ev.clientY - rect.top) / rect.height) * vb.height;
+  return { x, y };
+}
+
+function fireCompletionFlash() {
+  const overlay = document.getElementById('flashOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('fire');
+  void overlay.offsetWidth;
+  overlay.classList.add('fire');
 }
 
 function updateTracePath() {
@@ -728,6 +922,10 @@ function resetAttempt() {
   if (isUnlocked) return;
   connectedDots = [];
   updateDisplay();
+
+  // Hide any in-flight drag preview
+  const preview = document.getElementById('previewLine');
+  if (preview) preview.style.opacity = '0';
 
   // Reset trace path
   const tracePath = document.getElementById('tracePath');
