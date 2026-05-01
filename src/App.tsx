@@ -9,6 +9,8 @@ const WolfensteinRoom = lazy(() => import("./pages/WolfensteinRoom"));
 const OmnibusOfFun = lazy(() => import("./pages/OmnibusOfFun"));
 const Omnibus = lazy(() => import("./pages/Omnibus"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
+const ShopGrid = lazy(() => import("./pages/shop/ShopGrid"));
+const ShopDetail = lazy(() => import("./pages/shop/ShopDetail"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,8 +39,13 @@ const App = () => (
             </Suspense>
           } />
           <Route path="/shop" element={
-            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
-              <ComingSoon title="Shop" />
+            <Suspense fallback={<div className="h-screen w-full" style={{ background: '#f2f0ec' }} />}>
+              <ShopGrid />
+            </Suspense>
+          } />
+          <Route path="/shop/:slug" element={
+            <Suspense fallback={<div className="h-screen w-full" style={{ background: '#f2f0ec' }} />}>
+              <ShopDetail />
             </Suspense>
           } />
           <Route path="/reading" element={
