@@ -5,15 +5,17 @@ import artPiece2Video from "@/assets/art-piece-2.mp4";
 import discordiaShape from "@/assets/discordia-shape.png";
 import discordiaShapeGlow from "@/assets/discordia-shape-glow.png";
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const pieces = [
-  { src: artPiece1, title: "VOID_GEOMETRY.exe", id: "ZN-001", status: "ARCHIVED" },
-  { src: artPiece2, video: artPiece2Video, title: "DATAMIND_v3.corrupt", id: "ZN-002", status: "ACTIVE" },
-  { src: discordiaShape, hoverSrc: discordiaShapeGlow, title: "ALL_SEEING.ritual", id: "ZN-003", status: "SEALED" },
+  { src: artPiece1, title: "VOID_GEOMETRY.exe", id: "ZN-001", status: "ARCHIVED", route: "/artifacts/void-geometry" },
+  { src: artPiece2, video: artPiece2Video, title: "DATAMIND_v3.corrupt", id: "ZN-002", status: "ACTIVE", route: "/artifacts/datamind-v3" },
+  { src: discordiaShape, hoverSrc: discordiaShapeGlow, title: "ALL_SEEING.ritual", id: "ZN-003", status: "SEALED", route: "/artifacts/all-seeing-ritual" },
 ];
 
 const ArtGallery = () => {
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const navigate = useNavigate();
 
   const handleEnter = (id: string) => {
     const v = videoRefs.current[id];
@@ -42,10 +44,14 @@ const ArtGallery = () => {
         {pieces.map((piece, i) => (
           <div
             key={piece.id}
-            className="retro-border bg-card p-3 group hover:border-primary transition-colors duration-300"
+            className="retro-border bg-card p-3 group hover:border-primary transition-colors duration-300 cursor-pointer"
             style={{ animationDelay: `${i * 0.2}s` }}
             onMouseEnter={() => piece.video && handleEnter(piece.id)}
             onMouseLeave={() => piece.video && handleLeave(piece.id)}
+            onClick={() => navigate(piece.route)}
+            role="link"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(piece.route); } }}
           >
             <div className="overflow-hidden mb-3">
               {piece.video ? (

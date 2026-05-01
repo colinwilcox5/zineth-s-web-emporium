@@ -11,6 +11,9 @@ const Omnibus = lazy(() => import("./pages/Omnibus"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const ShopGrid = lazy(() => import("./pages/shop/ShopGrid"));
 const ShopDetail = lazy(() => import("./pages/shop/ShopDetail"));
+const VoidGeometry = lazy(() => import("./pages/artifacts/VoidGeometry"));
+const Datamind = lazy(() => import("./pages/artifacts/Datamind"));
+const AllSeeingRitual = lazy(() => import("./pages/artifacts/AllSeeingRitual"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +49,21 @@ const App = () => (
           <Route path="/shop/:slug" element={
             <Suspense fallback={<div className="h-screen w-full" style={{ background: '#f2f0ec' }} />}>
               <ShopDetail />
+            </Suspense>
+          } />
+          <Route path="/artifacts/void-geometry" element={
+            <Suspense fallback={<div className="h-screen w-full" style={{ background: '#0a1119' }} />}>
+              <VoidGeometry />
+            </Suspense>
+          } />
+          <Route path="/artifacts/datamind-v3" element={
+            <Suspense fallback={<div className="h-screen w-full" style={{ background: '#0a1119' }} />}>
+              <Datamind />
+            </Suspense>
+          } />
+          <Route path="/artifacts/all-seeing-ritual" element={
+            <Suspense fallback={<div className="h-screen w-full" style={{ background: '#0a1119' }} />}>
+              <AllSeeingRitual />
             </Suspense>
           } />
           <Route path="/reading" element={
