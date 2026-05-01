@@ -51,8 +51,8 @@ const Foyer = ({ onEnterGreatRoom }: FoyerProps) => {
   const LWALL_SHIFT   = { x: parallax.x *  -3.5, y: parallax.y * -1.8 };
   const RWALL_SHIFT   = { x: parallax.x *  -3.5, y: parallax.y * -1.8 };
   const CEILING_SHIFT = { x: parallax.x *  -2.5, y: parallax.y * -1.5 };
-  const FLOOR_SHIFT   = { x: parallax.x *  -7,   y: parallax.y * -3.5 };
-  const COLUMNS_SHIFT = { x: parallax.x * -10,   y: parallax.y * -5 };
+  const FLOOR_SHIFT   = { x: parallax.x *  -5,   y: parallax.y * -2.5 };
+  const COLUMNS_SHIFT = { x: parallax.x *  -4,   y: parallax.y * -2 };
 
   // Scales: base bleed + zoom growth
   const BACK_SCALE    = 1.04 + zoom * 0.10;
