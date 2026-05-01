@@ -150,6 +150,7 @@ const GreatRoom = () => {
             ...layerImg,
             opacity: leftHover ? 1 : 0,
             transform: `scale(${leftHover ? 1.0 : 0.8})`,
+            transformOrigin: '16% 58%',
             transition: 'opacity 350ms ease-out, transform 350ms ease-out',
           }}
           draggable={false}
@@ -175,6 +176,7 @@ const GreatRoom = () => {
             ...layerImg,
             opacity: rightHover ? 1 : 0,
             transform: `scale(${rightHover ? 1.0 : 0.8})`,
+            transformOrigin: '84% 58%',
             transition: 'opacity 350ms ease-out, transform 350ms ease-out',
           }}
           draggable={false}
