@@ -923,6 +923,10 @@ function resetAttempt() {
   connectedDots = [];
   updateDisplay();
 
+  // Hide any in-flight drag preview
+  const preview = document.getElementById('previewLine');
+  if (preview) preview.style.opacity = '0';
+
   // Reset trace path
   const tracePath = document.getElementById('tracePath');
   tracePath.style.transition = 'none';
