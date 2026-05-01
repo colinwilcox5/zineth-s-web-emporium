@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CursorSigil from '@/components/omnibus/CursorSigil';
 import PixelWipeTransition from '@/components/omnibus/PixelWipeTransition';
@@ -23,17 +23,68 @@ const Omnibus = () => {
   const debug = useMemo(() => new URLSearchParams(location.search).has('debug'), [location.search]);
   const devLabel = useMemo(() => new URLSearchParams(location.search).has('dev'), [location.search]);
 
-  const [currentSceneId, setCurrentSceneId] = useState<SceneId>('observatory');
+  const [currentSceneId, setCurrentSceneId] = useState<SceneId>(() => {
+    if (typeof window === 'undefined') return 'observatory';
+    const fromState = (window.history.state && (window.history.state as { omnibusScene?: SceneId }).omnibusScene) as
+      | SceneId
+      | undefined;
+    if (fromState) return fromState;
+    const hash = window.location.hash.replace(/^#/, '') as SceneId;
+    if (hash) return hash;
+    return 'observatory';
+  });
   const [pendingSceneId, setPendingSceneId] = useState<SceneId | null>(null);
   const [transitionKey, setTransitionKey] = useState(0);
   const [hovered, setHovered] = useState<HotspotConfig | null>(null);
+  // When true, the next scene change came from a popstate (browser back/fwd)
+  // and must NOT push another history entry.
+  const fromPopRef = useRef(false);
 
-  // Trigger a transition to a new scene
+  // Trigger a transition to a new scene. By default this pushes a browser
+  // history entry so the back button walks the procession in reverse.
   const goTo = useCallback((id: SceneId) => {
     if (id === currentSceneId) return;
+    if (!fromPopRef.current) {
+      try {
+        window.history.pushState({ omnibusScene: id }, '', `/omnibus#${id}`);
+      } catch { /* noop */ }
+    }
+    fromPopRef.current = false;
     setPendingSceneId(id);
     setTransitionKey((k) => k + 1);
   }, [currentSceneId]);
+
+  // Seed the initial history entry + handle browser back/forward inside Omnibus.
+  useEffect(() => {
+    // Ensure the current entry carries an omnibusScene state for popstate matching.
+    try {
+      const existing = (window.history.state && (window.history.state as { omnibusScene?: SceneId }).omnibusScene) as
+        | SceneId
+        | undefined;
+      if (!existing) {
+        const hash = window.location.hash.replace(/^#/, '') as SceneId;
+        const seed = (hash || 'observatory') as SceneId;
+        window.history.replaceState(
+          { omnibusScene: seed },
+          '',
+          window.location.pathname + window.location.search + (hash ? `#${seed}` : ''),
+        );
+      }
+    } catch { /* noop */ }
+
+    const onPop = (e: PopStateEvent) => {
+      const target = (e.state && (e.state as { omnibusScene?: SceneId }).omnibusScene) as
+        | SceneId
+        | undefined;
+      if (!target) return;
+      fromPopRef.current = true;
+      setPendingSceneId(target);
+      setTransitionKey((k) => k + 1);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Mid-transition swap
   const handleMid = useCallback(() => {
