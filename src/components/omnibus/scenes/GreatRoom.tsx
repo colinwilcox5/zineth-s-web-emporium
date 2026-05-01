@@ -70,8 +70,6 @@ const GreatRoom = () => {
 
   // Subtle hover-zoom on the doors (matches Foyer/Idol Doorway feel)
   const CENTRAL_SCALE = 1.0 + (centerHover ? zoom * 0.06 : 0);
-  const LDOOR_SCALE   = 1.0 + (leftHover   ? zoom * 0.06 : 0);
-  const RDOOR_SCALE   = 1.0 + (rightHover  ? zoom * 0.06 : 0);
 
   // ---------- Click handlers ----------
   const handleCenterClick = useCallback(() => {
@@ -137,7 +135,7 @@ const GreatRoom = () => {
       </div>
 
       {/* z=5 left door */}
-      <div style={layerWrap(LDOOR_SHIFT, 5, LDOOR_SCALE)} aria-hidden>
+      <div style={{ ...layerWrap(LDOOR_SHIFT, 5), transformOrigin: 'center center' }} aria-hidden>
         <img src={`${ASSETS}/scene-05-great-room-left-door.png`} alt="" style={layerImg} draggable={false} />
       </div>
 
@@ -163,7 +161,7 @@ const GreatRoom = () => {
       </div>
 
       {/* z=8 right door */}
-      <div style={layerWrap(RDOOR_SHIFT, 8, RDOOR_SCALE)} aria-hidden>
+      <div style={{ ...layerWrap(RDOOR_SHIFT, 8), transformOrigin: 'center center' }} aria-hidden>
         <img src={`${ASSETS}/scene-05-great-room-right-door.png`} alt="" style={layerImg} draggable={false} />
       </div>
 
