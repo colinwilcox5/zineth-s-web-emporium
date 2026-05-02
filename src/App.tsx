@@ -14,6 +14,8 @@ const ShopDetail = lazy(() => import("./pages/shop/ShopDetail"));
 const VoidGeometry = lazy(() => import("./pages/artifacts/VoidGeometry"));
 const Datamind = lazy(() => import("./pages/artifacts/Datamind"));
 const AllSeeingRitual = lazy(() => import("./pages/artifacts/AllSeeingRitual"));
+const ReadingRoom = lazy(() => import("./pages/reading/ReadingRoom"));
+const ReadingDetail = lazy(() => import("./pages/reading/ReadingDetail"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,7 +70,12 @@ const App = () => (
           } />
           <Route path="/reading" element={
             <Suspense fallback={<div className="h-screen w-full bg-black" />}>
-              <ComingSoon title="Reading Room" />
+              <ReadingRoom />
+            </Suspense>
+          } />
+          <Route path="/reading/:slug" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ReadingDetail />
             </Suspense>
           } />
           <Route path="/arcade" element={
