@@ -33,7 +33,7 @@ export const folders: FolderItem[] = [
     body: 'This file has been sealed by order of [REDACTED]. Access requires clearance level [REDACTED] or above. Unauthorized attempts to view this file will be logged and reported to [REDACTED]. The contents pertain to a series of coordinated events observed across seven unrelated locations on [REDACTED]. Witnesses at each site reported identical phenomena despite having no communication with one another. The ritual designation was applied after analysis revealed a temporal pattern consistent with [REDACTED]. Further details are available only through secure channels.',
   },
   {
-    id: 'ZN-004',
+    id: 'ZN-005',
     title: '[Brand-book-01.pdf]',
     status: 'ARCHIVED',
     tag: 'ARCHIVED',
@@ -44,7 +44,7 @@ export const folders: FolderItem[] = [
     bookOrientation: 'portrait',
   },
   {
-    id: 'ZN-005',
+    id: 'ZN-006',
     title: '[Omnibus-Rebrand-Guidelines.pdf]',
     status: 'ARCHIVED',
     tag: 'ARCHIVED',
