@@ -12,13 +12,6 @@ export interface FolderItem {
 
 export const folders: FolderItem[] = [
   {
-    id: 'ZN-001',
-    title: '[VOID_GEOMETRY.exe]',
-    status: 'ARCHIVED',
-    tag: 'RESTRICTED',
-    body: 'The first geometry was discovered in the static between channels. It pulsed at a frequency that matched no known broadcast standard. Researchers at [REDACTED] initially dismissed it as interference, but pattern analysis revealed a recursive structure — a shape that contained itself infinitely. Those who stared at the raw data for too long reported seeing the geometry when they closed their eyes. Three technicians requested transfers. One stopped speaking entirely. The geometry was archived and access restricted to Level 4 clearance and above.',
-  },
-  {
     id: 'ZN-002',
     title: '[DATAMIND_v3.corrupt]',
     status: 'ACTIVE',
@@ -52,7 +45,7 @@ export const folders: FolderItem[] = [
   },
   {
     id: 'ZN-005',
-    title: '[Omnibus-Zineth-Rebrand-Guidelines.pdf]',
+    title: '[Omnibus-Rebrand-Guidelines.pdf]',
     status: 'ARCHIVED',
     tag: 'ARCHIVED',
     type: 'flipbook',
