@@ -201,7 +201,7 @@ const FolderScene = ({ folder, onClose, onZoom, startRect }: FolderSceneProps) =
               {folder.title}
             </h3>
             <p
-              className="font-mono-retro mb-6"
+              className="font-mono-retro mb-6 text-primary-foreground"
               style={{ fontSize: '10px', color: '#777', lineHeight: 1.9 }}
             >
               {folder.body.substring(0, 200)}...
