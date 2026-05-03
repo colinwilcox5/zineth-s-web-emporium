@@ -16,6 +16,11 @@ const Datamind = lazy(() => import("./pages/artifacts/Datamind"));
 const AllSeeingRitual = lazy(() => import("./pages/artifacts/AllSeeingRitual"));
 const ReadingRoom = lazy(() => import("./pages/reading/ReadingRoom"));
 const ReadingDetail = lazy(() => import("./pages/reading/ReadingDetail"));
+const ArcadeHome = lazy(() => import("./pages/arcade/ArcadeHome"));
+const ArcadePong = lazy(() => import("./pages/arcade/ArcadePong"));
+const ArcadeTracePentagon = lazy(() => import("./pages/arcade/ArcadeTracePentagon"));
+const ArcadeTracePentagram = lazy(() => import("./pages/arcade/ArcadeTracePentagram"));
+const ArcadeTraceSpiral = lazy(() => import("./pages/arcade/ArcadeTraceSpiral"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -80,7 +85,27 @@ const App = () => (
           } />
           <Route path="/arcade" element={
             <Suspense fallback={<div className="h-screen w-full bg-black" />}>
-              <ComingSoon title="Arcade" />
+              <ArcadeHome />
+            </Suspense>
+          } />
+          <Route path="/arcade/pong" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ArcadePong />
+            </Suspense>
+          } />
+          <Route path="/arcade/trace-pentagon" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ArcadeTracePentagon />
+            </Suspense>
+          } />
+          <Route path="/arcade/trace-pentagram" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ArcadeTracePentagram />
+            </Suspense>
+          } />
+          <Route path="/arcade/trace-spiral" element={
+            <Suspense fallback={<div className="h-screen w-full bg-black" />}>
+              <ArcadeTraceSpiral />
             </Suspense>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
