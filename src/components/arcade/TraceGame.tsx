@@ -157,6 +157,20 @@ export const TraceGame = ({ dots, sequence, onComplete, completionRevealSVG }: T
           const isStart = i === sequence[0] && currentStep === 0;
           return (
             <g key={`dot-${i}`}>
+             {/* Halo ring for active dot — drawn BEFORE dot so it's underneath */}
+             {isActive && (
+               <circle
+                 cx={dot.x} cy={dot.y} r={DOT_RADIUS + 6}
+                 fill="none"
+                 stroke={NEON_PINK}
+                 strokeWidth={2}
+                 style={{
+                   transformOrigin: `${dot.x}px ${dot.y}px`,
+                   animation: 'haloPing 1.2s ease-out infinite',
+                   pointerEvents: 'none',
+                 }}
+               />
+             )}
               <circle
                 cx={dot.x} cy={dot.y} r={DOT_RADIUS}
                 fill={NEON_PINK}
@@ -165,19 +179,6 @@ export const TraceGame = ({ dots, sequence, onComplete, completionRevealSVG }: T
                 }}
                 data-interactive="true"
               />
-             {/* Halo ring for active dot */}
-             {isActive && (
-               <circle
-                 cx={dot.x} cy={dot.y} r={DOT_RADIUS + 6}
-                 fill="none"
-                 stroke={NEON_PINK}
-                 strokeWidth={2}
-                 style={{
-                   animation: 'haloPing 1.2s ease-out infinite',
-                   pointerEvents: 'none',
-                 }}
-               />
-             )}
               {/* Dot number label */}
               <text
                 x={dot.x} y={dot.y - 14}
@@ -236,8 +237,8 @@ export const TraceGame = ({ dots, sequence, onComplete, completionRevealSVG }: T
 
       <style>{`
         @keyframes haloPing {
-          0% { transform-origin: center; opacity: 0.6; }
-          100% { transform-origin: center; opacity: 0; }
+          0% { transform: scale(1); opacity: 0.6; }
+          100% { transform: scale(1.6); opacity: 0; }
         }
         @keyframes fadeIn {
           from { opacity: 0; }
