@@ -138,7 +138,7 @@ export const TraceGame = ({ dots, sequence, onComplete, completionRevealSVG }: T
         inset: 0,
         top: 64,
         background: '#0A0A0A',
-        cursor: 'none',
+        cursor: 'crosshair',
         touchAction: 'none',
         userSelect: 'none',
       }}
