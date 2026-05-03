@@ -26,13 +26,6 @@ export const folders: FolderItem[] = [
     body: 'The first signal was intercepted on a frequency that shouldn\'t exist — 0.0023 Hz, far below the range of any conventional receiver. It was detected accidentally when a [REDACTED] antenna array experienced a calibration error that temporarily expanded its listening range. The transmission lasted exactly 47 seconds and contained what appeared to be a compressed data stream. Decompression yielded 2.3 terabytes of information, primarily consisting of coordinates, timestamps, and what linguists have tentatively identified as a grammatical structure with no known earthly analog.',
   },
   {
-    id: 'ZN-004',
-    title: '[ALL_SEEING.ritual]',
-    status: 'SEALED',
-    tag: 'SEALED — CLEARANCE REQUIRED',
-    body: 'This file has been sealed by order of [REDACTED]. Access requires clearance level [REDACTED] or above. Unauthorized attempts to view this file will be logged and reported to [REDACTED]. The contents pertain to a series of coordinated events observed across seven unrelated locations on [REDACTED]. Witnesses at each site reported identical phenomena despite having no communication with one another. The ritual designation was applied after analysis revealed a temporal pattern consistent with [REDACTED]. Further details are available only through secure channels.',
-  },
-  {
     id: 'ZN-005',
     title: '[Brand-book-01.pdf]',
     status: 'ARCHIVED',
