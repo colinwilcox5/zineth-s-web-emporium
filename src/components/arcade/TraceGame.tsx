@@ -162,10 +162,22 @@ export const TraceGame = ({ dots, sequence, onComplete, completionRevealSVG }: T
                 fill={NEON_PINK}
                 style={{
                   filter: isActive || isStart ? `drop-shadow(0 0 10px ${NEON_PINK})` : undefined,
-                  animation: isActive ? 'dotPulse 0.8s ease-in-out infinite' : undefined,
                 }}
                 data-interactive="true"
               />
+             {/* Halo ring for active dot */}
+             {isActive && (
+               <circle
+                 cx={dot.x} cy={dot.y} r={DOT_RADIUS + 6}
+                 fill="none"
+                 stroke={NEON_PINK}
+                 strokeWidth={2}
+                 style={{
+                   animation: 'haloPing 1.2s ease-out infinite',
+                   pointerEvents: 'none',
+                 }}
+               />
+             )}
               {/* Dot number label */}
               <text
                 x={dot.x} y={dot.y - 14}
@@ -223,9 +235,9 @@ export const TraceGame = ({ dots, sequence, onComplete, completionRevealSVG }: T
       )}
 
       <style>{`
-        @keyframes dotPulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.15); }
+        @keyframes haloPing {
+          0% { transform-origin: center; opacity: 0.6; }
+          100% { transform-origin: center; opacity: 0; }
         }
         @keyframes fadeIn {
           from { opacity: 0; }
