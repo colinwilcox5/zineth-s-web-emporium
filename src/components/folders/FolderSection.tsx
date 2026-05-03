@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import FolderCard from "./FolderCard";
 import FolderScene from "./FolderScene";
 import FolderContentPage from "./FolderContentPage";
+import FlipbookViewer from "./FlipbookViewer";
 import { folders } from "./folderData";
 
 export type Rect = { left: number; top: number; width: number; height: number };
@@ -100,7 +101,16 @@ const FolderSection = ({ onOpenChange }: FolderSectionProps) => {
       )}
 
       {showContent && selectedFolder && (
-        <FolderContentPage folder={selectedFolder} onBack={handleBack} />
+        selectedFolder.type === 'flipbook' && selectedFolder.manifestUrl ? (
+          <FlipbookViewer
+            manifestUrl={selectedFolder.manifestUrl}
+            bookTitle={selectedFolder.bookTitle ?? selectedFolder.title}
+            orientation={selectedFolder.bookOrientation ?? 'portrait'}
+            onBack={handleBack}
+          />
+        ) : (
+          <FolderContentPage folder={selectedFolder} onBack={handleBack} />
+        )
       )}
     </>
   );
