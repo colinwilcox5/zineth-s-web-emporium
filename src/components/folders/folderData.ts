@@ -12,6 +12,17 @@ export interface FolderItem {
 
 export const folders: FolderItem[] = [
   {
+    id: 'ZN-006',
+    title: '[Omnibus-Rebrand-Guidelines.pdf]',
+    status: 'ARCHIVED',
+    tag: 'ARCHIVED',
+    type: 'flipbook',
+    body: 'The Zineth Brand strategy is based on 5000+ years of shared ideas in design philosophy meeting the journey of my personal influences. These come together to form my Constitution of Design. This document details the  rebrand of Omnibus Brand Systems to Zineth as my process evolved through the year',
+    manifestUrl: '/artifacts/omnibus-rebrand/manifest.json',
+    bookTitle: 'OMNIBUS → ZINETH · REBRAND GUIDELINES',
+    bookOrientation: 'portrait',
+  },
+  {
     id: 'ZN-002',
     title: '[DATAMIND_v3.corrupt]',
     status: 'ACTIVE',
@@ -34,17 +45,6 @@ export const folders: FolderItem[] = [
     body: 'This document serves as the foundational brand book for Zineth. It establishes the visual language, core values, and creative philosophy that define our studio. From color theory to typographic systems, every element has been meticulously crafted to represent the intersection of historical design and future-facing innovation.',
     manifestUrl: '/artifacts/brand-book-01/manifest.json',
     bookTitle: 'BRAND BOOK 01',
-    bookOrientation: 'portrait',
-  },
-  {
-    id: 'ZN-006',
-    title: '[Omnibus-Rebrand-Guidelines.pdf]',
-    status: 'ARCHIVED',
-    tag: 'ARCHIVED',
-    type: 'flipbook',
-    body: 'The Zineth Brand strategy is based on 5000+ years of shared ideas in design philosophy meeting the journey of my personal influences. These come together to form my Constitution of Design. This document details the  rebrand of Omnibus Brand Systems to Zineth as my process evolved through the year',
-    manifestUrl: '/artifacts/omnibus-rebrand/manifest.json',
-    bookTitle: 'OMNIBUS → ZINETH · REBRAND GUIDELINES',
     bookOrientation: 'portrait',
   },
 ];
