@@ -75,14 +75,16 @@ const Pedestal = ({ char, onSelect }: { char: typeof readingCharacters[0]; onSel
           zIndex: 1,
           transform: hovered ? 'translateY(-12px)' : 'translateY(0)',
           transition: 'transform 250ms ease-out',
+          display: 'flex',
+          alignItems: 'flex-end',
         }}
       >
         <img
           src={hovered ? `/reading/${char.slug}.gif` : `/reading/${char.slug}.png`}
           alt={char.name}
           style={{
-            maxHeight: '60vh',
-            width: 'auto',
+            width: '22vw',
+            height: 'auto',
             objectFit: 'contain',
             imageRendering: 'pixelated',
             display: 'block',
