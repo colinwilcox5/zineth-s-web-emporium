@@ -4,6 +4,10 @@ export interface FolderItem {
   status: string;
   tag: string;
   body: string;
+  type?: 'text' | 'flipbook';
+  manifestUrl?: string;
+  bookTitle?: string;
+  bookOrientation?: 'portrait' | 'landscape';
 }
 
 export const folders: FolderItem[] = [
@@ -34,5 +38,27 @@ export const folders: FolderItem[] = [
     status: 'SEALED',
     tag: 'SEALED — CLEARANCE REQUIRED',
     body: 'This file has been sealed by order of [REDACTED]. Access requires clearance level [REDACTED] or above. Unauthorized attempts to view this file will be logged and reported to [REDACTED]. The contents pertain to a series of coordinated events observed across seven unrelated locations on [REDACTED]. Witnesses at each site reported identical phenomena despite having no communication with one another. The ritual designation was applied after analysis revealed a temporal pattern consistent with [REDACTED]. Further details are available only through secure channels.',
+  },
+  {
+    id: 'ZN-004',
+    title: '[Brand-book-01.pdf]',
+    status: 'ARCHIVED',
+    tag: 'ARCHIVED',
+    type: 'flipbook',
+    body: 'PLACEHOLDER — Colin will replace this with his brand-voiced teaser copy. Three to four sentences. Should feel like an in-world archive document description, slightly cryptic, deadpan.',
+    manifestUrl: '/artifacts/brand-book-01/manifest.json',
+    bookTitle: 'BRAND BOOK 01',
+    bookOrientation: 'portrait',
+  },
+  {
+    id: 'ZN-005',
+    title: '[Omnibus-Zineth-Rebrand-Guidelines.pdf]',
+    status: 'ARCHIVED',
+    tag: 'ARCHIVED',
+    type: 'flipbook',
+    body: 'PLACEHOLDER — Colin will replace with brand-voiced teaser describing the fictional rebrand from Omnibus Brand Systems to Zineth. Should reference the leaked-internal-document feel and parody-of-corporate-rebrand-decks aesthetic.',
+    manifestUrl: '/artifacts/omnibus-rebrand/manifest.json',
+    bookTitle: 'OMNIBUS → ZINETH · REBRAND GUIDELINES',
+    bookOrientation: 'portrait',
   },
 ];
