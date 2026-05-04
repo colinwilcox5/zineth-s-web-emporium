@@ -64,11 +64,10 @@ const ArtGallery = () => {
                 <video
                   ref={(el) => { videoRefs.current[piece.id] = el; }}
                   src={piece.video}
-                  poster={piece.src}
                   muted
                   loop
                   playsInline
-                  preload="metadata"
+                  preload="none"
                   aria-label={piece.title}
                   className="absolute inset-0 z-10 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:rgb-cycle"
                 />
