@@ -63,8 +63,14 @@ const ArtGallery = () => {
                   loop
                   playsInline
                   preload="metadata"
+                  style={{ opacity: 0 }}
                   aria-label={piece.title}
                   className="w-full aspect-square object-cover group-hover:rgb-cycle transition-all duration-500"
+                />
+                <img
+                  src={piece.src}
+                  alt={piece.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
                 />
               ) : piece.hoverSrc ? (
                 <div className="relative w-full aspect-square">
