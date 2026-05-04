@@ -2,9 +2,10 @@ import artPiece1 from "@/assets/art-piece-1.png";
 import artPiece2 from "@/assets/art-piece-2.png";
 import artPiece3 from "@/assets/art-piece-3.png";
 import artPiece2Video from "@/assets/art-piece-2.mp4";
+import henryEnkaVideo from "@/assets/henry-enka.mp4";
 import discordiaShape from "@/assets/discordia-shape.png";
 import discordiaShapeGlow from "@/assets/discordia-shape-glow.png";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const pieces = [
@@ -15,6 +16,8 @@ const pieces = [
 
 const ArtGallery = () => {
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const archiveVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [archivePlaying, setArchivePlaying] = useState(false);
   const navigate = useNavigate();
 
   const handleEnter = (id: string) => {
@@ -38,8 +41,37 @@ const ArtGallery = () => {
         </h2>
       </div>
       <p className="font-terminal text-lg text-muted-foreground mb-8">
-        [ RECOVERED FROM THE ARCHIVE // HANDLE WITH CAUTION ]
+        <button
+          onClick={() => {
+            setArchivePlaying((prev) => {
+              const next = !prev;
+              const v = archiveVideoRef.current;
+              if (v) {
+                if (next) { v.currentTime = 0; v.play().catch(() => {}); }
+                else { v.pause(); }
+              }
+              return next;
+            });
+          }}
+          className="hover:text-accent transition-colors duration-200 cursor-pointer bg-transparent border-none font-terminal text-lg text-muted-foreground"
+        >
+          [ RECOVERED FROM THE ARCHIVE // HANDLE WITH CAUTION ]
+        </button>
       </p>
+
+      {archivePlaying && (
+        <div className="mb-8 retro-border bg-card p-2 max-w-2xl mx-auto">
+          <video
+            ref={archiveVideoRef}
+            src={henryEnkaVideo}
+            controls
+            autoPlay
+            className="w-full"
+            onEnded={() => setArchivePlaying(false)}
+          />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {pieces.map((piece, i) => (
           <div
