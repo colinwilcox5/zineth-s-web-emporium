@@ -56,6 +56,11 @@ const ArtGallery = () => {
             <div className="overflow-hidden mb-3">
               {piece.video ? (
                 <div className="relative w-full aspect-square">
+                <img
+                  src={piece.src}
+                  alt={piece.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+                />
                 <video
                   ref={(el) => { videoRefs.current[piece.id] = el; }}
                   src={piece.video}
@@ -65,12 +70,7 @@ const ArtGallery = () => {
                   playsInline
                   preload="metadata"
                   aria-label={piece.title}
-                  className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:rgb-cycle"
-                />
-                <img
-                  src={piece.src}
-                  alt={piece.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+                  className="absolute inset-0 z-10 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:rgb-cycle"
                 />
                 </div>
               ) : piece.hoverSrc ? (
