@@ -55,6 +55,7 @@ const ArtGallery = () => {
           >
             <div className="overflow-hidden mb-3">
               {piece.video ? (
+                <div className="relative w-full aspect-square">
                 <video
                   ref={(el) => { videoRefs.current[piece.id] = el; }}
                   src={piece.video}
@@ -63,15 +64,15 @@ const ArtGallery = () => {
                   loop
                   playsInline
                   preload="metadata"
-                  style={{ opacity: 0 }}
                   aria-label={piece.title}
-                  className="w-full aspect-square object-cover group-hover:rgb-cycle transition-all duration-500"
+                  className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:rgb-cycle"
                 />
                 <img
                   src={piece.src}
                   alt={piece.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
                 />
+                </div>
               ) : piece.hoverSrc ? (
                 <div className="relative w-full aspect-square">
                   <img
