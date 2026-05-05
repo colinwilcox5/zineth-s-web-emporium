@@ -48,21 +48,31 @@ const FlipbookViewer = ({ manifestUrl, bookTitle, orientation, onBack }: Flipboo
   useEffect(() => {
     if (!manifest || !containerRef.current) return;
 
+    // Calculate available space: viewport minus header (60px) and footer (50px) and padding
+    const availableHeight = window.innerHeight - 130;
+    const availableWidth = window.innerWidth - 40;
+    
+    // Page aspect ratio from source images (2000x2667 ≈ 0.75)
+    const pageAspect = orientation === 'portrait' ? 0.75 : 1.333;
+    
+    // In portrait/cover mode, single page is shown — fit to available space
+    let pageHeight = Math.min(availableHeight, 1200);
+    let pageWidth = Math.round(pageHeight * pageAspect);
+    
+    if (pageWidth > availableWidth * 0.9) {
+      pageWidth = Math.round(availableWidth * 0.9);
+      pageHeight = Math.round(pageWidth / pageAspect);
+    }
+
     const pf = new PageFlip(containerRef.current, {
-      width: orientation === 'portrait' ? 480 : 640,
-      height: orientation === 'portrait' ? 640 : 480,
-      size: 'stretch',
-      minWidth: 200,
-      maxWidth: 1200,
-      minHeight: 300,
-      maxHeight: 1600,
+      width: pageWidth,
+      height: pageHeight,
+      size: 'fixed',
       drawShadow: true,
       maxShadowOpacity: 0.5,
       showCover: true,
       mobileScrollSupport: true,
       usePortrait: orientation === 'portrait',
-      flippingTime: 800,
-      autoSize: true,
     });
 
     pf.loadFromImages(manifest.pages);
