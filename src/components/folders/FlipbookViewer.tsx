@@ -49,8 +49,8 @@ const FlipbookViewer = ({ manifestUrl, bookTitle, orientation, onBack }: Flipboo
     if (!manifest || !containerRef.current) return;
 
     // Calculate available space: viewport minus header (60px) and footer (50px) and padding
-    const availableHeight = window.innerHeight - 130;
-    const availableWidth = window.innerWidth - 40;
+    const availableHeight = window.innerHeight - 160;
+    const availableWidth = window.innerWidth - 80;
     
     // Page aspect ratio from source images (2000x2667 ≈ 0.75)
     const pageAspect = orientation === 'portrait' ? 0.75 : 1.333;
