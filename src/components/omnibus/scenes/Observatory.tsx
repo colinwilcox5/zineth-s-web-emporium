@@ -1,13 +1,14 @@
 // SCENE 01 — THE OBSERVATORY
 // Cosmic black menu screen with rotating REAL chrome sigil, picture-frame
 // viewport, and metal control panel (QUIT / BYPASS / ENTER).
-import { useState, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import type { SceneConfig, SceneId } from '../sceneTypes';
 import { SIGIL_COLORS } from '../sceneTypes';
 import { ChromeSigil, DitherOverlay } from '../sceneShared';
 import { RealSigil } from '../RealSigil';
 import { TextureOverlay } from '../TextureOverlay';
 import { ScanlineOverlay } from '../ScanlineOverlay';
+import bigWindowVideo from '@/assets/big-window.mp4';
 
 interface ObservatoryProps {
   hovered: SceneId | 'home' | null;
@@ -17,6 +18,21 @@ interface ObservatoryProps {
 }
 
 const Observatory = ({ hovered, onEnter, onQuit, onBypass }: ObservatoryProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+
+  const toggleVideo = useCallback(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (vid.paused) {
+      vid.play();
+      setVideoPlaying(true);
+    } else {
+      vid.pause();
+      setVideoPlaying(false);
+    }
+  }, []);
+
   // Stable starfield positions
   const stars = useMemo(() =>
     Array.from({ length: 90 }, () => ({
@@ -96,7 +112,7 @@ const Observatory = ({ hovered, onEnter, onQuit, onBypass }: ObservatoryProps) =
             background: SIGIL_COLORS.black,
             overflow: 'hidden',
           }}>
-            <ViewportContent hovered={hovered} />
+            <ViewportContent hovered={hovered} videoPlaying={videoPlaying} videoRef={videoRef} onVideoEnd={() => setVideoPlaying(false)} />
           </div>
         </div>
       </div>
@@ -114,7 +130,7 @@ const Observatory = ({ hovered, onEnter, onQuit, onBypass }: ObservatoryProps) =
         boxShadow: 'inset 0 4px 16px rgba(0,0,0,0.6)',
       }}>
         <LavaButton label="QUIT" size={64} color="dim" onClick={onQuit} />
-        <LavaButton label="BYPASS" size={84} color="medium" onClick={onBypass} />
+        <LavaButton label={videoPlaying ? '▌▌' : 'BYPASS'} size={84} color="medium" onClick={toggleVideo} />
         <LavaButton label="ENTER" size={110} color="hot" onClick={onEnter} pulse />
       </div>
 
@@ -125,17 +141,40 @@ const Observatory = ({ hovered, onEnter, onQuit, onBypass }: ObservatoryProps) =
   );
 };
 
-const ViewportContent = ({ hovered }: { hovered: SceneId | 'home' | null }) => {
+const ViewportContent = ({ hovered, videoPlaying, videoRef, onVideoEnd }: {
+  hovered: SceneId | 'home' | null;
+  videoPlaying: boolean;
+  videoRef: React.RefObject<HTMLVideoElement>;
+  onVideoEnd: () => void;
+}) => {
+  // When video is playing (or has been activated), show the video
+  if (videoPlaying || (videoRef.current && !videoRef.current.paused)) {
+    return (
+      <video
+        ref={videoRef}
+        src={bigWindowVideo}
+        onEnded={onVideoEnd}
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        playsInline
+        muted
+      />
+    );
+  }
+
+  // Video element hidden but mounted so ref is ready
   if (!hovered) {
     return (
-      <div style={{
-        width: '100%', height: '100%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: '"Space Mono", monospace',
-        fontSize: 11, color: SIGIL_COLORS.skyBlue, opacity: 0.4, letterSpacing: 3,
-      }}>
-        — STANDBY —
-      </div>
+      <>
+        <video ref={videoRef} src={bigWindowVideo} style={{ display: 'none' }} playsInline muted onEnded={onVideoEnd} />
+        <div style={{
+          width: '100%', height: '100%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: '"Space Mono", monospace',
+          fontSize: 11, color: SIGIL_COLORS.skyBlue, opacity: 0.4, letterSpacing: 3,
+        }}>
+          — STANDBY —
+        </div>
+      </>
     );
   }
   if (hovered === 'home') {
@@ -166,9 +205,12 @@ const ViewportContent = ({ hovered }: { hovered: SceneId | 'home' | null }) => {
     );
   }
   return (
-    <div style={{ width: '100%', height: '100%', background: SIGIL_COLORS.federalBlue, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '"Space Mono", monospace', fontSize: 10, color: SIGIL_COLORS.cream, letterSpacing: 2 }}>
-      — UNKNOWN SIGNAL —
-    </div>
+    <>
+      <video ref={videoRef} src={bigWindowVideo} style={{ display: 'none' }} playsInline muted onEnded={onVideoEnd} />
+      <div style={{ width: '100%', height: '100%', background: SIGIL_COLORS.federalBlue, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '"Space Mono", monospace', fontSize: 10, color: SIGIL_COLORS.cream, letterSpacing: 2 }}>
+        — UNKNOWN SIGNAL —
+      </div>
+    </>
   );
 };
 
