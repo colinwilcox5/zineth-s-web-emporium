@@ -156,7 +156,6 @@ const ViewportContent = ({ hovered, videoPlaying, videoRef, onVideoEnd }: {
         onEnded={onVideoEnd}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         playsInline
-        muted
       />
     );
   }
@@ -165,7 +164,7 @@ const ViewportContent = ({ hovered, videoPlaying, videoRef, onVideoEnd }: {
   if (!hovered) {
     return (
       <>
-        <video ref={videoRef} src={bigWindowVideo} style={{ display: 'none' }} playsInline muted onEnded={onVideoEnd} />
+        <video ref={videoRef} src={bigWindowVideo} style={{ display: 'none' }} playsInline onEnded={onVideoEnd} />
         <div style={{
           width: '100%', height: '100%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -206,7 +205,7 @@ const ViewportContent = ({ hovered, videoPlaying, videoRef, onVideoEnd }: {
   }
   return (
     <>
-      <video ref={videoRef} src={bigWindowVideo} style={{ display: 'none' }} playsInline muted onEnded={onVideoEnd} />
+      <video ref={videoRef} src={bigWindowVideo} style={{ display: 'none' }} playsInline onEnded={onVideoEnd} />
       <div style={{ width: '100%', height: '100%', background: SIGIL_COLORS.federalBlue, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '"Space Mono", monospace', fontSize: 10, color: SIGIL_COLORS.cream, letterSpacing: 2 }}>
         — UNKNOWN SIGNAL —
       </div>
