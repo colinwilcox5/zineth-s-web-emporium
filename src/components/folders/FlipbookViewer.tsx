@@ -205,7 +205,7 @@ const FlipbookViewer = ({ manifestUrl, bookTitle, orientation, onBack }: Flipboo
       {/* Main stage */}
       <div
         className="flex-1 flex items-center justify-center relative"
-        style={{ overflow: 'visible', minHeight: 0 }}
+        style={{ overflow: 'hidden', minHeight: 0 }}
       >
         {/* Loading state */}
         {!ready && !error && (
@@ -236,9 +236,6 @@ const FlipbookViewer = ({ manifestUrl, bookTitle, orientation, onBack }: Flipboo
             transition: 'opacity 0.5s ease',
             boxShadow: '0 8px 32px rgba(61, 85, 136, 0.2)',
             imageRendering: 'auto',
-            width: '100%',
-            maxWidth: orientation === 'portrait' ? '600px' : '900px',
-            height: '100%',
           }}
         />
       </div>
