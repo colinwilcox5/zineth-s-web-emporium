@@ -52,15 +52,17 @@ const FlipbookViewer = ({ manifestUrl, bookTitle, orientation, onBack }: Flipboo
       width: orientation === 'portrait' ? 480 : 640,
       height: orientation === 'portrait' ? 640 : 480,
       size: 'stretch',
-      minWidth: 280,
-      maxWidth: 700,
-      minHeight: 360,
-      maxHeight: 900,
+      minWidth: 200,
+      maxWidth: 1200,
+      minHeight: 300,
+      maxHeight: 1600,
       drawShadow: true,
       maxShadowOpacity: 0.5,
       showCover: true,
-      mobileScrollSupport: false,
+      mobileScrollSupport: true,
       usePortrait: orientation === 'portrait',
+      flippingTime: 800,
+      autoSize: true,
     });
 
     pf.loadFromImages(manifest.pages);
