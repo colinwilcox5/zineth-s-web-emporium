@@ -156,7 +156,6 @@ const ViewportContent = ({ hovered, videoPlaying, videoRef, onVideoEnd }: {
         onEnded={onVideoEnd}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         playsInline
-        muted
       />
     );
   }
