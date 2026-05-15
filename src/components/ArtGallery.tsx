@@ -1,5 +1,5 @@
 import artPiece1 from "@/assets/art-piece-1.png";
-import artPiece2 from "@/assets/art-piece-2.png";
+import datamindFirstFrame from "@/assets/datamind-first-frame.jpg";
 import artPiece3 from "@/assets/art-piece-3.png";
 import artPiece2Video from "@/assets/art-piece-2.mp4";
 import henryEnkaVideo from "@/assets/henry-enka.mp4";
@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const pieces = [
   { src: artPiece1, title: "VOID_GEOMETRY.exe", id: "ZN-001", status: "ARCHIVED", route: "/artifacts/void-geometry" },
-  { src: artPiece2, video: artPiece2Video, title: "DATAMIND_v3.corrupt", id: "ZN-002", status: "ACTIVE", route: "/artifacts/datamind-v3" },
+  { src: datamindFirstFrame, video: artPiece2Video, title: "DATAMIND_v3.corrupt", id: "ZN-002", status: "ACTIVE", route: "/artifacts/datamind-v3" },
   { src: discordiaShape, hoverSrc: discordiaShapeGlow, title: "ALL_SEEING.ritual", id: "ZN-003", status: "SEALED", route: "/artifacts/all-seeing-ritual" },
 ];
 
@@ -96,6 +96,7 @@ const ArtGallery = () => {
                 <video
                   ref={(el) => { videoRefs.current[piece.id] = el; }}
                   src={piece.video}
+                  poster={piece.src}
                   muted
                   loop
                   playsInline
