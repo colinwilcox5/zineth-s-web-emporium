@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE PAGE IS A CUBE</title>
+<style>
+  /* ---- period-accurate crudeness, Riso-corrupted ---- */
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #FFFEF8;
+    font-family: "Times New Roman", Times, serif;
+    cursor: crosshair;
+  }
+  #page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 20px 120px 20px;
+    text-align: center;
+  }
+  .r { margin: 34px 0; line-height: 1.35; }
+
+  /* per-word wrapper keeps line-breaking sane once chars go inline-block */
+  .w { display: inline-block; white-space: nowrap; }
+  .ch {
+    display: inline-block;
+    position: relative;
+    will-change: transform;
+  }
+  .ch.active {
+    z-index: 50;
+  }
+
+  /* Riso palette classes */
+  .fedblue { color: #3D5588; }
+  .skyblue { color: #4982CF; }
+  .green   { color: #00A95C; }
+  .pink    { color: #FF48B0; }
+  .red     { color: #FF4C65; }
+  .yellow  { color: #FFE800; text-shadow: 1px 1px 0 #3D5588; }
+
+  .t64 { font-size: 64px; font-weight: bold; }
+  .t40 { font-size: 40px; font-weight: bold; }
+  .t28 { font-size: 28px; font-weight: bold; }
+  .t22 { font-size: 22px; }
+  .t18 { font-size: 18px; }
+  .t14 { font-size: 14px; }
+
+  .misreg { text-shadow: 3px 2px 0 #FF48B0; }
+
+  hr {
+    border: none;
+    border-top: 3px double #3D5588;
+    width: 60%;
+    margin: 40px auto;
+  }
+
+  #counter {
+    font-size: 13px;
+    color: #3D5588;
+    margin-top: 70px;
+  }
+
+  /* crude mode toggle, styled like it belongs in 1997 */
+  #modeToggle {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    background: #FFFEF8;
+    border: 2px outset #4982CF;
+    color: #3D5588;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 10px;
+    cursor: pointer;
+    z-index: 999;
+  }
+  #modeToggle:active { border-style: inset; }
+</style>
+</head>
+<body>
+<div id="page">
+
+  <div class="r t22 red"><b>WARNING: You were educated FLAT.</b></div>
+
+  <div class="r t64 fedblue misreg">THE PAGE IS A CUBE</div>
+
+  <div class="r t28 pink">FOUR SIMULTANEOUS LAYERS in ONE printed page.</div>
+
+  <div class="r t22 fedblue">Yellow layer. Pink layer. Blue layer. Green layer. FOUR PASSES, ONE TRUTH. Your teachers told you the page has two sides. LIE OF THE CENTURY. A page has SIX FACES. You have only ever been shown ONE.</div>
+
+  <hr>
+
+  <div class="r t28 green">Single-pass printing is EVIL.</div>
+
+  <div class="r t22 skyblue">The laser printer is a CYCLOPS. It sees one color because it has ONE EYE. I have studied the drum. I have studied the stencil. The stencil does not lie. Ink is TIME. Registration error is MEMORY.</div>
+
+  <div class="r t22 fedblue">Academia will not debate me. The design schools teach the GRID because the grid is a CAGE with the corners FILED OFF. Ask your professor where the corners went. Watch the face. The face KNOWS.</div>
+
+  <hr>
+
+  <div class="r t40 red">WORD IS FLAT UNTIL OBSERVED.</div>
+
+  <div class="r t22 fedblue">Hold your cursor against these words and WITNESS: language assumes its TRUE FORM. Every letter you have ever read was a cube FOLDED FLAT to fit your screen. I have unfolded nothing. I have merely STOPPED FOLDING.</div>
+
+  <div class="r t28 pink">Z is not a letter. Z is a cube seen from the corner, FALLING.</div>
+
+  <hr>
+
+  <div class="r t22 green">I will award ONE (1) ZINE, hand-registered, four layers, corners intact, to any professor, priest, or brand strategist who can disprove the Cubic Page. None have collected. None will collect. The offer STANDS like a cube stands: on ALL SIX FACES AT ONCE.</div>
+
+  <div class="r t28 fedblue">BEWARE of FAKE flat sites claiming cubic knowledge.</div>
+
+  <div class="r t22 skyblue">There is ONE Omnibus. The door was always open. You walked past it. The octopus watched you walk past it. The octopus KNOWS.</div>
+
+  <hr>
+
+  <div class="r t18 fedblue">This page renders correctly at 640 &times; 480 and NOWHERE ELSE. If the words are moving it is because you are FINALLY LOOKING AT THEM.</div>
+
+  <div class="r t14 green">Ink is time. Registration error is memory. The corners were never filed off, only HIDDEN.</div>
+
+  <div id="counter">You are visitor 0000004 to the true page. &copy; whenever.</div>
+
+</div>
+
+<button id="modeToggle">CUBE MODE: ROTATING</button>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================= config ================= */
+  var RADIUS = 150;          // recruitment radius around cursor (px)
+  var RELEASE = 195;         // hysteresis: release beyond this
+  var LERP_GO = 0.16;        // speed toward cube slot
+  var LERP_BACK = 0.12;      // speed back home
+  var CUBE_SIZE_3D = 105;    // half-extent of projected 3D cube
+  var FOV = 420;             // perspective strength
+
+  /* ================= build per-glyph spans ================= */
+  var chars = []; // {el, homeX, homeY, x, y, slot, active, space}
+
+  function wrapBlocks() {
+    var blocks = document.querySelectorAll('.r');
+    blocks.forEach(function (block) {
+      wrapNode(block);
+    });
+  }
+
+  function wrapNode(node) {
+    // walk children; replace text nodes with word/char spans
+    var kids = Array.prototype.slice.call(node.childNodes);
+    kids.forEach(function (kid) {
+      if (kid.nodeType === Node.TEXT_NODE) {
+        var frag = document.createDocumentFragment();
+        var words = kid.textContent.split(/(\s+)/);
+        words.forEach(function (word) {
+          if (word.length === 0) return;
+          if (/^\s+$/.test(word)) {
+            frag.appendChild(document.createTextNode(' '));
+            return;
+          }
+          var w = document.createElement('span');
+          w.className = 'w';
+          for (var i = 0; i < word.length; i++) {
+            var c = document.createElement('span');
+            c.className = 'ch';
+            c.textContent = word[i];
+            w.appendChild(c);
+          }
+          frag.appendChild(w);
+        });
+        node.replaceChild(frag, kid);
+      } else if (kid.nodeType === Node.ELEMENT_NODE) {
+        wrapNode(kid);
+      }
+    });
+  }
+
+  function measure() {
+    chars = [];
+    var els = document.querySelectorAll('.ch');
+    var sx = window.scrollX, sy = window.scrollY;
+    els.forEach(function (el) {
+      el.style.transform = '';
+      var r = el.getBoundingClientRect();
+      chars.push({
+        el: el,
+        homeX: r.left + r.width / 2 + sx,
+        homeY: r.top + r.height / 2 + sy,
+        x: 0, y: 0, s: 1,        // current offset from home + scale
+        slot: -1,
+        active: false
+      });
+    });
+  }
+
+  /* ================= cube slot geometry ================= */
+  // 12 edges of a unit cube, each with N sample points
+  var EDGES = (function () {
+    var v = [
+      [-1,-1,-1],[ 1,-1,-1],[ 1, 1,-1],[-1, 1,-1],
+      [-1,-1, 1],[ 1,-1, 1],[ 1, 1, 1],[-1, 1, 1]
+    ];
+    var pairs = [
+      [0,1],[1,2],[2,3],[3,0],   // back face
+      [4,5],[5,6],[6,7],[7,4],   // front face
+      [0,4],[1,5],[2,6],[3,7]    // connectors
+    ];
+    return pairs.map(function (p) { return [v[p[0]], v[p[1]]]; });
+  })();
+
+  var PER_EDGE = 8;
+  var SLOTS_3D = [];
+  EDGES.forEach(function (edge) {
+    for (var i = 0; i < PER_EDGE; i++) {
+      var t = (i + 0.5) / PER_EDGE;
+      SLOTS_3D.push([
+        edge[0][0] + (edge[1][0] - edge[0][0]) * t,
+        edge[0][1] + (edge[1][1] - edge[0][1]) * t,
+        edge[0][2] + (edge[1][2] - edge[0][2]) * t
+      ]);
+    }
+  });
+
+  // Flat ASCII isometric cube: sample the same 12 edges but project
+  // them once with a fixed "drawn on graph paper" oblique projection.
+  var SLOTS_FLAT = SLOTS_3D.map(function (p) {
+    var s = 62;      // front square half-size
+    var d = 34;      // depth offset per unit z (up and to the right)
+    // oblique: x' = x*s + z*d ; y' = y*s - z*d
+    return [p[0] * s + p[2] * d, p[1] * s - p[2] * d];
+  });
+
+  /* ================= state ================= */
+  var mode3d = true;
+  var mouse = { x: -9999, y: -9999, in: false };
+  var freeSlots = [];
+  var slotOwner = [];
+
+  function resetSlots() {
+    var n = SLOTS_3D.length;
+    freeSlots = [];
+    slotOwner = new Array(n).fill(-1);
+    for (var i = n - 1; i >= 0; i--) freeSlots.push(i);
+    chars.forEach(function (c) {
+      c.slot = -1;
+      c.active = false;
+      c.el.classList.remove('active');
+    });
+  }
+
+  /* ================= rotation / projection ================= */
+  function project3d(p, time) {
+    var ry = time * 0.0009;
+    var rx = 0.45 + Math.sin(time * 0.0004) * 0.25;
+    // rotate Y
+    var cy = Math.cos(ry), sy2 = Math.sin(ry);
+    var x = p[0] * cy + p[2] * sy2;
+    var z = -p[0] * sy2 + p[2] * cy;
+    // rotate X
+    var cx = Math.cos(rx), sx2 = Math.sin(rx);
+    var y = p[1] * cx - z * sx2;
+    z = p[1] * sx2 + z * cx;
+    var scale = FOV / (FOV + z * CUBE_SIZE_3D);
+    return {
+      x: x * CUBE_SIZE_3D * scale,
+      y: y * CUBE_SIZE_3D * scale,
+      s: 0.7 + scale * 0.5,
+      z: z
+    };
+  }
+
+  /* ================= main loop ================= */
+  function frame(time) {
+    var mx = mouse.x, my = mouse.y;
+
+    // recruitment & release
+    if (mouse.in) {
+      for (var i = 0; i < chars.length; i++) {
+        var c = chars[i];
+        var dx = c.homeX - mx, dy = c.homeY - my;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (!c.active && dist < RADIUS && freeSlots.length > 0) {
+          c.slot = freeSlots.pop();
+          slotOwner[c.slot] = i;
+          c.active = true;
+          c.el.classList.add('active');
+        } else if (c.active && dist > RELEASE) {
+          release(c);
+        }
+      }
+    } else {
+      for (var j = 0; j < chars.length; j++) {
+        if (chars[j].active) release(chars[j]);
+      }
+    }
+
+    // motion
+    for (var k = 0; k < chars.length; k++) {
+      var ch = chars[k];
+      var tx, ty, ts;
+      if (ch.active) {
+        if (mode3d) {
+          var pr = project3d(SLOTS_3D[ch.slot], time);
+          tx = (mx + pr.x) - ch.homeX;
+          ty = (my + pr.y) - ch.homeY;
+          ts = pr.s;
+        } else {
+          var fp = SLOTS_FLAT[ch.slot];
+          tx = (mx + fp[0]) - ch.homeX;
+          ty = (my + fp[1]) - ch.homeY;
+          ts = 1;
+        }
+        ch.x += (tx - ch.x) * LERP_GO;
+        ch.y += (ty - ch.y) * LERP_GO;
+        ch.s += (ts - ch.s) * LERP_GO;
+      } else {
+        ch.x += (0 - ch.x) * LERP_BACK;
+        ch.y += (0 - ch.y) * LERP_BACK;
+        ch.s += (1 - ch.s) * LERP_BACK;
+        if (Math.abs(ch.x) < 0.15 && Math.abs(ch.y) < 0.15) {
+          if (ch.el.style.transform !== '') ch.el.style.transform = '';
+          continue;
+        }
+      }
+      ch.el.style.transform =
+        'translate(' + ch.x.toFixed(1) + 'px,' + ch.y.toFixed(1) + 'px)' +
+        ' scale(' + ch.s.toFixed(2) + ')';
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  function release(c) {
+    if (c.slot >= 0) {
+      slotOwner[c.slot] = -1;
+      freeSlots.push(c.slot);
+    }
+    c.slot = -1;
+    c.active = false;
+    c.el.classList.remove('active');
+  }
+
+  /* ================= events ================= */
+  document.addEventListener('mousemove', function (e) {
+    mouse.x = e.clientX + window.scrollX;
+    mouse.y = e.clientY + window.scrollY;
+    mouse.in = true;
+  });
+  document.addEventListener('mouseleave', function () { mouse.in = false; });
+
+  // touch: finger acts as the cursor so phone viewers get the effect too
+  function onTouch(e) {
+    if (e.touches.length > 0) {
+      mouse.x = e.touches[0].clientX + window.scrollX;
+      mouse.y = e.touches[0].clientY + window.scrollY;
+      mouse.in = true;
+    }
+  }
+  document.addEventListener('touchstart', onTouch, { passive: true });
+  document.addEventListener('touchmove', onTouch, { passive: true });
+  document.addEventListener('touchend', function () { mouse.in = false; });
+
+  var toggle = document.getElementById('modeToggle');
+  toggle.addEventListener('click', function () {
+    mode3d = !mode3d;
+    toggle.textContent = 'CUBE MODE: ' + (mode3d ? 'ROTATING' : 'FLAT');
+    resetSlots();
+  });
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      resetSlots();
+      measure();
+      resetSlots();
+    }, 150);
+  });
+
+  /* ================= boot ================= */
+  function boot() {
+    wrapBlocks();
+    measure();
+    resetSlots();
+    requestAnimationFrame(frame);
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { setTimeout(boot, 50); });
+  } else {
+    setTimeout(boot, 200);
+  }
+})();
+</script>
+</body>
+</html>
