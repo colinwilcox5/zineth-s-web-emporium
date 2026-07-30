@@ -21,6 +21,7 @@ const ArcadePong = lazy(() => import("./pages/arcade/ArcadePong"));
 const ArcadeTracePentagon = lazy(() => import("./pages/arcade/ArcadeTracePentagon"));
 const ArcadeTracePentagram = lazy(() => import("./pages/arcade/ArcadeTracePentagram"));
 const ArcadeTraceSpiral = lazy(() => import("./pages/arcade/ArcadeTraceSpiral"));
+const CubePage = lazy(() => import("./pages/CubePage"));
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -106,6 +107,11 @@ const App = () => (
           <Route path="/arcade/trace-spiral" element={
             <Suspense fallback={<div className="h-screen w-full bg-black" />}>
               <ArcadeTraceSpiral />
+            </Suspense>
+          } />
+          <Route path="/cube" element={
+            <Suspense fallback={<div className="h-screen w-full" style={{ background: '#FFFEF8' }} />}>
+              <CubePage />
             </Suspense>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
