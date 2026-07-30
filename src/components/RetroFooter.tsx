@@ -1,6 +1,22 @@
 import HitCounter from "./HitCounter";
 
-const RetroFooter = () => (
+const RANDOM_DESTINATIONS = [
+  "/cube.html",
+  "/trace-to-unlock.html",
+  "/omnibus",
+  "/omnibus-of-fun",
+  "/reading",
+  "/arcade",
+];
+
+const RetroFooter = () => {
+  const goRandom = () => {
+    const dest =
+      RANDOM_DESTINATIONS[Math.floor(Math.random() * RANDOM_DESTINATIONS.length)];
+    window.open(dest, "_blank", "noopener");
+  };
+
+  return (
   <footer className="border-t border-border py-8 px-4">
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -9,7 +25,13 @@ const RetroFooter = () => (
           <span className="text-foreground">◄</span>
           <span className="retro-link cursor-pointer">ZINETH WEBRING</span>
           <span className="text-muted-foreground">|</span>
-          <a href="/cube.html" className="retro-link cursor-pointer">RANDOM</a>
+          <button
+            type="button"
+            onClick={goRandom}
+            className="retro-link cursor-pointer bg-transparent border-none p-0 font-terminal text-sm text-muted-foreground"
+          >
+            RANDOM
+          </button>
           <span className="text-muted-foreground">|</span>
           <span className="retro-link cursor-pointer">NEXT</span>
           <span className="text-foreground">►</span>
@@ -37,6 +59,7 @@ const RetroFooter = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export default RetroFooter;
