@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /**
  * THE PAGE IS A CUBE — TimeCube-homage rant page.
@@ -72,6 +73,22 @@ const CSS = `
     z-index: 999;
   }
   #cube-page .cube-mode-toggle:active { border-style: inset; }
+
+  #cube-page .cube-back {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    background: #FFFEF8;
+    border: 2px outset #4982CF;
+    color: #3D5588;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 10px;
+    cursor: pointer;
+    z-index: 999;
+  }
+  #cube-page .cube-back:active { border-style: inset; }
 `;
 
 const RANT_HTML = `
@@ -137,6 +154,7 @@ interface CharState {
 
 const CubePage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const mode3dRef = useRef(true);
   const resetRef = useRef<() => void>(() => {});
   const [modeLabel, setModeLabel] = useState("ROTATING");
@@ -389,6 +407,13 @@ const CubePage = () => {
   return (
     <div id="cube-page">
       <style>{CSS}</style>
+      <button
+        className="cube-back"
+        onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
+        data-interactive="true"
+      >
+        ← BACK TO ZINETH
+      </button>
       <div
         ref={containerRef}
         className="cube-inner"
