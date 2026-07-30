@@ -9,7 +9,7 @@ const RetroFooter = () => (
           <span className="text-foreground">◄</span>
           <span className="retro-link cursor-pointer">ZINETH WEBRING</span>
           <span className="text-muted-foreground">|</span>
-          <span className="retro-link cursor-pointer">RANDOM</span>
+          <a href="/cube.html" className="retro-link cursor-pointer">RANDOM</a>
           <span className="text-muted-foreground">|</span>
           <span className="retro-link cursor-pointer">NEXT</span>
           <span className="text-foreground">►</span>
